@@ -1,122 +1,106 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { AppLayout } from './components/layout/AppLayout';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Public Pages
+import { LandingPage } from './pages/public/LandingPage';
+import { RoleSelectionPage } from './pages/public/RoleSelectionPage';
+import { BusinessOnboardingPage } from './pages/public/BusinessOnboardingPage';
+import { WorkerOnboardingPage } from './pages/public/WorkerOnboardingPage';
+import { LoginPage } from './pages/public/LoginPage';
+import { RegisterPage } from './pages/public/RegisterPage';
+
+// Business Pages
+import { BusinessDashboard } from './pages/business/BusinessDashboard';
+import { PostWorkPage } from './pages/business/PostWorkPage';
+import { MatchingPage } from './pages/business/MatchingPage';
+import { WorkerDirectory } from './pages/business/WorkerDirectory';
+import { BusinessProjects } from './pages/business/BusinessProjects';
+import { ProjectDetailPage } from './pages/business/ProjectDetailPage';
+import { BusinessHistory } from './pages/business/BusinessHistory';
+import { BusinessProfile } from './pages/business/BusinessProfile';
+
+// Worker Pages
+import { WorkerDashboard } from './pages/worker/WorkerDashboard';
+import { WorkerCapacityPage } from './pages/worker/WorkerCapacityPage';
+import { FindWorkPage } from './pages/worker/FindWorkPage';
+import { WorkerProjectsPage } from './pages/worker/WorkerProjectsPage';
+import { WorkPassportPage } from './pages/worker/WorkPassportPage';
+import { WorkerProfilePage } from './pages/worker/WorkerProfilePage';
+
+// Shared & Admin Pages
+import { PublicPassportView } from './pages/shared/PublicPassportView';
+import { AdminDemoPage } from './pages/admin/AdminDemoPage';
+
+export default function App() {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (path) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+    window.scrollTo(0, 0);
+  };
+
+  const renderContent = () => {
+    // Phase 1 Public Routes
+    if (currentPath === '/') return <LandingPage onNavigate={navigate} />;
+    if (currentPath === '/role-selection') return <RoleSelectionPage onNavigate={navigate} />;
+    if (currentPath === '/onboarding/business') return <BusinessOnboardingPage onNavigate={navigate} />;
+    if (currentPath === '/onboarding/worker') return <WorkerOnboardingPage onNavigate={navigate} />;
+    if (currentPath === '/login') return <LoginPage onNavigate={navigate} />;
+    if (currentPath === '/register') return <RegisterPage onNavigate={navigate} />;
+    if (currentPath.startsWith('/workers/')) {
+      const wId = currentPath.replace('/workers/', '') || 'usr-wrk-1';
+      return <PublicPassportView workerId={wId} onNavigate={navigate} />;
+    }
+
+    // Business & Worker App Views wrapped in AppLayout
+    let pageElement = <BusinessDashboard onNavigate={navigate} />;
+
+    // Business Navigation Routes
+    if (currentPath === '/business/dashboard') pageElement = <BusinessDashboard onNavigate={navigate} />;
+    else if (currentPath === '/business/post-work') pageElement = <PostWorkPage onNavigate={navigate} />;
+    else if (currentPath === '/business/matches') pageElement = <MatchingPage onNavigate={navigate} />;
+    else if (currentPath === '/business/workers') pageElement = <WorkerDirectory onNavigate={navigate} />;
+    else if (currentPath === '/business/projects') pageElement = <BusinessProjects onNavigate={navigate} />;
+    else if (currentPath.startsWith('/business/project/')) {
+      const pId = currentPath.replace('/business/project/', '') || 'proj-501';
+      pageElement = <ProjectDetailPage projectId={pId} onNavigate={navigate} />;
+    } else if (currentPath === '/business/history') pageElement = <BusinessHistory onNavigate={navigate} />;
+    else if (currentPath === '/business/profile') pageElement = <BusinessProfile onNavigate={navigate} />;
+
+    // Worker Navigation Routes
+    else if (currentPath === '/worker/dashboard') pageElement = <WorkerDashboard onNavigate={navigate} />;
+    else if (currentPath === '/worker/capacity') pageElement = <WorkerCapacityPage onNavigate={navigate} />;
+    else if (currentPath === '/worker/work' || currentPath === '/worker/matches') pageElement = <FindWorkPage onNavigate={navigate} />;
+    else if (currentPath === '/worker/projects' || currentPath === '/worker/history') pageElement = <WorkerProjectsPage onNavigate={navigate} />;
+    else if (currentPath === '/worker/profile') pageElement = <WorkPassportPage onNavigate={navigate} />;
+    else if (currentPath === '/worker/settings') pageElement = <WorkerProfilePage onNavigate={navigate} />;
+
+    // Admin Demo Route
+    else if (currentPath === '/admin/demo') pageElement = <AdminDemoPage onNavigate={navigate} />;
+
+    return (
+      <AppLayout currentPath={currentPath} onNavigate={navigate}>
+        {pageElement}
+      </AppLayout>
+    );
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <AuthProvider>
+      <NotificationProvider>
+        {renderContent()}
+      </NotificationProvider>
+    </AuthProvider>
+  );
 }
-
-export default App
