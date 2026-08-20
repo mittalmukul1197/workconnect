@@ -17,12 +17,13 @@ export const Button = ({
   const baseStyles = 'inline-flex items-center justify-center font-bold rounded-xl transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
   const variants = {
-    primary: 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:-translate-y-0.5',
-    secondary: 'bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-lg shadow-emerald-600/30 hover:-translate-y-0.5',
-    outline: 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 shadow-md',
-    accent: 'bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/30',
-    danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30',
-    ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60'
+    primary: 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5',
+    secondary: 'bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-md shadow-emerald-500/25 hover:-translate-y-0.5',
+    outline: 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 hover:border-slate-400 shadow-sm',
+    accent: 'bg-amber-600 hover:bg-amber-500 text-white shadow-md shadow-amber-600/25',
+    danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/25',
+    success: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/25',
+    ghost: 'bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
   };
 
   const sizes = {

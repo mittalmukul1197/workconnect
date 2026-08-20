@@ -14,8 +14,8 @@ export const Input = ({
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-          {label} {required && <span className="text-rose-400">*</span>}
+        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+          {label} {required && <span className="text-rose-500">*</span>}
         </label>
       )}
       <input
@@ -24,12 +24,12 @@ export const Input = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className={`w-full p-3 rounded-xl bg-slate-900 border text-xs text-white placeholder-slate-500 focus:outline-none transition-colors ${
-          error ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-indigo-500'
+        className={`w-full p-3 rounded-xl bg-white border text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-colors ${
+          error ? 'border-rose-500 focus:border-rose-400' : 'border-slate-300 focus:border-indigo-500 shadow-xs'
         }`}
       />
-      {error && <p className="text-[11px] font-medium text-rose-400">{error}</p>}
-      {helpText && !error && <p className="text-[11px] text-slate-400">{helpText}</p>}
+      {error && <p className="text-[11px] font-medium text-rose-600">{error}</p>}
+      {helpText && !error && <p className="text-[11px] text-slate-500">{helpText}</p>}
     </div>
   );
 };

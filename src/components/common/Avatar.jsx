@@ -11,7 +11,7 @@ export const Avatar = ({ src, alt = 'User', size = 'md', className = '' }) => {
   const initials = alt ? alt.split(' ').map(n => n[0]).join('').substring(0, 2) : 'U';
 
   return (
-    <div className={`relative overflow-hidden border border-slate-700 bg-slate-800 shrink-0 flex items-center justify-center font-bold text-white shadow-md ${sizes[size] || sizes.md} ${className}`}>
+    <div className={`relative overflow-hidden border border-slate-200 bg-indigo-50 shrink-0 flex items-center justify-center font-bold text-indigo-700 shadow-xs ${sizes[size] || sizes.md} ${className}`}>
       {src ? (
         <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (

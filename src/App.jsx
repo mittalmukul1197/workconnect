@@ -11,6 +11,11 @@ import { WorkerOnboardingPage } from './pages/public/WorkerOnboardingPage';
 import { LoginPage } from './pages/public/LoginPage';
 import { RegisterPage } from './pages/public/RegisterPage';
 
+// Household Pages
+import { HouseholdDashboard } from './pages/household/HouseholdDashboard';
+import { HouseholdBookingsPage } from './pages/household/HouseholdBookingsPage';
+import { HouseholdProfilePage } from './pages/household/HouseholdProfilePage';
+
 // Business Pages
 import { BusinessDashboard } from './pages/business/BusinessDashboard';
 import { PostWorkPage } from './pages/business/PostWorkPage';
@@ -63,11 +68,16 @@ export default function App() {
       return <PublicPassportView workerId={wId} onNavigate={navigate} />;
     }
 
-    // Business & Worker App Views wrapped in AppLayout
+    // App Layout Views
     let pageElement = <BusinessDashboard onNavigate={navigate} />;
 
+    // Household Navigation Routes
+    if (currentPath === '/household/dashboard') pageElement = <HouseholdDashboard onNavigate={navigate} />;
+    else if (currentPath === '/household/bookings') pageElement = <HouseholdBookingsPage onNavigate={navigate} />;
+    else if (currentPath === '/household/profile') pageElement = <HouseholdProfilePage onNavigate={navigate} />;
+
     // Business Navigation Routes
-    if (currentPath === '/business/dashboard') pageElement = <BusinessDashboard onNavigate={navigate} />;
+    else if (currentPath === '/business/dashboard') pageElement = <BusinessDashboard onNavigate={navigate} />;
     else if (currentPath === '/business/post-work') pageElement = <PostWorkPage onNavigate={navigate} />;
     else if (currentPath === '/business/matches') pageElement = <MatchingPage onNavigate={navigate} />;
     else if (currentPath === '/business/workers') pageElement = <WorkerDirectory onNavigate={navigate} />;

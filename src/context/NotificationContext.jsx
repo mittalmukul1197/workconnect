@@ -67,14 +67,14 @@ export const NotificationProvider = ({ children }) => {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="pointer-events-auto flex items-start gap-3 p-4 rounded-xl glass-card border border-indigo-500/30 shadow-2xl animate-bounce-short text-white"
+            className="pointer-events-auto flex items-start gap-3 p-4 rounded-xl bg-white border border-indigo-200 shadow-xl animate-bounce-short text-slate-900"
           >
-            <div className="p-2 rounded-lg bg-indigo-600/30 text-indigo-400 shrink-0">
+            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 shrink-0">
               <span className="font-bold text-xs uppercase">{t.type}</span>
             </div>
             <div>
-              <h4 className="font-semibold text-sm text-slate-100">{t.title}</h4>
-              <p className="text-xs text-slate-300 mt-0.5">{t.message}</p>
+              <h4 className="font-semibold text-sm text-slate-900">{t.title}</h4>
+              <p className="text-xs text-slate-600 mt-0.5">{t.message}</p>
             </div>
           </div>
         ))}

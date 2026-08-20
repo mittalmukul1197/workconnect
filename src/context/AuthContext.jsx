@@ -7,6 +7,7 @@ export const DEFAULT_DEMO_BUSINESS = {
   email: 'business@demo.com',
   name: 'Crafted Threads Boutique',
   role: 'business',
+  clientType: 'business',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   phone: '+91 98765 43210',
   city: 'Rajpura',
@@ -14,6 +15,21 @@ export const DEFAULT_DEMO_BUSINESS = {
   industry: 'Tailoring & Apparel',
   verified: true,
   rating: 4.8
+};
+
+export const DEFAULT_DEMO_HOUSEHOLD = {
+  id: 'usr-hh-1',
+  email: 'household@demo.com',
+  name: 'Rahul Sharma',
+  role: 'business',
+  clientType: 'household',
+  avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+  phone: '+91 98765 22222',
+  city: 'Rajpura',
+  state: 'Punjab',
+  industry: 'Household Client',
+  verified: true,
+  rating: 4.9
 };
 
 export const DEFAULT_DEMO_WORKER = {
@@ -33,9 +49,9 @@ export const DEFAULT_DEMO_WORKER = {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('workconnect_user');
-    return saved ? JSON.parse(saved) : DEFAULT_DEMO_BUSINESS;
+    return saved ? JSON.parse(saved) : null; // Default to null so user must log in or select demo
   });
-  const [token, setToken] = useState(() => localStorage.getItem('workconnect_token') || 'demo-jwt-token');
+  const [token, setToken] = useState(() => localStorage.getItem('workconnect_token') || null);
 
   useEffect(() => {
     if (user) {
@@ -48,11 +64,58 @@ export const AuthProvider = ({ children }) => {
   const loginAsDemoBusiness = () => {
     setUser(DEFAULT_DEMO_BUSINESS);
     setToken('demo-bus-token');
+    return DEFAULT_DEMO_BUSINESS;
+  };
+
+  const loginAsDemoHousehold = () => {
+    setUser(DEFAULT_DEMO_HOUSEHOLD);
+    setToken('demo-hh-token');
+    return DEFAULT_DEMO_HOUSEHOLD;
   };
 
   const loginAsDemoWorker = () => {
     setUser(DEFAULT_DEMO_WORKER);
     setToken('demo-wrk-token');
+    return DEFAULT_DEMO_WORKER;
+  };
+
+  const loginWithCredentials = (email, password) => {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    let loggedUser = null;
+
+    if (cleanEmail === 'business@demo.com' || cleanEmail.includes('business')) {
+      loggedUser = loginAsDemoBusiness();
+    } else if (cleanEmail === 'household@demo.com' || cleanEmail.includes('household')) {
+      loggedUser = loginAsDemoHousehold();
+    } else if (cleanEmail === 'worker@demo.com' || cleanEmail.includes('worker')) {
+      loggedUser = loginAsDemoWorker();
+    } else {
+      // Auto-register new user
+      loggedUser = registerCustomUser({
+        name: cleanEmail.split('@')[0] || 'User',
+        email: cleanEmail,
+        role: 'business',
+        clientType: 'household',
+        phone: '+91 98765 99999',
+        city: 'Rajpura'
+      });
+    }
+    return loggedUser;
+  };
+
+  const registerCustomUser = (userData) => {
+    const newUser = {
+      id: `usr-${Date.now()}`,
+      verified: true,
+      rating: 5.0,
+      avatar: userData.role === 'worker'
+        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+      ...userData
+    };
+    setUser(newUser);
+    setToken(`custom-token-${Date.now()}`);
+    return newUser;
   };
 
   const switchRole = (targetRole) => {
@@ -76,7 +139,10 @@ export const AuthProvider = ({ children }) => {
         user,
         token,
         loginAsDemoBusiness,
+        loginAsDemoHousehold,
         loginAsDemoWorker,
+        loginWithCredentials,
+        registerCustomUser,
         switchRole,
         logout,
         isAuthenticated: !!user,
