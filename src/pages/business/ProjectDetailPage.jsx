@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
+import { useChat } from '../../context/ChatContext';
 import { SelfHealingSimulator } from '../../components/features/SelfHealingSimulator';
 import { WorkConnectEscrowVault } from '../../components/features/WorkConnectEscrowVault';
 import { MOCK_PROJECTS } from '../../data/mockData';
 
 export const ProjectDetailPage = ({ projectId, onNavigate }) => {
   const [project, setProject] = useState(MOCK_PROJECTS[0]);
+  const { openChatWithUser } = useChat();
 
   const handleRebalanced = () => {
     setProject((prev) => ({
@@ -54,7 +56,22 @@ export const ProjectDetailPage = ({ projectId, onNavigate }) => {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 <span className="font-bold text-slate-900">{w.workerName}</span>
               </div>
-              <span className="text-indigo-700 font-extrabold">{w.completedQuantity} / {w.allocatedQuantity} {project.unitLabel}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-indigo-700 font-extrabold">{w.completedQuantity} / {w.allocatedQuantity} {project.unitLabel}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon="message-square"
+                  onClick={() => openChatWithUser({
+                    id: w.workerName.includes('Sunita') ? 'usr-wrk-1' : 'usr-wrk-3',
+                    name: w.workerName,
+                    role: 'worker',
+                    profession: 'Assigned Garment Specialist'
+                  }, onNavigate)}
+                >
+                  Message
+                </Button>
+              </div>
             </div>
           ))}
         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useChat } from '../../context/ChatContext';
 import { Icon } from '../common/Icon';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
@@ -10,6 +11,7 @@ import { LanguageSelector } from '../common/LanguageSelector';
 export const Navbar = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+  const { unreadCount } = useChat();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const isHousehold = user?.role === 'household' || user?.clientType === 'household';
@@ -92,6 +94,19 @@ export const Navbar = ({ onNavigate }) => {
 
           {user ? (
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => onNavigate && onNavigate('/messages')}
+                className="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
+                title={t('chat.messages') || 'Messages'}
+              >
+                <Icon name="message-square" className="w-4 h-4 text-indigo-600" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-extrabold text-[9px] flex items-center justify-center border-2 border-white animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+
               <Button
                 size="sm"
                 variant="primary"

@@ -3,11 +3,13 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
+import { useChat } from '../../context/ChatContext';
 import { MOCK_OPPORTUNITIES, OPEN_WORK_OFFERS } from '../../data/mockData';
 
 export const FindWorkPage = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState('open-budget-offers'); // 'open-budget-offers' | 'ai-capacity'
   const [offersList, setOffersList] = useState(OPEN_WORK_OFFERS);
+  const { openChatWithUser } = useChat();
 
   const handleWorkerAccept = (offerId) => {
     setOffersList((prev) =>
@@ -134,7 +136,20 @@ export const FindWorkPage = ({ onNavigate }) => {
                   </div>
 
                   {opp.status === 'pending' && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        icon="message-square"
+                        onClick={() => openChatWithUser({
+                          id: opp.requesterId || 'usr-bus-1',
+                          name: opp.requesterName || 'Crafted Threads Boutique',
+                          role: 'business',
+                          profession: opp.title || 'Hirer'
+                        }, onNavigate)}
+                      >
+                        Message Hirer
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -149,20 +164,35 @@ export const FindWorkPage = ({ onNavigate }) => {
                         icon="check"
                         onClick={() => handleWorkerAccept(opp.id)}
                       >
-                        Accept Work Offer
+                        Accept Offer
                       </Button>
                     </div>
                   )}
 
                   {opp.status === 'accepted' && (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      icon="arrow-right"
-                      onClick={() => onNavigate('/worker/projects')}
-                    >
-                      View Active Project
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        icon="message-square"
+                        onClick={() => openChatWithUser({
+                          id: opp.requesterId || 'usr-bus-1',
+                          name: opp.requesterName || 'Crafted Threads Boutique',
+                          role: 'business',
+                          profession: opp.title || 'Hirer'
+                        }, onNavigate)}
+                      >
+                        Message Hirer
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        icon="arrow-right"
+                        onClick={() => onNavigate('/worker/projects')}
+                      >
+                        View Active Project
+                      </Button>
+                    </div>
                   )}
                 </div>
               </Card>

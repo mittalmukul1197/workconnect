@@ -2,9 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../common/Icon';
 import { Badge } from '../common/Badge';
+import { Button } from '../common/Button';
+import { useChat } from '../../context/ChatContext';
 
-export const WorkPassportCard = ({ workerUser, profile, compact = false }) => {
+export const WorkPassportCard = ({ workerUser, profile, compact = false, onNavigate }) => {
   const { t } = useTranslation();
+  const { openChatWithUser } = useChat();
 
   if (!workerUser) return null;
 
@@ -78,6 +81,44 @@ export const WorkPassportCard = ({ workerUser, profile, compact = false }) => {
           ))}
         </div>
       </div>
+
+      {(workerUser.hasDisability || profile?.hasDisability) && (
+        <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs space-y-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="purple" className="text-[10px]">♿ PwD Inclusive Worker</Badge>
+              <span className="font-bold text-purple-950">
+                {workerUser.disabilityType || profile?.disabilityType || 'Special Ability Artisan'}
+              </span>
+            </div>
+          </div>
+          {(workerUser.disabilityAccommodations?.length > 0 || profile?.disabilityAccommodations?.length > 0) && (
+            <p className="text-[11px] text-purple-800 leading-relaxed font-medium">
+              <strong className="font-bold">Accommodations Needed:</strong>{' '}
+              {(workerUser.disabilityAccommodations || profile?.disabilityAccommodations || []).join(', ')}
+            </p>
+          )}
+        </div>
+      )}
+
+      {onNavigate && (
+        <div className="pt-2 border-t border-slate-100">
+          <Button
+            variant="primary"
+            fullWidth
+            icon="message-square"
+            onClick={() => openChatWithUser({
+              id: workerUser.id || 'usr-wrk-1',
+              name: workerUser.name || 'Sunita Sharma',
+              role: 'worker',
+              avatar: workerUser.avatar,
+              profession: workerUser.profession || 'Master Tailor & Garment Designer'
+            }, onNavigate)}
+          >
+            {t('chat.messageWorker') || 'Message Worker'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

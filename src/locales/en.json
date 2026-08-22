@@ -165,5 +165,36 @@
     "tagline": "Empowering Bharat's skilled local workforce with AI matching and portable Work Passports.",
     "rights": "WorkConnect Platform. All rights reserved.",
     "quickLinks": "Quick Navigation"
+  },
+  "role": {
+    "worker": "Worker",
+    "hirer": "Hirer",
+    "business": "Business"
+  },
+  "chat": {
+    "messages": "Messages",
+    "messagesTitle": "Real-Time Workforce Chat",
+    "messagesSubtitle": "Direct, instant end-to-end communication between Hirers & Workers.",
+    "messageWorker": "Message Worker",
+    "messageHirer": "Message Hirer",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "noMessagesYet": "No messages yet",
+    "startConversation": "Say hello to start the conversation!",
+    "online": "Online",
+    "offline": "Offline",
+    "unreadMessages": "Unread messages",
+    "searchConversations": "Search conversations...",
+    "selectConversation": "Select a Conversation",
+    "selectConversationSubtitle": "Choose a contact from the list on the left to start chatting in real time.",
+    "backToConversations": "Back to conversations",
+    "chats": "Chats",
+    "viewPassport": "Work Passport",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "justNow": "Just now",
+    "noConversations": "No conversations found",
+    "tryDifferentSearch": "Try searching for another user or role.",
+    "startMessageFromProfile": "Start a conversation from a worker profile or job offer."
   }
 }

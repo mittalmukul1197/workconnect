@@ -145,5 +145,36 @@
     "tagline": "ਏਆਈ ਮੈਚਿੰਗ ਨਾਲ ਭਾਰਤ ਦੇ ਸਥਾਨਕ ਕਾਰੀਗਰਾਂ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣਾ।",
     "rights": "ਵਰਕਕਨੈਕਟ ਨੈੱਟਵਰਕ। ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।",
     "quickLinks": "ਤੁਰੰਤ ਲਿੰਕ"
+  },
+  "role": {
+    "worker": "ਕਾਰਕਰਤਾ",
+    "hirer": "ਨਿਯੋਜਕ",
+    "business": "ਕਾਰੋਬਾਰ"
+  },
+  "chat": {
+    "messages": "ਮੈਸੇਜ",
+    "messagesTitle": "ਰੀਅਲ-ਟਾਈਮ ਚੈਟ",
+    "messagesSubtitle": "ਨਿਯੋਜਕਾਂ ਅਤੇ ਕਾਰਕਰਤਾਵਾਂ ਵਿਚਕਾਰ ਸਿੱਧੀ ਚੈਟ।",
+    "messageWorker": "ਕਾਰਕਰਤਾ ਨੂੰ ਮੈਸੇਜ ਭੇਜੋ",
+    "messageHirer": "ਨਿਯੋਜਕ ਨੂੰ ਮੈਸੇਜ ਭੇਜੋ",
+    "typeMessage": "ਮੈਸੇਜ ਲਿਖੋ...",
+    "send": "ਭੇਜੋ",
+    "noMessagesYet": "ਅਜੇ ਕੋਈ ਮੈਸੇਜ ਨਹੀਂ",
+    "startConversation": "ਗੱਲਬਾਤ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਹੈਲੋ ਕਹੋ!",
+    "online": "ਆਨਲਾਈਨ",
+    "offline": "ਆਫਲਾਈਨ",
+    "unreadMessages": "ਅਣपੜ੍ਹੇ ਮੈਸੇਜ",
+    "searchConversations": "ਗੱਲਬਾਤ ਖੋਜੋ...",
+    "selectConversation": "ਗੱਲਬਾਤ ਚੁਣੋ",
+    "selectConversationSubtitle": "ਚੈਟ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣੋ।",
+    "backToConversations": "ਵਾਪਸ ਜਾਓ",
+    "chats": "ਚੈਟਾਂ",
+    "viewPassport": "ਵਰਕ ਪਾਸਪੋਰਟ",
+    "today": "ਅੱਜ",
+    "yesterday": "ਕੱਲ੍ਹ",
+    "justNow": "ਹੁਣੇ-ਹੁਣੇ",
+    "noConversations": "ਕੋਈ ਗੱਲਬਾਤ ਨਹੀਂ ਮਿਲੀ",
+    "tryDifferentSearch": "ਕਿਸੇ ਹੋਰ ਵਰਤੋਂਕਾਰ ਨੂੰ ਖੋਜੋ।",
+    "startMessageFromProfile": "ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਗੱਲਬਾਤ ਸ਼ੁਰੂ ਕਰੋ।"
   }
 }

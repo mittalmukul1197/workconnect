@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useChat } from '../../context/ChatContext';
 import { Icon } from '../common/Icon';
 import { Badge } from '../common/Badge';
 import { LanguageSelector } from '../common/LanguageSelector';
@@ -8,17 +9,20 @@ import { LanguageSelector } from '../common/LanguageSelector';
 export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }) => {
   const { t } = useTranslation();
   const { user, isBusiness, isWorker, switchRole } = useAuth();
+  const { unreadCount } = useChat();
 
   const isHousehold = user?.role === 'household' || user?.clientType === 'household';
 
   const householdNav = [
     { path: '/household/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
+    { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
     { path: '/household/bookings', label: 'My Bookings', icon: 'clock', badge: 'Doorstep' },
     { path: '/household/profile', label: 'Household Profile', icon: 'user' }
   ];
 
   const businessNav = [
     { path: '/business/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
+    { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
     { path: '/business/post-work', label: t('nav.postWork'), icon: 'plus', badge: 'AI Parser' },
     { path: '/business/matches', label: 'AI Matches', icon: 'sparkles' },
     { path: '/business/workers', label: t('nav.workerDirectory'), icon: 'users' },
@@ -29,6 +33,7 @@ export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }
 
   const workerNav = [
     { path: '/worker/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
+    { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
     { path: '/worker/work', label: t('nav.findWork'), icon: 'search', badge: 'Reverse' },
     { path: '/worker/capacity', label: 'My Capacity', icon: 'zap' },
     { path: '/worker/matches', label: 'Matched Jobs', icon: 'sparkles' },
