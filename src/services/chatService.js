@@ -73,7 +73,7 @@ const DEFAULT_CONVERSATIONS = [
     lastMessage: 'I can start at 9 AM tomorrow.',
     lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
     unreadCounts: {
-      'usr-bus-1': 0,
+      'usr-bus-1': 1,
       'usr-wrk-1': 0
     },
     updatedAt: new Date(Date.now() - 1000 * 60 * 25).toISOString()

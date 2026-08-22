@@ -290,11 +290,11 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                   <Button
                     size="sm"
                     variant="outline"
-                    icon="phone"
-                    onClick={() => alert(`Calling ${bk.workerName} at ${bk.workerPhone}...`)}
+                    icon="message-square"
+                    onClick={() => onNavigate && onNavigate('/messages')}
                     className="text-xs font-bold"
                   >
-                    Call Worker
+                    Message Worker
                   </Button>
                   <Button
                     size="sm"
@@ -552,11 +552,14 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                   <Button
                     size="sm"
                     variant="primary"
-                    icon="phone"
-                    onClick={() => alert(`Calling ${liveMapBooking.workerName} at ${liveMapBooking.workerPhone}...`)}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black border-none shadow-md shadow-emerald-500/20 text-xs px-3 py-1.5"
+                    icon="message-square"
+                    onClick={() => {
+                      setLiveMapBooking(null);
+                      onNavigate && onNavigate('/messages');
+                    }}
+                    className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-slate-950 font-black border-none shadow-md shadow-cyan-400/20 text-xs px-3 py-1.5"
                   >
-                    Call Worker
+                    Message Worker
                   </Button>
                 </div>
               </div>

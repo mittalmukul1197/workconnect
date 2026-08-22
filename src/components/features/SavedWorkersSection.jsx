@@ -88,33 +88,23 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
               <span className="text-emerald-700">{wrk.rate}</span>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5 pt-1">
-              <Button
-                size="sm"
-                variant="outline"
-                icon="phone"
-                onClick={() => setActiveCallingWorker(wrk)}
-                className="text-[11px] px-2 py-1.5"
-                title="Call Worker"
-              >
-                Call
-              </Button>
+            <div className="grid grid-cols-2 gap-2 pt-1">
               <Button
                 size="sm"
                 variant="outline"
                 icon="message-square"
                 onClick={() => onNavigate && onNavigate('/messages')}
-                className="text-[11px] px-2 py-1.5"
+                className="text-xs py-2 font-bold"
                 title="Chat Worker"
               >
-                Chat
+                Message Worker
               </Button>
               <Button
                 size="sm"
                 variant="primary"
                 icon="zap"
                 onClick={() => onRebook && onRebook(wrk)}
-                className="text-[11px] px-2 py-1.5 bg-indigo-600 hover:bg-indigo-700 shadow-xs"
+                className="text-xs py-2 bg-indigo-600 hover:bg-indigo-700 shadow-xs font-bold"
               >
                 Re-Hire
               </Button>
@@ -122,40 +112,6 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
           </Card>
         ))}
       </div>
-
-      {/* Simulated Call Modal */}
-      {activeCallingWorker && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-sm bg-gradient-to-b from-slate-900 to-indigo-950 text-white rounded-3xl p-6 border border-indigo-500/40 shadow-2xl text-center space-y-6 animate-scale-up">
-            <div className="w-20 h-20 rounded-full mx-auto p-1 bg-gradient-to-tr from-indigo-500 to-emerald-400 animate-pulse">
-              <img
-                src={activeCallingWorker.avatar}
-                alt={activeCallingWorker.name}
-                className="w-full h-full rounded-full object-cover"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <span className="text-xs text-indigo-300 font-bold uppercase tracking-wider">Calling Local Artisan...</span>
-              <h3 className="text-xl font-black text-white">{activeCallingWorker.name}</h3>
-              <p className="text-xs text-slate-400">{activeCallingWorker.phone}</p>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-xs text-emerald-400 font-semibold">
-              🔊 Live WorkConnect VoIP Doorstep Dispatch Line Connected
-            </div>
-
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={() => setActiveCallingWorker(null)}
-              className="bg-rose-600 hover:bg-rose-700 text-white font-bold border-none"
-            >
-              End Call
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

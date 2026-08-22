@@ -48,16 +48,12 @@ export const ChatProvider = ({ children }) => {
     });
 
     setConversations(updatedUserConvs);
-
-    if (!activeConversationId && updatedUserConvs.length > 0) {
-      // Default select first conversation if none selected
-      const firstId = updatedUserConvs[0].id;
-      setActiveConversationId(firstId);
-      const msgs = getMessages(firstId);
-      setMessages(msgs);
-      apiMarkAsRead(firstId, user.id);
-    }
   }, [user?.id, activeConversationId]);
+
+  useEffect(() => {
+    setActiveConversationId(null);
+    setMessages([]);
+  }, [user?.id]);
 
   useEffect(() => {
     reloadData();
