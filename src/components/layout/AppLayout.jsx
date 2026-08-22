@@ -11,6 +11,20 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
   const { user, isBusiness, logout } = useAuth();
   const { notifications, unreadCount, markAllAsRead } = useNotifications();
 
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    if (e.key === 'Enter' || e.type === 'click') {
+      e.preventDefault();
+      if (!searchQuery.trim()) return;
+      if (isBusiness) {
+        onNavigate && onNavigate('/business/workers');
+      } else {
+        onNavigate && onNavigate('/worker/work');
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex">
       <Sidebar
@@ -29,16 +43,21 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
             <Icon name="menu" className="w-6 h-6" />
           </button>
 
-          <div className="hidden sm:flex items-center gap-3">
+          <form onSubmit={handleSearchSubmit} className="hidden sm:flex items-center gap-3">
             <div className="relative">
-              <Icon name="search" className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600">
+                <Icon name="search" className="w-4 h-4" />
+              </button>
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchSubmit}
                 placeholder={isBusiness ? "Search workers by skill, location..." : "Search available doorstep services & workers..."}
-                className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-64 lg:w-80"
+                className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-64 lg:w-80 shadow-2xs"
               />
             </div>
-          </div>
+          </form>
 
           <div className="flex items-center gap-3">
             <div className="relative">

@@ -73,7 +73,9 @@ export const BusinessDashboard = ({ onNavigate }) => {
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-slate-600">{t('business.productionProgress')}</span>
-                  <span className="text-indigo-600">{proj.progress}% ({proj.completedUnits}/{proj.targetUnits} {proj.unit})</span>
+                  <span className="text-indigo-600 font-extrabold">
+                    {proj.progress}% {(proj.completedQuantity || proj.completedUnits) ? `(${proj.completedQuantity || proj.completedUnits}/${proj.totalQuantity || proj.targetUnits} ${proj.unitLabel || proj.unit || ''})` : ''}
+                  </span>
                 </div>
                 <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
                   <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-500" style={{ width: `${proj.progress}%` }} />
@@ -81,7 +83,9 @@ export const BusinessDashboard = ({ onNavigate }) => {
               </div>
 
               <div className="flex items-center justify-between pt-2 text-xs">
-                <span className="text-slate-500">Budget: <strong className="text-slate-900">{proj.budget}</strong></span>
+                <span className="text-slate-600 font-medium">
+                  Budget: <strong className="text-emerald-700 font-black text-xs">{proj.offeredBudget || proj.budget || '₹3,000'}</strong>
+                </span>
                 <Button size="sm" variant="ghost" onClick={() => onNavigate(`/business/projects`)}>
                   {t('business.openTracker')} →
                 </Button>

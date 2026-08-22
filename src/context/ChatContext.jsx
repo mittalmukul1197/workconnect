@@ -19,6 +19,7 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
 
   // Initialize and load conversations when user changes or chat events fire
+  // Initialize and load conversations when user changes or chat events fire
   const reloadData = useCallback(() => {
     initChatStorage();
     if (!user?.id) {
@@ -27,20 +28,34 @@ export const ChatProvider = ({ children }) => {
       return;
     }
 
-    const userConvs = getConversations(user.id);
-    setConversations(userConvs);
-
-    // If active conversation exists, update its messages
+    // If active conversation exists, mark as read BEFORE reading conversations
     if (activeConversationId) {
+      apiMarkAsRead(activeConversationId, user.id);
       const msgs = getMessages(activeConversationId);
       setMessages(msgs);
-      apiMarkAsRead(activeConversationId, user.id);
-    } else if (userConvs.length > 0) {
+    }
+
+    const userConvs = getConversations(user.id);
+    // Force active conversation unread count to 0 in local state as well
+    const updatedUserConvs = userConvs.map((c) => {
+      if (c.id === activeConversationId && c.unreadCounts && c.unreadCounts[user.id]) {
+        return {
+          ...c,
+          unreadCounts: { ...c.unreadCounts, [user.id]: 0 }
+        };
+      }
+      return c;
+    });
+
+    setConversations(updatedUserConvs);
+
+    if (!activeConversationId && updatedUserConvs.length > 0) {
       // Default select first conversation if none selected
-      setActiveConversationId(userConvs[0].id);
-      const msgs = getMessages(userConvs[0].id);
+      const firstId = updatedUserConvs[0].id;
+      setActiveConversationId(firstId);
+      const msgs = getMessages(firstId);
       setMessages(msgs);
-      apiMarkAsRead(userConvs[0].id, user.id);
+      apiMarkAsRead(firstId, user.id);
     }
   }, [user?.id, activeConversationId]);
 
@@ -59,12 +74,12 @@ export const ChatProvider = ({ children }) => {
   // Handle setting active conversation
   const selectConversation = useCallback((convId) => {
     setActiveConversationId(convId);
-    if (convId) {
+    if (convId && user?.id) {
+      apiMarkAsRead(convId, user.id);
       const msgs = getMessages(convId);
       setMessages(msgs);
-      if (user?.id) {
-        apiMarkAsRead(convId, user.id);
-      }
+      const userConvs = getConversations(user.id);
+      setConversations(userConvs);
     } else {
       setMessages([]);
     }
@@ -88,7 +103,8 @@ export const ChatProvider = ({ children }) => {
 
     if (newMsg) {
       setMessages((prev) => [...prev, newMsg]);
-      // Refresh conversations list for latest timestamp
+      // Active conversation is currently open, mark read immediately
+      apiMarkAsRead(activeConversationId, user.id);
       const updatedConvs = getConversations(user.id);
       setConversations(updatedConvs);
     }
@@ -111,9 +127,10 @@ export const ChatProvider = ({ children }) => {
     }
   }, [user]);
 
-  // Total unread count for logged-in user across all conversations
+  // Total unread count for logged-in user across all conversations (excluding open active conversation)
   const unreadCount = conversations.reduce((total, conv) => {
     if (!user?.id || !conv.unreadCounts) return total;
+    if (conv.id === activeConversationId) return total; // Currently open conversation has 0 unread
     return total + (conv.unreadCounts[user.id] || 0);
   }, 0);
 

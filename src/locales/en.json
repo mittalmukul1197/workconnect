@@ -77,7 +77,7 @@
   "offers": {
     "title": "Open Work Requirements & Budget Offers",
     "subtitle": "Users post work needs with custom budgets — Workers review and accept in real time",
-    "postNewOffer": "+ Post Work Requirement & Custom Budget",
+    "postNewOffer": "Post Work Requirement & Custom Budget",
     "offeredBudget": "Offered Budget",
     "postedBy": "Posted by",
     "statusWaiting": "Waiting for Worker Acceptance",
@@ -103,7 +103,7 @@
   "business": {
     "welcome": "Welcome back",
     "businessOwner": "Business Owner",
-    "postNewWork": "+ Post New Work",
+    "postNewWork": "Post New Work",
     "activeProjects": "Active Workforce Projects",
     "recommendedWorkers": "Recommended Nearby Professionals",
     "productionProgress": "Production Progress",

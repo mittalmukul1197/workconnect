@@ -258,18 +258,68 @@ export const MOCK_PROJECTS = [
   {
     id: 'proj-501',
     title: '100 Ethnic Kurtis Stitching Order',
+    category: 'Tailoring',
     businessName: 'Crafted Threads Boutique',
-    skillName: 'Stitching',
+    contactPerson: 'Anjali Sharma',
+    workerCount: 3,
+    location: 'Model Town, Rajpura',
+    city: 'Rajpura',
+    offeredBudget: '₹3,000',
+    ratePerUnit: '₹30 / piece',
+    completedQuantity: 65,
     totalQuantity: 100,
-    completedQuantity: 35,
     unitLabel: 'pieces',
-    deadlineDate: '2026-08-25',
+    progress: 65,
     status: 'In Production',
-    atRisk: false,
+    deadlineDate: '26 Aug 2026',
     assignedWorkers: [
-      { workerName: 'Sunita Sharma', allocatedQuantity: 35, completedQuantity: 20, status: 'Active' },
-      { workerName: 'Priya Kaur', allocatedQuantity: 35, completedQuantity: 15, status: 'Active' },
-      { workerName: 'Meenakshi Devi', allocatedQuantity: 30, completedQuantity: 0, status: 'Active' }
+      { id: 'usr-wrk-1', workerName: 'Sunita Sharma', allocatedQuantity: 35, completedQuantity: 35, status: 'Active' },
+      { id: 'usr-wrk-2', workerName: 'Meenakshi Devi', allocatedQuantity: 35, completedQuantity: 20, status: 'Delayed' },
+      { id: 'usr-wrk-3', workerName: 'Priya Kaur', allocatedQuantity: 30, completedQuantity: 10, status: 'Active' }
+    ]
+  },
+  {
+    id: 'proj-502',
+    title: '50 Office Desks Assembly & Lock Fittings',
+    category: 'Carpentry',
+    businessName: 'Apex Workspaces Ltd',
+    contactPerson: 'Vikram Singh',
+    workerCount: 4,
+    location: 'Industrial Focal Point, Rajpura',
+    city: 'Rajpura',
+    offeredBudget: '₹10,000',
+    ratePerUnit: '₹200 / desk',
+    completedQuantity: 40,
+    totalQuantity: 50,
+    unitLabel: 'desks',
+    progress: 80,
+    status: 'In Production',
+    deadlineDate: '28 Aug 2026',
+    assignedWorkers: [
+      { id: 'wrk-1', workerName: 'Gurpreet Singh', allocatedQuantity: 25, completedQuantity: 20, status: 'Active' },
+      { id: 'wrk-2', workerName: 'Ramesh Kumar', allocatedQuantity: 25, completedQuantity: 20, status: 'Active' }
+    ]
+  },
+  {
+    id: 'proj-503',
+    title: 'Factory Main Switchboard Rewiring & Conduit Pipe Fitting',
+    category: 'Electrical',
+    businessName: 'Rajpura Textile Mills',
+    contactPerson: 'Harminder Singh',
+    workerCount: 2,
+    location: 'Focal Point GT Road, Rajpura',
+    city: 'Rajpura',
+    offeredBudget: '₹4,500',
+    ratePerUnit: '₹750 / day',
+    completedQuantity: 8,
+    totalQuantity: 10,
+    unitLabel: 'bays',
+    progress: 80,
+    status: 'In Production',
+    deadlineDate: '25 Aug 2026',
+    assignedWorkers: [
+      { id: 'wrk-3', workerName: 'Manish Kumar', allocatedQuantity: 5, completedQuantity: 4, status: 'Active' },
+      { id: 'wrk-4', workerName: 'Deepak Electricals', allocatedQuantity: 5, completedQuantity: 4, status: 'Active' }
     ]
   }
 ];

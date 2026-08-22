@@ -43,7 +43,10 @@ export const BusinessProjects = ({ onNavigate }) => {
                   <Badge variant="success">{proj.status}</Badge>
                 </div>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Target Quota: <strong className="text-slate-900">{proj.totalQuantity} {proj.unitLabel}</strong> • Deadline: <strong className="text-amber-700 font-extrabold">{proj.deadlineDate}</strong>
+                  Target Quota: <strong className="text-slate-900">{proj.totalQuantity || 100} {proj.unitLabel || 'pieces'}</strong> • <strong className="text-indigo-700 font-extrabold">{proj.workerCount || 3} Workers Assigned</strong> • Deadline: <strong className="text-amber-700 font-extrabold">{proj.deadlineDate || '26 Aug 2026'}</strong>
+                </p>
+                <p className="text-xs text-slate-600 font-bold mt-1">
+                  Allocated Budget: <strong className="text-emerald-700 text-sm font-black">{proj.offeredBudget || '₹3,000'}</strong> <span className="text-[11px] font-normal text-slate-500">({proj.ratePerUnit || '₹30 / piece'})</span>
                 </p>
               </div>
 

@@ -75,7 +75,7 @@ export const WorkerProjectsPage = ({ onNavigate }) => {
             <form onSubmit={handleLogProgress} className="flex items-center gap-2">
               <span className="text-slate-500 text-[11px] font-medium">Add Output:</span>
               <Button type="submit" variant="secondary" size="sm" icon="plus">
-                + Log 5 Pieces Completed
+                Log 5 Pieces Completed
               </Button>
             </form>
           </div>

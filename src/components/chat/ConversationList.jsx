@@ -106,7 +106,7 @@ export const ConversationList = ({ conversations, activeId, onSelectConversation
               online: true
             };
 
-            const unread = conv.unreadCounts ? (conv.unreadCounts[currentUserId] || 0) : 0;
+            const unread = conv.id === activeId ? 0 : (conv.unreadCounts ? (conv.unreadCounts[currentUserId] || 0) : 0);
             const isActive = conv.id === activeId;
 
             return (
