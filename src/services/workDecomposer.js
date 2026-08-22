@@ -1,1 +1,1 @@
-export { parseNaturalLanguageRequirement } from '../../server/services/workDecomposer';
+export { parseNaturalLanguageRequirement, parseNaturalLanguageRequirementAsync } from '../../server/services/workDecomposer';
