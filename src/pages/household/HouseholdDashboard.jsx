@@ -170,7 +170,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
             </button>
 
             <button
-              onClick={() => setHomeShieldModalOpen(true)}
+              onClick={() => onNavigate('/household/shield')}
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-emerald-200"
             >
               <Icon name="shield" className="w-4 h-4 text-slate-950" />

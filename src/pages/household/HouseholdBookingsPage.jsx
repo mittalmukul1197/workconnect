@@ -118,29 +118,38 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
 
   return (
     <div className="space-y-8 animate-fade-in text-slate-900 pb-12">
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white shadow-xl border border-indigo-500/30">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Badge variant="indigo" className="bg-indigo-500/30 text-indigo-200 border-indigo-400/40 text-xs">
-              Doorstep Service Manager
-            </Badge>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">Interactive Household Bookings</h1>
-          <p className="text-xs sm:text-sm text-indigo-100/80 font-medium">
-            Live real-time worker tracking, security OTPs, platform escrow management & rating controls
-          </p>
-        </div>
+      {/* Unique Cosmic Aurora Header Banner */}
+      <div className="relative p-6 sm:p-8 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-indigo-950 via-slate-950 to-teal-950 text-white shadow-2xl overflow-hidden border-2 animate-shining-border">
+        {/* Glow ambient radial lights */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-cyan-400/25 via-emerald-500/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 left-10 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
 
-        <Button
-          variant="primary"
-          icon="plus"
-          size="lg"
-          onClick={() => setActiveBookingService(ON_DEMAND_SERVICES[0])}
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/20"
-        >
-          Book New Service
-        </Button>
+        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            <div className="flex items-center gap-2">
+              <span className="bg-slate-900/90 text-cyan-300 border border-cyan-400/50 text-xs py-1 px-3 rounded-xl font-black shadow-xs flex items-center gap-1.5">
+                ⚡ Doorstep Service Manager
+              </span>
+              <span className="bg-emerald-400/20 text-emerald-300 border border-emerald-400/40 text-xs py-1 px-3 rounded-xl font-bold">
+                🛡️ Live Escrow Protected
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm leading-snug">
+              Interactive <span className="text-shining-gold-rainbow font-black drop-shadow-md">Household Bookings</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-cyan-100 font-medium leading-relaxed">
+              Live real-time worker tracking, security OTPs, platform escrow management & rating controls
+            </p>
+          </div>
+
+          <button
+            onClick={() => setActiveBookingService(ON_DEMAND_SERVICES[0])}
+            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-xl shadow-cyan-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-cyan-200 shrink-0"
+          >
+            <Icon name="plus" className="w-4 h-4 text-slate-950" />
+            <span>Book New Service</span>
+          </button>
+        </div>
       </div>
 
       {/* Interactive Navigation Filter Bar */}
@@ -219,11 +228,11 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
 
               <div className="grid grid-cols-5 gap-1 relative">
                 {[
-                  { step: 1, label: 'Confirmed' },
-                  { step: 2, label: 'Dispatched' },
-                  { step: 3, label: 'En Route' },
-                  { step: 4, label: 'In Progress' },
-                  { step: 5, label: 'Completed' }
+                  { step: 1, label: 'Artisan Assigned' },
+                  { step: 2, label: 'Artisan Departing' },
+                  { step: 3, label: 'On The Way' },
+                  { step: 4, label: 'Work In Progress' },
+                  { step: 5, label: 'Service Completed' }
                 ].map((s) => {
                   const isDone = bk.currentStep >= s.step;
                   const isCurrent = bk.currentStep === s.step;

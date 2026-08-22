@@ -208,7 +208,7 @@ export const OnDemandBookingModal = ({ service, onClose, onNavigate }) => {
                 onClick={handleConfirmBooking}
                 className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black shadow-md shadow-emerald-500/20 py-2.5 px-4"
               >
-                Dispatch Pro Now
+                Confirm Artisan Booking
               </Button>
             </div>
           </div>
@@ -220,7 +220,7 @@ export const OnDemandBookingModal = ({ service, onClose, onNavigate }) => {
             </div>
 
             <div className="space-y-2">
-              <Badge variant="success" className="px-3 py-1 text-xs">Doorstep Worker Dispatched!</Badge>
+              <Badge variant="success" className="px-3 py-1 text-xs">Doorstep Artisan Assigned & On The Way!</Badge>
               <h3 className="text-2xl font-black text-slate-900">Booking Confirmed</h3>
               <p className="text-xs text-slate-600 max-w-sm mx-auto">
                 Assigned <strong className="text-slate-900">{currentService.name.split(' ')[0]}</strong> for <span className="text-indigo-700 font-extrabold">{selectedTask}</span>.
