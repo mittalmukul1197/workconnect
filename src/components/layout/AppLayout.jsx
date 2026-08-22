@@ -8,7 +8,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
-  const { user, isBusiness, switchRole } = useAuth();
+  const { user, isBusiness, logout } = useAuth();
   const { notifications, unreadCount, markAllAsRead } = useNotifications();
 
   return (
@@ -34,7 +34,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
               <Icon name="search" className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder={isBusiness ? "Search workers by skill, location..." : "Search available work opportunities..."}
+                placeholder={isBusiness ? "Search workers by skill, location..." : "Search available doorstep services & workers..."}
                 className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-64 lg:w-80"
               />
             </div>
@@ -90,15 +90,30 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
             </div>
 
             <div
-              className="flex items-center gap-2.5 cursor-pointer p-1 rounded-xl hover:bg-slate-100 transition-colors"
-              onClick={() => onNavigate(isBusiness ? '/business/profile' : '/worker/profile')}
+              className="flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-slate-100 transition-colors border border-slate-200"
+              onClick={() => onNavigate(user?.role === 'household' ? '/household/profile' : isBusiness ? '/business/profile' : '/worker/profile')}
             >
               <img
                 src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}
                 alt={user?.name}
-                className="w-8 h-8 rounded-xl object-cover border border-slate-200"
+                className="w-7 h-7 rounded-lg object-cover border border-slate-200"
               />
+              <span className="text-xs font-bold text-slate-800 hidden md:inline truncate max-w-[100px]">
+                {user?.name?.split(' ')[0] || 'Profile'}
+              </span>
             </div>
+
+            <button
+              onClick={() => {
+                logout();
+                onNavigate('/login');
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all shadow-xs"
+              title="Logout from account"
+            >
+              <Icon name="log-out" className="w-4 h-4 text-rose-600" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
           </div>
         </header>
 

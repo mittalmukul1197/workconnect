@@ -7,26 +7,70 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { OnDemandBookingModal } from '../../components/common/OnDemandBookingModal';
-import { OpenWorkOffersSection } from '../../components/features/OpenWorkOffersSection';
+import { HouseholdCostEstimator } from '../../components/features/HouseholdCostEstimator';
+import { SavedWorkersSection } from '../../components/features/SavedWorkersSection';
 import { ON_DEMAND_SERVICES } from '../../data/mockData';
 
 export const HouseholdDashboard = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
 
+  const [activeTab, setActiveTab] = useState('doorstep'); // 'doorstep' | 'custom' | 'calculator' | 'favorites'
   const [activeBookingService, setActiveBookingService] = useState(null);
+  const [homeShieldModalOpen, setHomeShieldModalOpen] = useState(false);
+  const [passActivated, setPassActivated] = useState(true);
+
+  // Household Custom Budget Posts State
+  const [householdOffers, setHouseholdOffers] = useState([
+    {
+      id: 'h-off-1',
+      title: 'Fix Main DB Electric Switchboard & Fan Regulator',
+      category: 'Electrician',
+      offeredBudget: '₹450',
+      area: 'Model Town, Sector 4, Rajpura',
+      urgency: 'Immediate (< 1 hr)',
+      postedTime: '15 mins ago',
+      status: 'pending', // 'pending' | 'accepted'
+      notes: 'Main switchboard sparking in bedroom 2. Need certified electrician.'
+    },
+    {
+      id: 'h-off-2',
+      title: 'Kitchen Sink Drain Leakage & New Tap Install',
+      category: 'Plumber',
+      offeredBudget: '₹350',
+      area: 'Model Town, Sector 4, Rajpura',
+      urgency: 'Today Slot',
+      postedTime: '2 hrs ago',
+      status: 'accepted',
+      acceptedBy: {
+        name: 'Ramesh Singh (Plumber)',
+        phone: '+91 98765 88811',
+        rating: 4.85,
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+      },
+      notes: 'Bring Teflon tape and extra 0.5 inch PVC pipe coupling.'
+    }
+  ]);
+
+  // Form State for posting custom household requirement
+  const [reqTitle, setReqTitle] = useState('');
+  const [reqCategory, setReqCategory] = useState('Electrician');
+  const [reqBudget, setReqBudget] = useState('₹500');
+  const [reqUrgency, setReqUrgency] = useState('Immediate (< 1 hr)');
+  const [reqNotes, setReqNotes] = useState('');
+  const [postAlert, setPostAlert] = useState(false);
 
   const householdUser = {
     name: user?.name || 'Rahul Sharma',
     phone: user?.phone || '+91 98765 22222',
-    area: user?.area || user?.city || 'Model Town, Rajpura',
+    area: user?.area || user?.city || 'Model Town, Sector 4, Rajpura',
     city: user?.city || 'Rajpura'
   };
 
   const activeBookings = [
     {
       id: 'bk-101',
-      serviceName: 'Electrician (Switchboard & Fan Repair)',
+      serviceName: 'Electrician (Switchboard Rewiring)',
       workerName: 'Manish Kumar',
       workerPhone: '+91 98765 44433',
       rating: 4.9,
@@ -34,155 +78,532 @@ export const HouseholdDashboard = ({ onNavigate }) => {
       eta: '12 Mins',
       budget: '₹450',
       time: 'Today, 2:30 PM'
-    },
-    {
-      id: 'bk-102',
-      serviceName: 'Plumber (Tap & Sink Fitting)',
-      workerName: 'Ramesh Singh',
-      workerPhone: '+91 98765 88811',
-      rating: 4.8,
-      status: 'Work Completed',
-      eta: 'Completed',
-      budget: '₹350',
-      time: 'Yesterday'
     }
   ];
 
-  return (
-    <div className="space-y-8 animate-fade-in text-slate-900">
-      {/* Welcome Banner */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 p-6 rounded-3xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-emerald-50 shadow-sm overflow-hidden">
-        <div className="space-y-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 truncate">
-              {t('business.welcome')}, {householdUser.name} 👋
-            </h1>
-            <Badge variant="indigo" className="shrink-0">Household Client</Badge>
-          </div>
-          <p className="text-xs text-slate-600 font-medium flex items-center gap-2 pt-0.5 flex-wrap">
-            <span>📍 {householdUser.area}</span>
-            <span>•</span>
-            <span>📞 {householdUser.phone}</span>
-          </p>
-        </div>
+  const handlePostHouseholdRequirement = (e) => {
+    e.preventDefault();
+    if (!reqTitle.trim()) return;
 
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
-          <Button
-            size="md"
-            variant="primary"
-            icon="sparkles"
-            onClick={() => setActiveBookingService(ON_DEMAND_SERVICES[0])}
-            className="w-full sm:w-auto shadow-md shadow-indigo-600/20 whitespace-nowrap"
-          >
-            Book Trade Service
-          </Button>
-          <Button
-            size="md"
-            variant="secondary"
-            icon="plus"
-            onClick={() => {
-              const el = document.getElementById('budget-offers-section');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="w-full sm:w-auto whitespace-nowrap"
-          >
-            + Post Custom Offer
-          </Button>
+    const newOffer = {
+      id: `h-off-${Date.now()}`,
+      title: reqTitle.trim(),
+      category: reqCategory,
+      offeredBudget: reqBudget.startsWith('₹') ? reqBudget : `₹${reqBudget}`,
+      area: householdUser.area,
+      urgency: reqUrgency,
+      postedTime: 'Just Now',
+      status: 'pending',
+      notes: reqNotes || 'Direct household doorstep work requirement.'
+    };
+
+    setHouseholdOffers([newOffer, ...householdOffers]);
+    setPostAlert(true);
+    setReqTitle('');
+    setReqNotes('');
+
+    setTimeout(() => {
+      setPostAlert(false);
+    }, 4000);
+  };
+
+  const handleBookFromEstimator = (categoryObj, totalEstimatedRate) => {
+    const matchedService = ON_DEMAND_SERVICES.find((s) => s.categoryKey === selectedCategoryKey(categoryObj.name)) || ON_DEMAND_SERVICES[0];
+    setActiveBookingService({
+      ...matchedService,
+      startingPrice: `₹${totalEstimatedRate}`
+    });
+  };
+
+  const selectedCategoryKey = (catName) => {
+    if (catName.includes('Electrician')) return 'electrician';
+    if (catName.includes('Plumbing')) return 'plumber';
+    if (catName.includes('Carpenter')) return 'carpenter';
+    if (catName.includes('Paint')) return 'painter';
+    if (catName.includes('Heavy')) return 'labour';
+    return 'electrician';
+  };
+
+  return (
+    <div className="space-y-8 animate-fade-in text-slate-900 pb-12">
+      {/* Ultra-High Contrast Greenish-Bluish Banner with Animated Shining Rainbow Gold Text */}
+      <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-teal-950 to-slate-950 text-white shadow-2xl overflow-hidden border-2 animate-shining-border">
+        {/* Glow ambient radial lights */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-400/20 via-cyan-500/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 left-10 w-72 h-72 bg-teal-400/20 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="bg-slate-900/90 text-teal-300 border border-teal-400/50 text-xs py-1 px-3 rounded-xl font-black shadow-sm flex items-center gap-1.5">
+                🏠 Household Care Portal
+              </span>
+              {passActivated && (
+                <span className="bg-emerald-400 text-slate-950 text-xs py-1 px-3.5 rounded-full font-black shadow-md shadow-emerald-400/40 flex items-center gap-1.5 border border-emerald-300">
+                  🛡️ 30-Day Work Shield Active
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm leading-snug">
+              Welcome back, <span className="text-shining-gold-rainbow font-black drop-shadow-md">{householdUser.name}</span> 👋
+            </h1>
+
+            <p className="text-xs sm:text-sm text-cyan-100 font-extrabold flex items-center gap-3 flex-wrap pt-0.5">
+              <span className="flex items-center gap-1 bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800">
+                📍 <span className="text-white">{householdUser.area}</span>
+              </span>
+              <span className="text-teal-400 font-black">•</span>
+              <span className="flex items-center gap-1 bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800">
+                📞 <span className="text-white">{householdUser.phone}</span>
+              </span>
+            </p>
+          </div>
+
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 shrink-0">
+            <button
+              onClick={() => setActiveBookingService(ON_DEMAND_SERVICES[0])}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-cyan-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-cyan-200"
+            >
+              <Icon name="zap" className="w-4 h-4 text-slate-950" />
+              <span>Book Doorstep Service</span>
+            </button>
+
+            <button
+              onClick={() => setHomeShieldModalOpen(true)}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-emerald-200"
+            >
+              <Icon name="shield" className="w-4 h-4 text-slate-950" />
+              <span>HomeCare Protection Shield</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* QUICK STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Active Bookings" value="1" subtext="Worker en route (ETA 12m)" icon="clock" variant="primary" />
-        <StatCard title="Completed Services" value="14" subtext="100% satisfaction rate" icon="check-circle" variant="emerald" />
-        <StatCard title="Posted Budget Offers" value="3" subtext="2 accepted by workers" icon="plus" variant="amber" />
-        <StatCard title="Favorite Workers" value="5" subtext="Verified local pros" icon="users" variant="sky" />
+        <StatCard title="Active Doorstep Orders" value="1" subtext="Worker en route (ETA 12m)" icon="clock" variant="primary" />
+        <StatCard title="Completed Services" value="14" subtext="100% mutual escrow payout" icon="check-circle" variant="emerald" />
+        <StatCard title="My Custom Offers" value={householdOffers.length.toString()} subtext="Direct budget requests" icon="plus" variant="amber" />
+        <StatCard title="Favorite Artisans" value="3" subtext="Saved local technicians" icon="heart" variant="sky" />
       </div>
 
-      {/* QUICK ON-DEMAND DOORSTEP SERVICES GRID */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-extrabold text-slate-900">{t('landing.onDemandTitle')}</h2>
-            <p className="text-xs text-slate-500 font-medium">{t('landing.onDemandSubtitle')}</p>
+      {/* DEDICATED HOUSEHOLD NAVIGATION TABS WITH ELECTRIC GRADIENTS */}
+      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+        <button
+          onClick={() => setActiveTab('doorstep')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+            activeTab === 'doorstep'
+              ? 'bg-gradient-to-r from-fuchsia-600 via-purple-600 to-pink-600 text-white shadow-md shadow-fuchsia-600/25'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          <Icon name="home" className="w-4 h-4" />
+          <span>Doorstep Trade Services</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('custom')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+            activeTab === 'custom'
+              ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-600/25'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          <Icon name="plus" className="w-4 h-4 text-cyan-400" />
+          <span>Post Household Custom Offer</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('calculator')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+            activeTab === 'calculator'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-600/25'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          <Icon name="calculator" className="w-4 h-4 text-teal-400" />
+          <span>Home Repair Cost Calculator</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('favorites')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
+            activeTab === 'favorites'
+              ? 'bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-md shadow-amber-500/25'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+        >
+          <Icon name="heart" className="w-4 h-4 text-rose-400" />
+          <span>Saved Household Pros</span>
+        </button>
+      </div>
+
+      {/* TAB CONTENT 1: DOORSTEP SERVICES & ACTIVE DISPATCH */}
+      {activeTab === 'doorstep' && (
+        <div className="space-y-8 animate-fade-in">
+          {/* Active Dispatch Live Preview Bar */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-600 animate-ping" />
+                <span>Active Live Doorstep Dispatch</span>
+              </h2>
+              <Button size="sm" variant="ghost" onClick={() => onNavigate('/household/bookings')}>
+                Manage All Bookings & Live Map →
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeBookings.map((bk) => (
+                <Card key={bk.id} borderVariant="indigo" className="p-5 space-y-4 bg-gradient-to-br from-white via-slate-50 to-fuchsia-50/20 border-fuchsia-200 shadow-md">
+                  <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
+                    <div>
+                      <h3 className="font-extrabold text-sm text-slate-900">{bk.serviceName}</h3>
+                      <p className="text-[11px] text-slate-500">{bk.time} • Ref: #{bk.id}</p>
+                    </div>
+                    <Badge variant="primary" className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-black animate-pulse">
+                      ⚡ En Route ({bk.eta})
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-white p-3 rounded-2xl border border-slate-200 text-xs shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80"
+                        alt={bk.workerName}
+                        className="w-10 h-10 rounded-xl object-cover border border-fuchsia-300"
+                      />
+                      <div>
+                        <h4 className="font-extrabold text-slate-900">{bk.workerName}</h4>
+                        <p className="text-[10px] text-slate-500 font-medium">★ {bk.rating} • Verified Local Electrician</p>
+                      </div>
+                    </div>
+                    <span className="font-black text-emerald-700 text-base">{bk.budget}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 text-xs">
+                    <span className="text-slate-600 font-medium">Doorstep ETA: <strong className="text-fuchsia-700 font-black">{bk.eta}</strong></span>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" icon="phone" onClick={() => alert(`Calling ${bk.workerName} at ${bk.workerPhone}`)}>
+                        Call
+                      </Button>
+                      <Button size="sm" variant="primary" icon="clock" onClick={() => onNavigate('/household/bookings')} className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white">
+                        Track Live Progress
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => onNavigate('/household/bookings')}>
-            {t('common.viewAll')} →
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {ON_DEMAND_SERVICES.slice(0, 8).map((service) => (
-            <Card
-              key={service.id}
-              borderVariant="indigo"
-              onClick={() => setActiveBookingService(service)}
-              className="p-4 space-y-3 bg-white hover:border-indigo-400 cursor-pointer transition-all shadow-xs group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors border border-indigo-100 shadow-xs">
-                  <Icon name={service.icon} className="w-5 h-5" />
-                </div>
-                <Badge variant="success" className="text-[9px]">Online</Badge>
-              </div>
-
+          {/* Quick Doorstep Service Booking Grid */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-xs text-slate-900 group-hover:text-indigo-600 transition-colors">{service.name}</h3>
-                <p className="text-[10px] text-slate-500 mt-0.5">{service.startingPrice} / {service.unit}</p>
+                <h2 className="text-lg font-black text-slate-900">{t('landing.onDemandTitle')}</h2>
+                <p className="text-xs text-slate-500 font-medium">{t('landing.onDemandSubtitle')}</p>
               </div>
+            </div>
 
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-indigo-600">
-                <span>Book Now</span>
-                <span>→</span>
-              </div>
-            </Card>
-          ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {ON_DEMAND_SERVICES.map((service) => (
+                <Card
+                  key={service.id}
+                  borderVariant="indigo"
+                  onClick={() => setActiveBookingService(service)}
+                  className="p-4 space-y-3 bg-white hover:border-fuchsia-400 cursor-pointer transition-all shadow-xs hover:shadow-md group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-2xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center group-hover:bg-gradient-to-tr group-hover:from-fuchsia-600 group-hover:to-pink-600 group-hover:text-white transition-all border border-fuchsia-100 shadow-xs">
+                      <Icon name={service.icon} className="w-5 h-5" />
+                    </div>
+                    <Badge variant="success" className="text-[9px]">Verified Pro</Badge>
+                  </div>
+
+                  <div>
+                    <h3 className="font-extrabold text-xs text-slate-900 group-hover:text-fuchsia-600 transition-colors line-clamp-1">
+                      {service.name}
+                    </h3>
+                    <p className="text-[10px] text-slate-500 mt-0.5 font-semibold">From {service.startingPrice} / {service.unit}</p>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-fuchsia-600">
+                    <span>Book Doorstep Pro</span>
+                    <span>→</span>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* ACTIVE BOOKINGS FEED */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-extrabold text-slate-900">Active Doorstep Service Bookings</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {activeBookings.map((bk) => (
-            <Card key={bk.id} borderVariant={bk.status.includes('Way') ? 'indigo' : 'emerald'} className="p-5 space-y-4 bg-white shadow-sm">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="font-bold text-sm text-slate-900">{bk.serviceName}</h3>
-                  <p className="text-[11px] text-slate-500">{bk.time} • Ref: #{bk.id}</p>
-                </div>
-                <Badge variant={bk.status.includes('Way') ? 'primary' : 'success'}>
-                  {bk.status}
-                </Badge>
-              </div>
-
-              <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-black flex items-center justify-center text-xs">
-                    {bk.workerName[0]}
+      {/* TAB CONTENT 2: HOUSEHOLD CUSTOM BUDGET POSTING */}
+      {activeTab === 'custom' && (
+        <div className="space-y-8 animate-fade-in">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Form Column */}
+            <div className="lg:col-span-5 space-y-4">
+              <Card borderVariant="indigo" className="p-6 space-y-5 bg-white shadow-md border-cyan-200">
+                <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+                  <div className="p-2.5 rounded-xl bg-cyan-50 text-cyan-600 border border-cyan-100">
+                    <Icon name="plus" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900">{bk.workerName}</h4>
-                    <p className="text-[10px] text-slate-500">★ {bk.rating} • Verified Local Pro</p>
+                    <h3 className="font-extrabold text-sm text-slate-900">Post Household Work & Custom Budget</h3>
+                    <p className="text-[11px] text-slate-500">Specify your household repair need & what you want to pay</p>
                   </div>
                 </div>
-                <span className="font-black text-emerald-700 text-sm">{bk.budget}</span>
+
+                {postAlert && (
+                  <div className="p-3.5 rounded-2xl bg-cyan-50 border border-cyan-200 text-xs text-cyan-900 space-y-1 animate-scale-up">
+                    <div className="flex items-center gap-2 font-bold text-cyan-700">
+                      <Icon name="check-circle" className="w-4 h-4 text-emerald-600" />
+                      <span>Household Requirement Live!</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      Your offer is live for nearby workers to review and accept.
+                    </p>
+                  </div>
+                )}
+
+                <form onSubmit={handlePostHouseholdRequirement} className="space-y-4 text-xs">
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Household Repair Title *</label>
+                    <input
+                      type="text"
+                      required
+                      value={reqTitle}
+                      onChange={(e) => setReqTitle(e.target.value)}
+                      placeholder="e.g. Need 1 Electrician to fix bedroom switchboard & fan"
+                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Trade Category *</label>
+                      <select
+                        value={reqCategory}
+                        onChange={(e) => setReqCategory(e.target.value)}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                      >
+                        <option value="Electrician">Electrician</option>
+                        <option value="Plumber">Plumber</option>
+                        <option value="Carpenter">Carpenter</option>
+                        <option value="Painter">Painter</option>
+                        <option value="Tailor">Tailor</option>
+                        <option value="Daily Labour">Daily Labour</option>
+                        <option value="Appliance Repair">Appliance Repair</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Offered Budget *</label>
+                      <input
+                        type="text"
+                        required
+                        value={reqBudget}
+                        onChange={(e) => setReqBudget(e.target.value)}
+                        placeholder="e.g. ₹400"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-emerald-700 font-extrabold focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Required Urgency</label>
+                    <select
+                      value={reqUrgency}
+                      onChange={(e) => setReqUrgency(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                    >
+                      <option value="Immediate (< 1 hr)">⚡ Rapid Immediate (&lt; 1 hr)</option>
+                      <option value="Today Slot">📅 Today Slot</option>
+                      <option value="Tomorrow">🗓️ Tomorrow</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Additional Repair Notes</label>
+                    <textarea
+                      rows={2}
+                      value={reqNotes}
+                      onChange={(e) => setReqNotes(e.target.value)}
+                      placeholder="e.g. Please bring 32A breaker & spare wire tape..."
+                      className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <Button type="submit" variant="primary" size="lg" icon="plus" fullWidth className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow-md">
+                    Publish Household Custom Offer
+                  </Button>
+                </form>
+              </Card>
+            </div>
+
+            {/* Household Offers List Column */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+                <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                  <Icon name="briefcase" className="w-4 h-4 text-cyan-600" />
+                  <span>My Active Household Budget Offers</span>
+                </h3>
+                <Badge variant="indigo" className="text-xs bg-cyan-50 text-cyan-700 border-cyan-200">{householdOffers.length} Active Posts</Badge>
               </div>
 
-              <div className="flex items-center justify-between pt-1 text-xs">
-                <span className="text-slate-500 font-medium">ETA: <strong className="text-indigo-600 font-bold">{bk.eta}</strong></span>
-                <Button size="sm" variant="outline" icon="phone">
-                  Call Worker ({bk.workerPhone})
-                </Button>
+              <div className="space-y-4">
+                {householdOffers.map((off) => (
+                  <Card key={off.id} borderVariant={off.status === 'accepted' ? 'emerald' : 'amber'} className="p-5 space-y-4 bg-white shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-extrabold text-sm text-slate-900">{off.title}</h4>
+                          <Badge variant="indigo">{off.category}</Badge>
+                          {off.status === 'pending' ? (
+                            <Badge variant="amber" className="bg-amber-50 text-amber-800 border-amber-200">
+                              ⏳ Waiting for Worker Acceptance
+                            </Badge>
+                          ) : (
+                            <Badge variant="emerald" className="bg-emerald-50 text-emerald-800 border-emerald-200">
+                              ✅ Accepted by Worker
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">
+                          📍 {off.area} • Posted {off.postedTime}
+                        </p>
+                      </div>
+
+                      <div className="text-left sm:text-right shrink-0">
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Offered Budget</span>
+                        <span className="text-lg font-black text-emerald-700">{off.offeredBudget}</span>
+                      </div>
+                    </div>
+
+                    {off.notes && (
+                      <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                        💡 <strong>Notes:</strong> {off.notes}
+                      </p>
+                    )}
+
+                    {off.acceptedBy && (
+                      <div className="flex items-center justify-between p-3 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs">
+                        <div className="flex items-center gap-3">
+                          <img src={off.acceptedBy.avatar} alt={off.acceptedBy.name} className="w-8 h-8 rounded-full object-cover" />
+                          <div>
+                            <span className="font-bold text-slate-900 block">{off.acceptedBy.name}</span>
+                            <span className="text-[10px] text-slate-500">★ {off.acceptedBy.rating} Verified Local Pro</span>
+                          </div>
+                        </div>
+                        <Button size="sm" variant="outline" icon="phone" onClick={() => alert(`Calling ${off.acceptedBy.name}`)}>
+                          Call Worker
+                        </Button>
+                      </div>
+                    )}
+                  </Card>
+                ))}
               </div>
-            </Card>
-          ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* REVERSE BUDGET WORK OFFERS SECTION FOR HOUSEHOLD CLIENT */}
-      <OpenWorkOffersSection onNavigate={onNavigate} />
+      {/* TAB CONTENT 3: HOUSEHOLD COST ESTIMATOR */}
+      {activeTab === 'calculator' && (
+        <div className="animate-fade-in">
+          <HouseholdCostEstimator onBookService={handleBookFromEstimator} />
+        </div>
+      )}
+
+      {/* TAB CONTENT 4: SAVED HOUSEHOLD PROS */}
+      {activeTab === 'favorites' && (
+        <div className="animate-fade-in">
+          <SavedWorkersSection
+            onNavigate={onNavigate}
+            onRebook={(wrk) => {
+              const matchedService = ON_DEMAND_SERVICES.find(s => s.name.toLowerCase().includes(wrk.trade.split(' ')[1]?.toLowerCase() || 'electrician')) || ON_DEMAND_SERVICES[0];
+              setActiveBookingService(matchedService);
+            }}
+          />
+        </div>
+      )}
+
+      {/* HOME CARE PROTECTION SHIELD MODAL */}
+      {homeShieldModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-lg bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 border-2 border-teal-500/50 shadow-[0_0_50px_rgba(45,212,191,0.3)] space-y-6 animate-scale-up relative overflow-hidden">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
+
+            <button
+              onClick={() => setHomeShieldModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white"
+            >
+              <Icon name="x" className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-teal-400 to-emerald-500 p-0.5 shadow-lg shadow-teal-500/30">
+                <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                  <Icon name="shield" className="w-7 h-7 text-cyan-300" />
+                </div>
+              </div>
+              <div>
+                <Badge variant="emerald" className="bg-teal-500/30 text-teal-200 border-teal-400/40 text-[10px] mb-1">
+                  100% Home Protection Assurance
+                </Badge>
+                <h3 className="text-xl font-black text-white">WorkConnect HomeCare Shield</h3>
+                <p className="text-xs text-teal-100/80">Included automatically for all household bookings</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-teal-500/30 space-y-1.5">
+                <div className="flex items-center gap-2 font-black text-cyan-300">
+                  <span>🛡️ 30-Day Zero-Cost Re-Work Guarantee</span>
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  If any electrical fix, plumbing joint, or carpentry lock shows issues within 30 days, a technician re-visits your doorstep for ₹0.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                <div className="flex items-center gap-2 font-black text-emerald-300">
+                  <span>🔒 Scam-Free Escrow Protection</span>
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  Payment is safely held in WorkConnect Vault and only released when both you and the worker confirm job sign-off.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
+                <div className="flex items-center gap-2 font-black text-amber-300">
+                  <span>⚡ Priority Concierge & Verified Pros</span>
+                </div>
+                <p className="text-[11px] text-slate-300">
+                  Only background-checked technicians with 90%+ trust scores are dispatched to household residences.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={() => {
+                setPassActivated(true);
+                setHomeShieldModalOpen(false);
+              }}
+              className="bg-gradient-to-r from-teal-400 via-cyan-500 to-emerald-500 text-slate-950 font-black py-3.5 shadow-lg shadow-teal-500/30 border-none"
+            >
+              Keep HomeCare Shield Active ✓
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* ON-DEMAND BOOKING MODAL */}
       {activeBookingService && (

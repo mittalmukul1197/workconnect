@@ -8,7 +8,7 @@ import { LanguageSelector } from '../common/LanguageSelector';
 
 export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }) => {
   const { t } = useTranslation();
-  const { user, isBusiness, isWorker, switchRole } = useAuth();
+  const { user, isBusiness, isWorker, logout } = useAuth();
   const { unreadCount } = useChat();
 
   const isHousehold = user?.role === 'household' || user?.clientType === 'household';
@@ -123,16 +123,29 @@ export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }
         </div>
 
         <div className="p-4 border-t border-slate-200/80 space-y-3 bg-slate-50/80">
-          <div className="flex items-center gap-3 pt-1">
-            <img
-              src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'}
-              alt={user?.name}
-              className="w-9 h-9 rounded-xl object-cover border border-slate-200"
-            />
-            <div className="min-w-0 flex-1">
-              <h5 className="font-bold text-xs text-slate-900 truncate">{user?.name || 'User'}</h5>
-              <p className="text-[10px] text-slate-500 truncate">{user?.email || user?.phone}</p>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <img
+                src={user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'}
+                alt={user?.name}
+                className="w-8 h-8 rounded-xl object-cover border border-slate-200"
+              />
+              <div className="min-w-0 flex-1">
+                <h5 className="font-bold text-xs text-slate-900 truncate">{user?.name || 'User'}</h5>
+                <p className="text-[10px] text-slate-500 truncate">{user?.email || user?.phone}</p>
+              </div>
             </div>
+
+            <button
+              onClick={() => {
+                logout();
+                onNavigate('/login');
+              }}
+              className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors shrink-0"
+              title="Logout"
+            >
+              <Icon name="log-out" className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </aside>

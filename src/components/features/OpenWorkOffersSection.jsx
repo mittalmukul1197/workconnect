@@ -125,13 +125,13 @@ export const OpenWorkOffersSection = ({ onNavigate }) => {
             </div>
 
             {postedSuccessAlert && (
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1 animate-scale-up">
-                <div className="flex items-center gap-2 font-bold text-emerald-700">
-                  <Icon name="check-circle" className="w-4 h-4" />
-                  <span>{t('offers.statusAccepted')}</span>
+              <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 space-y-1 animate-scale-up">
+                <div className="flex items-center gap-2 font-bold text-indigo-700">
+                  <Icon name="check-circle" className="w-4 h-4 text-emerald-600" />
+                  <span>Work Requirement Posted Successfully!</span>
                 </div>
                 <p className="text-[11px] text-slate-600">
-                  {t('offers.statusWaiting')}
+                  Your custom budget offer is live. Workers can now review and accept in real time.
                 </p>
               </div>
             )}
@@ -253,9 +253,24 @@ export const OpenWorkOffersSection = ({ onNavigate }) => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="font-bold text-sm text-slate-900">{offer.title}</h4>
                       <Badge variant="indigo">{offer.skillRequired}</Badge>
+                      {offer.status === 'pending' && (
+                        <Badge variant="amber" className="bg-amber-50 text-amber-800 border-amber-200">
+                          ⏳ Waiting for Worker Acceptance
+                        </Badge>
+                      )}
+                      {offer.status === 'accepted' && (
+                        <Badge variant="emerald" className="bg-emerald-50 text-emerald-800 border-emerald-200">
+                          ✅ Accepted by {offer.acceptedBy?.workerName || 'Worker'}
+                        </Badge>
+                      )}
+                      {offer.status === 'declined' && (
+                        <Badge variant="rose" className="bg-rose-50 text-rose-800 border-rose-200">
+                          ❌ Declined
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5">
                       {t('offers.postedBy')} <strong className="text-slate-800">{offer.requesterName}</strong> • {offer.city} ({offer.area})
@@ -291,7 +306,7 @@ export const OpenWorkOffersSection = ({ onNavigate }) => {
                       size="sm"
                       variant="primary"
                       icon="shield"
-                      onClick={() => setActiveEscrowOffer(offer)}
+                      onClick={() => onNavigate && onNavigate(`/household/escrow/${offer.id}`)}
                     >
                       Manage Escrow & Sign Deal
                     </Button>
@@ -303,38 +318,6 @@ export const OpenWorkOffersSection = ({ onNavigate }) => {
         </div>
 
       </div>
-
-      {/* Escrow Vault Modal overlay */}
-      {activeEscrowOffer && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto animate-fade-in">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl my-auto">
-            <div className="absolute right-4 top-4 z-10">
-              <button
-                type="button"
-                onClick={() => setActiveEscrowOffer(null)}
-                className="p-2 rounded-xl bg-slate-800 text-white hover:bg-slate-700 shadow-md"
-              >
-                <Icon name="close" className="w-5 h-5" />
-              </button>
-            </div>
-            <WorkConnectEscrowVault
-              dealId={activeEscrowOffer.id}
-              dealTitle={activeEscrowOffer.title}
-              businessName={activeEscrowOffer.requesterName}
-              workerName={activeEscrowOffer.acceptedBy?.workerName || 'Sunita Sharma (Master Tailor)'}
-              amount={activeEscrowOffer.offeredBudget}
-              unitDetails={`${activeEscrowOffer.skillRequired} • ${activeEscrowOffer.unit || 'Custom Budget'}`}
-              initialBusinessAgreed={activeEscrowOffer.status === 'accepted'}
-              initialWorkerAgreed={false}
-              onPaymentComplete={() => {
-                setOffers((prev) =>
-                  prev.map((o) => (o.id === activeEscrowOffer.id ? { ...o, status: 'accepted' } : o))
-                );
-              }}
-            />
-          </div>
-        </div>
-      )}
     </section>
   );
 };

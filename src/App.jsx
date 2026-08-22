@@ -17,6 +17,7 @@ import { RegisterPage } from './pages/public/RegisterPage';
 import { HouseholdDashboard } from './pages/household/HouseholdDashboard';
 import { HouseholdBookingsPage } from './pages/household/HouseholdBookingsPage';
 import { HouseholdProfilePage } from './pages/household/HouseholdProfilePage';
+import { HouseholdEscrowPage } from './pages/household/HouseholdEscrowPage';
 
 // Business Pages
 import { BusinessDashboard } from './pages/business/BusinessDashboard';
@@ -81,6 +82,10 @@ export default function App() {
     else if (currentPath === '/household/dashboard') pageElement = <HouseholdDashboard onNavigate={navigate} />;
     else if (currentPath === '/household/bookings') pageElement = <HouseholdBookingsPage onNavigate={navigate} />;
     else if (currentPath === '/household/profile') pageElement = <HouseholdProfilePage onNavigate={navigate} />;
+    else if (currentPath.startsWith('/household/escrow')) {
+      const dealId = currentPath.replace('/household/escrow/', '').replace('/household/escrow', '') || 'bk-101';
+      pageElement = <HouseholdEscrowPage dealId={dealId} onNavigate={navigate} />;
+    }
 
     // Business Navigation Routes
     else if (currentPath === '/business/dashboard') pageElement = <BusinessDashboard onNavigate={navigate} />;

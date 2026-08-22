@@ -93,7 +93,7 @@ export const Navbar = ({ onNavigate }) => {
           <LanguageSelector />
 
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={() => onNavigate && onNavigate('/messages')}
                 className="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
@@ -112,16 +112,21 @@ export const Navbar = ({ onNavigate }) => {
                 variant="primary"
                 icon="user"
                 onClick={() => onNavigate && onNavigate(getDashboardPath())}
+                className="shadow-xs"
               >
                 {user.name.split(' ')[0]}
               </Button>
 
               <button
-                onClick={logout}
-                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                title={t('nav.logout')}
+                onClick={() => {
+                  logout();
+                  if (onNavigate) onNavigate('/login');
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all shadow-xs"
+                title={t('nav.logout') || 'Logout'}
               >
-                <Icon name="log-out" className="w-4 h-4" />
+                <Icon name="log-out" className="w-3.5 h-3.5 text-rose-600" />
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           ) : (
