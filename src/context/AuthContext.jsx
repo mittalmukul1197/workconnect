@@ -9,7 +9,6 @@ const DEFAULT_DEMO_BUSINESS = {
   name: 'Crafted Threads Boutique',
   role: 'business',
   clientType: 'business',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   phone: '+91 98765 43210',
   city: 'Rajpura',
   state: 'Punjab',
