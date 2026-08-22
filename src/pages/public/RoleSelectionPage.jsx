@@ -145,7 +145,6 @@ export const RoleSelectionPage = ({ onNavigate }) => {
               iconPosition="right"
               fullWidth
               onClick={() => {
-                loginAsDemoWorker();
                 onNavigate('/onboarding/worker');
               }}
             >

@@ -16,7 +16,7 @@ export const PublicPassportView = ({ workerId, onNavigate }) => {
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
       <Navbar onNavigate={onNavigate} />
       <main className="max-w-3xl mx-auto px-4 py-12 flex-1 w-full space-y-6">
-        <WorkPassportCard workerUser={workerUser} compact={false} />
+        <WorkPassportCard workerUser={workerUser} compact={false} onNavigate={onNavigate} />
       </main>
       <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-200">
         WorkConnect Portable Work Passport Verification Engine

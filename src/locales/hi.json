@@ -145,5 +145,36 @@
     "tagline": "एआई मैचिंग और पोर्टेबल वर्क पासपोर्ट के साथ भारत के कुशल स्थानीय कार्यबल को सशक्त बनाना।",
     "rights": "वर्ककनेक्ट प्लेटफॉर्म। सर्वाधिकार सुरक्षित।",
     "quickLinks": "त्वरित नेविगेशन"
+  },
+  "role": {
+    "worker": "कार्यकर्ता",
+    "hirer": "नियोक्ता",
+    "business": "व्यवसाय"
+  },
+  "chat": {
+    "messages": "संदेश",
+    "messagesTitle": "रीयल-टाइम कार्यबल बातचीत",
+    "messagesSubtitle": "नियोक्ताओं और कार्यकर्ताओं के बीच सीधा, त्वरित संवाद।",
+    "messageWorker": "कार्यकर्ता को संदेश भेजें",
+    "messageHirer": "नियोक्ता को संदेश भेजें",
+    "typeMessage": "संदेश लिखें...",
+    "send": "भेजें",
+    "noMessagesYet": "अभी कोई संदेश नहीं है",
+    "startConversation": "बातचीत शुरू करने के लिए नमस्ते कहें!",
+    "online": "ऑनलाइन",
+    "offline": "ऑफ़लाइन",
+    "unreadMessages": "अपठित संदेश",
+    "searchConversations": "बातचीत खोजें...",
+    "selectConversation": "एक बातचीत चुनें",
+    "selectConversationSubtitle": "रीयल-टाइम में चैट शुरू करने के लिए बाएं सूची से संपर्क चुनें।",
+    "backToConversations": "बातचीत सूची पर वापस जाएँ",
+    "chats": "चैट्स",
+    "viewPassport": "वर्क पासपोर्ट",
+    "today": "आज",
+    "yesterday": "कल",
+    "justNow": "अभी-अभी",
+    "noConversations": "कोई बातचीत नहीं मिली",
+    "tryDifferentSearch": "किसी अन्य उपयोगकर्ता या भूमिका को खोजने का प्रयास करें।",
+    "startMessageFromProfile": "कार्यकर्ता प्रोफ़ाइल या नौकरी के प्रस्ताव से बातचीत शुरू करें।"
   }
 }

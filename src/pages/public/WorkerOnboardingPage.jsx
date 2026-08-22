@@ -19,9 +19,12 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
   const [email, setEmail] = useState('sunita@demo.com');
   const [gender, setGender] = useState('Female');
 
-  // Step 2: Worker Details
+  // Step 2: Verification, Work Zone & Disability Status
   const [idVerified, setIdVerified] = useState('Verified (Aadhaar KYC Completed)');
   const [workRadiusKm, setWorkRadiusKm] = useState('10 km');
+  const [hasDisability, setHasDisability] = useState(false);
+  const [disabilityType, setDisabilityType] = useState('Locomotor / Physical Disability');
+  const [disabilityAccommodations, setDisabilityAccommodations] = useState(['Flexible Work Hours / Rest Breaks']);
 
   // Step 3: Skills / Work Type
   const [primarySkill, setPrimarySkill] = useState('Tailor & Stitching');
@@ -51,26 +54,45 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Final Submit
+      // Final Submit with all complete worker registration data
       const userData = {
         name: fullName,
         phone,
         email,
+        gender,
+        hasDisability,
+        disabilityType: hasDisability ? disabilityType : '',
+        disabilityAccommodations: hasDisability ? disabilityAccommodations : [],
+        idVerified,
+        workRadiusKm,
         role: 'worker',
         profession: `${primarySkill} Specialist`,
+        primarySkill,
+        secondarySkills,
+        skillsList: [primarySkill, ...secondarySkills.split(',').map((s) => s.trim()).filter(Boolean)],
+        experienceYears,
+        portfolioSummary,
+        expectedRate,
+        dailyCapacity,
+        preferredShift,
+        streetAddress,
+        area,
         city,
-        state: 'Punjab',
+        pincode,
         address: `${streetAddress}, ${area}, ${city} - ${pincode}`,
         verified: true,
         rating: 4.9,
-        experienceYears,
-        skillsList: [primarySkill, ...secondarySkills.split(',').map((s) => s.trim())],
         workPassport: {
           totalCompletedJobs: 147,
           onTimeRate: 96,
           qualityScore: 94,
           overallRating: 4.9,
-          verifiedBadges: ['KYC Verified', 'Top Rated Artisan', 'High Reliability']
+          verifiedBadges: [
+            'KYC Verified',
+            'Top Rated Artisan',
+            'High Reliability',
+            ...(hasDisability ? ['♿ PwD Inclusive Worker'] : [])
+          ]
         }
       };
 
@@ -98,11 +120,17 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
 
   const previewWorker = {
     id: 'usr-wrk-new',
-    name: fullName,
+    name: fullName || 'Sunita Sharma',
     profession: `${primarySkill} Specialist`,
-    city,
+    city: city || 'Rajpura',
     state: 'Punjab',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80'
+    avatar: gender === 'Male'
+      ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+      : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    hasDisability,
+    disabilityType: hasDisability ? disabilityType : '',
+    disabilityAccommodations: hasDisability ? disabilityAccommodations : [],
+    gender
   };
 
   const previewProfile = {
@@ -116,7 +144,11 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
       onTimeRate: 96,
       qualityScore: 94,
       overallRating: 4.9,
-      verifiedBadges: ['KYC Verified', 'Top Rated Artisan']
+      verifiedBadges: [
+        'KYC Verified',
+        'Top Rated Artisan',
+        ...(hasDisability ? ['♿ PwD Inclusive Worker'] : [])
+      ]
     }
   };
 
@@ -166,7 +198,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                     </div>
                     <div>
                       <h3 className="font-bold text-sm text-slate-900">Step 1: Basic Personal Details</h3>
-                      <p className="text-[11px] text-slate-500">Full name and primary contact channel</p>
+                      <p className="text-[11px] text-slate-500">Full name and primary contact details</p>
                     </div>
                   </div>
 
@@ -178,7 +210,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                     placeholder="e.g. Sunita Sharma"
                   />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Input
                       label="Phone Number *"
                       type="tel"
@@ -195,40 +227,166 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. worker@demo.com"
                     />
+                    <Select
+                      label="Gender *"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      options={['Female', 'Male', 'Non-Binary', 'Prefer not to say']}
+                    />
                   </div>
                 </div>
               )}
 
-              {/* STEP 2: WORKER DETAILS */}
+              {/* STEP 2: VERIFICATION & DISABILITY / ACCESSIBILITY */}
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fade-in">
+                <div className="space-y-5 animate-fade-in">
                   <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
                     <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
                       <Icon name="shield-check" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 2: ID Verification & Travel Radius</h3>
-                      <p className="text-[11px] text-slate-500">Government identity trust & preferred work zone</p>
+                      <h3 className="font-bold text-sm text-slate-900">Step 2: Verification, Work Zone & Disability</h3>
+                      <p className="text-[11px] text-slate-500">Government identity, travel radius & disability accessibility</p>
                     </div>
                   </div>
 
-                  <Select
-                    label="ID Verification Status *"
-                    value={idVerified}
-                    onChange={(e) => setIdVerified(e.target.value)}
-                    options={[
-                      'Verified (Aadhaar KYC Completed)',
-                      'PAN / Voter ID Verified',
-                      'Pending Verification'
-                    ]}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Select
+                      label="ID Verification Status *"
+                      value={idVerified}
+                      onChange={(e) => setIdVerified(e.target.value)}
+                      options={[
+                        'Verified (Aadhaar KYC Completed)',
+                        'PAN / Voter ID Verified',
+                        'Pending Verification'
+                      ]}
+                    />
 
-                  <Select
-                    label="Preferred Work Zone Travel Radius *"
-                    value={workRadiusKm}
-                    onChange={(e) => setWorkRadiusKm(e.target.value)}
-                    options={['5 km radius', '10 km radius', '15 km radius', 'Entire City & District']}
-                  />
+                    <Select
+                      label="Preferred Travel Radius *"
+                      value={workRadiusKm}
+                      onChange={(e) => setWorkRadiusKm(e.target.value)}
+                      options={['5 km radius', '10 km radius', '15 km radius', 'Entire City & District']}
+                    />
+                  </div>
+
+                  {/* DISABILITY YES / NO SECTION */}
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="font-bold text-slate-800 text-xs uppercase tracking-wider">
+                          Do you have any disability or special needs? *
+                        </label>
+                        <Badge variant="indigo" className="text-[10px]">Inclusive Workforce</Badge>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        WorkConnect connects skilled persons with disabilities (PwD) with inclusive employers and workplace accommodations.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHasDisability(false);
+                        }}
+                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                          !hasDisability
+                            ? 'border-emerald-600 bg-emerald-50/80 text-emerald-900 font-bold ring-2 ring-emerald-500/20'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                            !hasDisability ? 'border-emerald-600 bg-emerald-600' : 'border-slate-300'
+                          }`}>
+                            {!hasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <span className="text-xs">No (Abled / No Special Needs)</span>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHasDisability(true);
+                          if (!disabilityType) setDisabilityType('Locomotor / Physical Disability');
+                          if (disabilityAccommodations.length === 0) setDisabilityAccommodations(['Flexible Work Hours / Rest Breaks']);
+                        }}
+                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                          hasDisability
+                            ? 'border-purple-600 bg-purple-50/80 text-purple-900 font-bold ring-2 ring-purple-500/20'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                            hasDisability ? 'border-purple-600 bg-purple-600' : 'border-slate-300'
+                          }`}>
+                            {hasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <span className="text-xs">Yes (Person with Disability - PwD)</span>
+                        </div>
+                      </button>
+                    </div>
+
+                    {/* CONDITIONAL DISABILITY DETAILS WHEN YES */}
+                    {hasDisability && (
+                      <div className="space-y-4 pt-3 border-t border-slate-200 animate-fade-in">
+                        <Select
+                          label="Disability Category / Type *"
+                          value={disabilityType}
+                          onChange={(e) => setDisabilityType(e.target.value)}
+                          options={[
+                            'Locomotor / Physical Disability',
+                            'Visual Impairment / Low Vision',
+                            'Hearing & Speech Impairment',
+                            'Intellectual / Learning Disability',
+                            'Multiple Disabilities / Other Special Ability'
+                          ]}
+                        />
+
+                        <div className="space-y-2">
+                          <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider block">
+                            Workplace Accommodations Needed (Select all that apply)
+                          </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {[
+                              'Wheelchair Accessible Workspace',
+                              'Flexible Work Hours / Rest Breaks',
+                              'Home-based / Remote Work Option',
+                              'Ergonomic Seating / Adapted Tools',
+                              'Assistive Audio/Visual Support',
+                              'Companion / Support Assistant Allowed'
+                            ].map((acc) => {
+                              const isSelected = disabilityAccommodations.includes(acc);
+                              return (
+                                <button
+                                  key={acc}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setDisabilityAccommodations(disabilityAccommodations.filter((a) => a !== acc));
+                                    } else {
+                                      setDisabilityAccommodations([...disabilityAccommodations, acc]);
+                                    }
+                                  }}
+                                  className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2 ${
+                                    isSelected
+                                      ? 'border-purple-500 bg-purple-100/70 text-purple-900 font-semibold'
+                                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <Icon name={isSelected ? 'check-circle' : 'circle'} className={`w-3.5 h-3.5 ${isSelected ? 'text-purple-700' : 'text-slate-400'}`} />
+                                  <span>{acc}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -283,7 +441,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       max="50"
                       required
                       value={experienceYears}
-                      onChange={(e) => setExperienceYears(parseInt(e.target.value, 10))}
+                      onChange={(e) => setExperienceYears(parseInt(e.target.value, 10) || 0)}
                       className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-emerald-700 focus:outline-none focus:border-indigo-500"
                     />
                   </div>
@@ -426,10 +584,24 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <div>
                         <h4 className="font-extrabold text-base text-slate-900">{fullName}</h4>
                         <p className="text-xs text-emerald-700 font-bold">{primarySkill} Specialist • {experienceYears} Yrs Exp.</p>
-                        <p className="text-xs text-slate-500 mt-0.5">{streetAddress}, {area}, {city}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">{streetAddress}, {area}, {city} ({gender})</p>
                       </div>
                       <Badge variant="success">★ 4.9 Top Artisan</Badge>
                     </div>
+
+                    {hasDisability && (
+                      <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="purple" className="text-[10px]">♿ PwD Inclusive Worker</Badge>
+                          <span className="text-[11px] font-bold text-purple-900">{disabilityType}</span>
+                        </div>
+                        {disabilityAccommodations.length > 0 && (
+                          <p className="text-[10px] text-purple-700">
+                            Accommodations: {disabilityAccommodations.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     <div className="pt-2 border-t border-emerald-200 grid grid-cols-2 gap-2 text-xs">
                       <div>
@@ -477,3 +649,4 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
     </div>
   );
 };
+

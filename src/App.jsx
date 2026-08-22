@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { ChatProvider } from './context/ChatContext';
 import { AppLayout } from './components/layout/AppLayout';
 
 // Public Pages
@@ -36,6 +37,7 @@ import { WorkerProfilePage } from './pages/worker/WorkerProfilePage';
 
 // Shared & Admin Pages
 import { PublicPassportView } from './pages/shared/PublicPassportView';
+import { MessagesPage } from './pages/shared/MessagesPage';
 import { AdminDemoPage } from './pages/admin/AdminDemoPage';
 
 export default function App() {
@@ -71,8 +73,11 @@ export default function App() {
     // App Layout Views
     let pageElement = <BusinessDashboard onNavigate={navigate} />;
 
+    // Shared Messaging Route
+    if (currentPath === '/messages') pageElement = <MessagesPage onNavigate={navigate} />;
+
     // Household Navigation Routes
-    if (currentPath === '/household/dashboard') pageElement = <HouseholdDashboard onNavigate={navigate} />;
+    else if (currentPath === '/household/dashboard') pageElement = <HouseholdDashboard onNavigate={navigate} />;
     else if (currentPath === '/household/bookings') pageElement = <HouseholdBookingsPage onNavigate={navigate} />;
     else if (currentPath === '/household/profile') pageElement = <HouseholdProfilePage onNavigate={navigate} />;
 
@@ -109,7 +114,9 @@ export default function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-        {renderContent()}
+        <ChatProvider>
+          {renderContent()}
+        </ChatProvider>
       </NotificationProvider>
     </AuthProvider>
   );

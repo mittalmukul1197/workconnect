@@ -2,9 +2,12 @@ import React from 'react';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
+import { useChat } from '../../context/ChatContext';
 import { MOCK_WORKERS } from '../../data/mockData';
 
 export const WorkerDirectory = ({ onNavigate }) => {
+  const { openChatWithUser } = useChat();
+
   return (
     <div className="space-y-6 animate-fade-in text-slate-900">
       <div className="space-y-1">
@@ -29,9 +32,26 @@ export const WorkerDirectory = ({ onNavigate }) => {
               <p>Rate: <strong className="text-emerald-700">{worker.rate}</strong></p>
             </div>
 
-            <Button variant="outline" size="sm" fullWidth onClick={() => onNavigate(`/workers/${worker.id}`)}>
-              View Work Passport
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                icon="message-square"
+                onClick={() => openChatWithUser({
+                  id: worker.id === 'wrk-1' ? 'usr-wrk-1' : (worker.id === 'wrk-2' ? 'usr-wrk-2' : 'usr-wrk-3'),
+                  name: worker.name,
+                  role: 'worker',
+                  avatar: worker.avatar,
+                  profession: worker.profession
+                }, onNavigate)}
+              >
+                Message
+              </Button>
+
+              <Button variant="outline" size="sm" onClick={() => onNavigate(`/workers/${worker.id}`)}>
+                Passport
+              </Button>
+            </div>
           </Card>
         ))}
       </div>

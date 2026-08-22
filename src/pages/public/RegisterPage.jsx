@@ -45,8 +45,12 @@ export const RegisterPage = ({ onNavigate }) => {
   const [wName, setWName] = useState('Sunita Sharma');
   const [wPhone, setWPhone] = useState('+91 98765 11111');
   const [wEmail, setWEmail] = useState('sunita@demo.com');
+  const [wGender, setWGender] = useState('Female');
   const [wIdVerified, setWIdVerified] = useState('Verified (Aadhaar KYC Completed)');
   const [wRadiusKm, setWRadiusKm] = useState('10 km');
+  const [wHasDisability, setWHasDisability] = useState(false);
+  const [wDisabilityType, setWDisabilityType] = useState('Locomotor / Physical Disability');
+  const [wDisabilityAccommodations, setWDisabilityAccommodations] = useState(['Flexible Work Hours / Rest Breaks']);
   const [wPrimarySkill, setWPrimarySkill] = useState('Tailor & Stitching');
   const [wSecondarySkills, setWSecondarySkills] = useState('Alterations, Pattern Cutting, Embroidery');
   const [wExpYears, setWExpYears] = useState(6);
@@ -118,21 +122,39 @@ export const RegisterPage = ({ onNavigate }) => {
           name: wName,
           phone: wPhone,
           email: wEmail,
+          gender: wGender,
+          hasDisability: wHasDisability,
+          disabilityType: wHasDisability ? wDisabilityType : '',
+          disabilityAccommodations: wHasDisability ? wDisabilityAccommodations : [],
+          idVerified: wIdVerified,
+          workRadiusKm: wRadiusKm,
           role: 'worker',
           profession: `${wPrimarySkill} Specialist`,
+          primarySkill: wPrimarySkill,
+          secondarySkills: wSecondarySkills,
+          skillsList: [wPrimarySkill, ...wSecondarySkills.split(',').map((s) => s.trim()).filter(Boolean)],
+          experienceYears: wExpYears,
+          portfolioSummary: wPortfolio,
+          expectedRate: wExpectedRate,
+          dailyCapacity: wDailyCapacity,
+          preferredShift: wShift,
+          streetAddress: wStreet,
+          area: wArea,
           city: wCity,
-          state: 'Punjab',
+          pincode: wPincode,
           address: `${wStreet}, ${wArea}, ${wCity} - ${wPincode}`,
           verified: true,
           rating: 4.9,
-          experienceYears: wExpYears,
-          skillsList: [wPrimarySkill, ...wSecondarySkills.split(',').map((s) => s.trim())],
           workPassport: {
             totalCompletedJobs: 147,
             onTimeRate: 96,
             qualityScore: 94,
             overallRating: 4.9,
-            verifiedBadges: ['KYC Verified', 'Top Rated Artisan']
+            verifiedBadges: [
+              'KYC Verified',
+              'Top Rated Artisan',
+              ...(wHasDisability ? ['♿ PwD Inclusive Worker'] : [])
+            ]
           }
         };
       }
@@ -422,20 +444,138 @@ export const RegisterPage = ({ onNavigate }) => {
             <form onSubmit={handleNextStep} className="space-y-5 text-xs">
               {currentStep === 1 && (
                 <div className="space-y-4 animate-fade-in">
-                  <h3 className="font-bold text-sm text-slate-900 border-b pb-2">1. Basic Details</h3>
+                  <h3 className="font-bold text-sm text-slate-900 border-b pb-2">1. Basic Personal Details</h3>
                   <Input label="Full Name *" required value={wName} onChange={(e) => setWName(e.target.value)} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Input label="Phone Number *" type="tel" required value={wPhone} onChange={(e) => setWPhone(e.target.value)} />
                     <Input label="Email Address *" type="email" required value={wEmail} onChange={(e) => setWEmail(e.target.value)} />
+                    <Select label="Gender *" value={wGender} onChange={(e) => setWGender(e.target.value)} options={['Female', 'Male', 'Non-Binary', 'Prefer not to say']} />
                   </div>
                 </div>
               )}
 
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fade-in">
-                  <h3 className="font-bold text-sm text-slate-900 border-b pb-2">2. Worker Details</h3>
-                  <Select label="KYC Status *" value={wIdVerified} onChange={(e) => setWIdVerified(e.target.value)} options={['Verified (Aadhaar KYC)', 'PAN Verified', 'Pending']} />
-                  <Select label="Travel Radius *" value={wRadiusKm} onChange={(e) => setWRadiusKm(e.target.value)} options={['5 km radius', '10 km radius', '15 km radius', 'Entire City']} />
+                <div className="space-y-5 animate-fade-in">
+                  <h3 className="font-bold text-sm text-slate-900 border-b pb-2">2. Verification, Work Zone & Disability</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Select label="KYC Status *" value={wIdVerified} onChange={(e) => setWIdVerified(e.target.value)} options={['Verified (Aadhaar KYC Completed)', 'PAN / Voter ID Verified', 'Pending Verification']} />
+                    <Select label="Travel Radius *" value={wRadiusKm} onChange={(e) => setWRadiusKm(e.target.value)} options={['5 km radius', '10 km radius', '15 km radius', 'Entire City & District']} />
+                  </div>
+
+                  {/* DISABILITY SECTION */}
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <label className="font-bold text-slate-800 text-xs uppercase tracking-wider">
+                          Do you have any disability or special needs? *
+                        </label>
+                        <Badge variant="indigo" className="text-[10px]">Inclusive Workforce</Badge>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        WorkConnect connects skilled persons with disabilities (PwD) with inclusive employers and workplace accommodations.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setWHasDisability(false)}
+                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                          !wHasDisability
+                            ? 'border-emerald-600 bg-emerald-50/80 text-emerald-900 font-bold ring-2 ring-emerald-500/20'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                            !wHasDisability ? 'border-emerald-600 bg-emerald-600' : 'border-slate-300'
+                          }`}>
+                            {!wHasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <span className="text-xs">No (Abled / No Special Needs)</span>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWHasDisability(true);
+                          if (!wDisabilityType) setWDisabilityType('Locomotor / Physical Disability');
+                          if (wDisabilityAccommodations.length === 0) setWDisabilityAccommodations(['Flexible Work Hours / Rest Breaks']);
+                        }}
+                        className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                          wHasDisability
+                            ? 'border-purple-600 bg-purple-50/80 text-purple-900 font-bold ring-2 ring-purple-500/20'
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                            wHasDisability ? 'border-purple-600 bg-purple-600' : 'border-slate-300'
+                          }`}>
+                            {wHasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <span className="text-xs">Yes (Person with Disability - PwD)</span>
+                        </div>
+                      </button>
+                    </div>
+
+                    {wHasDisability && (
+                      <div className="space-y-4 pt-3 border-t border-slate-200 animate-fade-in">
+                        <Select
+                          label="Disability Category / Type *"
+                          value={wDisabilityType}
+                          onChange={(e) => setWDisabilityType(e.target.value)}
+                          options={[
+                            'Locomotor / Physical Disability',
+                            'Visual Impairment / Low Vision',
+                            'Hearing & Speech Impairment',
+                            'Intellectual / Learning Disability',
+                            'Multiple Disabilities / Other Special Ability'
+                          ]}
+                        />
+
+                        <div className="space-y-2">
+                          <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider block">
+                            Workplace Accommodations Needed
+                          </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {[
+                              'Wheelchair Accessible Workspace',
+                              'Flexible Work Hours / Rest Breaks',
+                              'Home-based / Remote Work Option',
+                              'Ergonomic Seating / Adapted Tools',
+                              'Assistive Audio/Visual Support',
+                              'Companion / Support Assistant Allowed'
+                            ].map((acc) => {
+                              const isSelected = wDisabilityAccommodations.includes(acc);
+                              return (
+                                <button
+                                  key={acc}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setWDisabilityAccommodations(wDisabilityAccommodations.filter((a) => a !== acc));
+                                    } else {
+                                      setWDisabilityAccommodations([...wDisabilityAccommodations, acc]);
+                                    }
+                                  }}
+                                  className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2 ${
+                                    isSelected
+                                      ? 'border-purple-500 bg-purple-100/70 text-purple-900 font-semibold'
+                                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <Icon name={isSelected ? 'check-circle' : 'circle'} className={`w-3.5 h-3.5 ${isSelected ? 'text-purple-700' : 'text-slate-400'}`} />
+                                  <span>{acc}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -450,7 +590,7 @@ export const RegisterPage = ({ onNavigate }) => {
               {currentStep === 4 && (
                 <div className="space-y-4 animate-fade-in">
                   <h3 className="font-bold text-sm text-slate-900 border-b pb-2">4. Experience</h3>
-                  <Input label="Years of Experience *" type="number" required value={wExpYears} onChange={(e) => setWExpYears(parseInt(e.target.value, 10))} />
+                  <Input label="Years of Experience *" type="number" required value={wExpYears} onChange={(e) => setWExpYears(parseInt(e.target.value, 10) || 0)} />
                   <div className="space-y-1">
                     <label className="font-bold text-slate-700 uppercase text-[10px]">Portfolio Summary *</label>
                     <textarea rows={3} required value={wPortfolio} onChange={(e) => setWPortfolio(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 text-xs" />
@@ -469,7 +609,7 @@ export const RegisterPage = ({ onNavigate }) => {
                 <div className="space-y-4 animate-fade-in">
                   <h3 className="font-bold text-sm text-slate-900 border-b pb-2">6. Availability</h3>
                   <Input label="Daily Capacity *" required value={wDailyCapacity} onChange={(e) => setWDailyCapacity(e.target.value)} />
-                  <Select label="Shift Preference *" value={wShift} onChange={(e) => setWShift(e.target.value)} options={['Full Day (9 AM - 6 PM)', 'Morning Shift', 'Evening Shift']} />
+                  <Select label="Shift Preference *" value={wShift} onChange={(e) => setWShift(e.target.value)} options={['Full Day (9 AM - 6 PM)', 'Morning Shift', 'Evening Shift', 'Home-based Workshop']} />
                 </div>
               )}
 
@@ -488,9 +628,40 @@ export const RegisterPage = ({ onNavigate }) => {
               {currentStep === 8 && (
                 <div className="space-y-4 animate-fade-in">
                   <h3 className="font-bold text-sm text-slate-900 border-b pb-2">8. Worker Profile Review</h3>
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs space-y-1">
-                    <p className="font-bold text-slate-900">{wName}</p>
-                    <p className="text-[11px] text-emerald-700">{wPrimarySkill} Specialist • {wExpYears} Yrs Exp.</p>
+                  <div className="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-xs space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-extrabold text-base text-slate-900">{wName}</p>
+                        <p className="text-xs text-emerald-700 font-bold">{wPrimarySkill} Specialist • {wExpYears} Yrs Exp.</p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">{wStreet}, {wArea}, {wCity} ({wGender})</p>
+                      </div>
+                      <Badge variant="success">★ 4.9 Top Artisan</Badge>
+                    </div>
+
+                    {wHasDisability && (
+                      <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="purple" className="text-[10px]">♿ PwD Inclusive Worker</Badge>
+                          <span className="text-[11px] font-bold text-purple-900">{wDisabilityType}</span>
+                        </div>
+                        {wDisabilityAccommodations.length > 0 && (
+                          <p className="text-[10px] text-purple-700">
+                            Accommodations: {wDisabilityAccommodations.join(', ')}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="pt-2 border-t border-emerald-200 grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Capacity</span>
+                        <span className="font-bold text-slate-800">{wDailyCapacity}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Expected Pay</span>
+                        <span className="font-bold text-emerald-700">{wExpectedRate}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
