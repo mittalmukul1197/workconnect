@@ -54,11 +54,25 @@ export const PostWorkPage = ({ onNavigate }) => {
 
         <div>
           {parsed ? (
-            <Card borderVariant="emerald" className="p-6 space-y-4 bg-white shadow-sm">
+            <Card borderVariant={parsed.needsClarification ? 'rose' : 'emerald'} className="p-6 space-y-4 bg-white shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <span className="font-bold text-xs text-indigo-700 uppercase">Extracted Specs</span>
-                <Badge variant="success">AI Verified</Badge>
+                <Badge variant={parsed.needsClarification ? 'secondary' : 'success'}>
+                  {parsed.needsClarification ? 'Needs Clarification' : 'AI Verified'}
+                </Badge>
               </div>
+
+              {parsed.needsClarification && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1 font-medium">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <Icon name="alert-circle" className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Could not confidently identify the required skill.</span>
+                  </div>
+                  <p className="text-[11px] text-amber-800">
+                    Please describe the work more specifically (e.g. "Need 100 kurtis stitched" or "Need 20 solar panels installed").
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
@@ -67,7 +81,7 @@ export const PostWorkPage = ({ onNavigate }) => {
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 text-[10px] uppercase font-bold">Required Skill</span>
-                  <p className="font-bold text-indigo-700 mt-0.5">{parsed.skillName}</p>
+                  <p className={`font-bold mt-0.5 ${parsed.needsClarification ? 'text-amber-700' : 'text-indigo-700'}`}>{parsed.skillName}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 text-[10px] uppercase font-bold">Total Quota</span>
@@ -79,7 +93,14 @@ export const PostWorkPage = ({ onNavigate }) => {
                 </div>
               </div>
 
-              <Button variant="secondary" size="lg" icon="arrow-right" iconPosition="right" onClick={handleConfirmAndMatch} fullWidth>
+              <Button
+                variant={parsed.needsClarification ? 'outline' : 'secondary'}
+                size="lg"
+                icon="arrow-right"
+                iconPosition="right"
+                onClick={handleConfirmAndMatch}
+                fullWidth
+              >
                 Find & Rank Matched Workers
               </Button>
             </Card>
