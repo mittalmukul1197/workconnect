@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { SelfHealingSimulator } from '../../components/features/SelfHealingSimulator';
+import { WorkConnectEscrowVault } from '../../components/features/WorkConnectEscrowVault';
 import { MOCK_PROJECTS } from '../../data/mockData';
 
 export const ProjectDetailPage = ({ projectId, onNavigate }) => {
@@ -29,6 +30,18 @@ export const ProjectDetailPage = ({ projectId, onNavigate }) => {
           Back to Projects
         </Button>
       </div>
+
+      {/* WorkConnect Escrow Middleman Financial Vault */}
+      <WorkConnectEscrowVault
+        dealId={project.id}
+        dealTitle={project.title}
+        businessName={project.businessName}
+        workerName="Sunita Sharma & Team"
+        amount="₹3,000"
+        unitDetails={`Total Quota: ${project.totalQuantity} ${project.unitLabel}`}
+        initialBusinessAgreed={true}
+        initialWorkerAgreed={true}
+      />
 
       <SelfHealingSimulator project={project} onRebalanced={handleRebalanced} />
 
