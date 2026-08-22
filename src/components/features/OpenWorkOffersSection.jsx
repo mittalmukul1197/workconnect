@@ -5,12 +5,14 @@ import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { Icon } from '../common/Icon';
 import { SectionHeading } from '../common/SectionHeading';
+import { WorkConnectEscrowVault } from './WorkConnectEscrowVault';
 import { OPEN_WORK_OFFERS } from '../../data/mockData';
 
 export const OpenWorkOffersSection = ({ onNavigate }) => {
   const { t } = useTranslation();
   const [offers, setOffers] = useState(OPEN_WORK_OFFERS);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [activeEscrowOffer, setActiveEscrowOffer] = useState(null);
 
   // Form State for User submitting requirement & budget
   const [title, setTitle] = useState('');
@@ -266,32 +268,73 @@ export const OpenWorkOffersSection = ({ onNavigate }) => {
                   </div>
                 </div>
 
-                {offer.status === 'pending' && (
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="emerald" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                      🛡️ Platform Escrow Protected
+                    </Badge>
+                    <span className="text-[11px] text-slate-500 font-medium">Dual-Approval Required</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {offer.status === 'pending' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeclineOffer(offer.id)}
+                      >
+                        {t('offers.declineButton')}
+                      </Button>
+                    )}
+
                     <Button
                       size="sm"
-                      variant="outline"
-                      onClick={() => handleDeclineOffer(offer.id)}
+                      variant="primary"
+                      icon="shield"
+                      onClick={() => setActiveEscrowOffer(offer)}
                     >
-                      {t('offers.declineButton')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      icon="check-circle"
-                      onClick={() => handleAcceptOffer(offer.id)}
-                      disabled={isSimulatingAccept}
-                    >
-                      {t('offers.acceptButton')}
+                      Manage Escrow & Sign Deal
                     </Button>
                   </div>
-                )}
+                </div>
               </Card>
             ))}
           </div>
         </div>
 
       </div>
+
+      {/* Escrow Vault Modal overlay */}
+      {activeEscrowOffer && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto animate-fade-in">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl my-auto">
+            <div className="absolute right-4 top-4 z-10">
+              <button
+                type="button"
+                onClick={() => setActiveEscrowOffer(null)}
+                className="p-2 rounded-xl bg-slate-800 text-white hover:bg-slate-700 shadow-md"
+              >
+                <Icon name="close" className="w-5 h-5" />
+              </button>
+            </div>
+            <WorkConnectEscrowVault
+              dealId={activeEscrowOffer.id}
+              dealTitle={activeEscrowOffer.title}
+              businessName={activeEscrowOffer.requesterName}
+              workerName={activeEscrowOffer.acceptedBy?.workerName || 'Sunita Sharma (Master Tailor)'}
+              amount={activeEscrowOffer.offeredBudget}
+              unitDetails={`${activeEscrowOffer.skillRequired} • ${activeEscrowOffer.unit || 'Custom Budget'}`}
+              initialBusinessAgreed={activeEscrowOffer.status === 'accepted'}
+              initialWorkerAgreed={false}
+              onPaymentComplete={() => {
+                setOffers((prev) =>
+                  prev.map((o) => (o.id === activeEscrowOffer.id ? { ...o, status: 'accepted' } : o))
+                );
+              }}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

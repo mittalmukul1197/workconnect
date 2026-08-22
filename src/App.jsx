@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ChatProvider } from './context/ChatContext';
+import { EscrowProvider } from './context/EscrowContext';
 import { AppLayout } from './components/layout/AppLayout';
 
 // Public Pages
@@ -115,7 +116,9 @@ export default function App() {
     <AuthProvider>
       <NotificationProvider>
         <ChatProvider>
-          {renderContent()}
+          <EscrowProvider>
+            {renderContent()}
+          </EscrowProvider>
         </ChatProvider>
       </NotificationProvider>
     </AuthProvider>

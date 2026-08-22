@@ -51,28 +51,30 @@ export const HouseholdDashboard = ({ onNavigate }) => {
   return (
     <div className="space-y-8 animate-fade-in text-slate-900">
       {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-emerald-50 shadow-sm">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900">{t('business.welcome')}, {householdUser.name} 👋</h1>
-            <Badge variant="indigo">Household Client</Badge>
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 p-6 rounded-3xl border border-indigo-200 bg-gradient-to-r from-indigo-50 via-white to-emerald-50 shadow-sm overflow-hidden">
+        <div className="space-y-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 truncate">
+              {t('business.welcome')}, {householdUser.name} 👋
+            </h1>
+            <Badge variant="indigo" className="shrink-0">Household Client</Badge>
           </div>
-          <p className="text-xs text-slate-600 font-medium flex items-center gap-2 pt-0.5">
+          <p className="text-xs text-slate-600 font-medium flex items-center gap-2 pt-0.5 flex-wrap">
             <span>📍 {householdUser.area}</span>
             <span>•</span>
             <span>📞 {householdUser.phone}</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
           <Button
             size="md"
             variant="primary"
             icon="sparkles"
             onClick={() => setActiveBookingService(ON_DEMAND_SERVICES[0])}
-            className="flex-1 sm:flex-none shadow-md shadow-indigo-600/20"
+            className="w-full sm:w-auto shadow-md shadow-indigo-600/20 whitespace-nowrap"
           >
-            {t('landing.skilledDemandCta')}
+            Book Trade Service
           </Button>
           <Button
             size="md"
@@ -82,9 +84,9 @@ export const HouseholdDashboard = ({ onNavigate }) => {
               const el = document.getElementById('budget-offers-section');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="flex-1 sm:flex-none"
+            className="w-full sm:w-auto whitespace-nowrap"
           >
-            {t('offers.postNewOffer')}
+            + Post Custom Offer
           </Button>
         </div>
       </div>

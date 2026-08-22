@@ -201,8 +201,13 @@ export const AuthProvider = ({ children }) => {
         switchRole,
         logout,
         isAuthenticated: !!user,
+<<<<<<< HEAD
         isBusiness: user?.role === 'business',
         isHousehold: user?.role === 'household',
+=======
+        isHousehold: user?.role === 'household' || user?.clientType === 'household',
+        isBusiness: user?.role === 'business' && user?.clientType !== 'household',
+>>>>>>> origin/main
         isWorker: user?.role === 'worker'
       }}
     >

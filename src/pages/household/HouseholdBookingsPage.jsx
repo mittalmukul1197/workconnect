@@ -102,6 +102,13 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 <p className="font-medium text-slate-800">{bk.address}</p>
               </div>
             </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+              <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                🛡️ WorkConnect Middleman Escrow: Funds held until service completed
+              </span>
+              <Badge variant="emerald">Dual Sign-Off Active</Badge>
+            </div>
           </Card>
         ))}
       </div>

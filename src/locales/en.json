@@ -141,6 +141,26 @@
     "step4": "4. Automated Work Rebalancing",
     "step5": "5. Project Restored"
   },
+  "escrow": {
+    "title": "WorkConnect Middleman Escrow Protection",
+    "subtitle": "100% Scam-Free Financial Vault • Money received by WorkConnect platform before payout",
+    "dualApprovalNotice": "Payment requires mutual click agreement from BOTH Business and Worker ends.",
+    "step1": "1. Dual Deal Agreement",
+    "step2": "2. Deposit to WorkConnect Vault",
+    "step3": "3. Work Output & Delivery",
+    "step4": "4. Mutual Approval & Payout Release",
+    "statusPendingAgreements": "Pending Mutual Agreement (Both Parties Must Click)",
+    "statusAgreedAwaitingDeposit": "Mutual Deal Agreed ✓ — Deposit Funds to Platform Escrow",
+    "statusFundsInEscrow": "Funds Safely Locked in WorkConnect Platform Vault 🔒",
+    "statusWorkSubmitted": "Work Delivered — Awaiting Final Sign-Off for Payout Release",
+    "statusReleased": "Funds Released to Worker 🟢 (Transaction Complete)",
+    "businessSignOff": "Business: Agree to Deal Terms",
+    "workerSignOff": "Worker: Agree to Deal Terms",
+    "depositVaultBtn": "Deposit Funds to WorkConnect Escrow",
+    "submitWorkBtn": "Submit Work Completion Proof",
+    "releaseFundsBtn": "Release Payment to Worker",
+    "scamProtectionBadge": "Anti-Scam Platform Protection Active"
+  },
   "footer": {
     "tagline": "Empowering Bharat's skilled local workforce with AI matching and portable Work Passports.",
     "rights": "WorkConnect Platform. All rights reserved.",
