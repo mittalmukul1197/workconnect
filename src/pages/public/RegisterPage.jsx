@@ -77,7 +77,7 @@ export const RegisterPage = ({ onNavigate }) => {
       phone: hPhone,
       address: hArea,
       city: hArea.split(',')[0] || 'Rajpura',
-      role: 'business',
+      role: 'household',
       clientType: 'household',
       industry: 'Household Client',
       email: `${(hName || 'user').toLowerCase().replace(/\s+/g, '')}@workconnect.com`,
@@ -86,7 +86,7 @@ export const RegisterPage = ({ onNavigate }) => {
     };
 
     registerCustomUser(userData);
-    onNavigate('/business/dashboard');
+    onNavigate('/household/dashboard');
   };
 
   const handleNextStep = (e) => {

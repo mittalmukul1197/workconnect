@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
-export const DEFAULT_DEMO_BUSINESS = {
+const DEFAULT_DEMO_BUSINESS = {
   id: 'usr-bus-1',
   email: 'business@demo.com',
   name: 'Crafted Threads Boutique',
@@ -17,11 +18,11 @@ export const DEFAULT_DEMO_BUSINESS = {
   rating: 4.8
 };
 
-export const DEFAULT_DEMO_HOUSEHOLD = {
+const DEFAULT_DEMO_HOUSEHOLD = {
   id: 'usr-hh-1',
   email: 'household@demo.com',
   name: 'Rahul Sharma',
-  role: 'business',
+  role: 'household',
   clientType: 'household',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
   phone: '+91 98765 22222',
@@ -32,7 +33,7 @@ export const DEFAULT_DEMO_HOUSEHOLD = {
   rating: 4.9
 };
 
-export const DEFAULT_DEMO_WORKER = {
+const DEFAULT_DEMO_WORKER = {
   id: 'usr-wrk-1',
   email: 'worker@demo.com',
   name: 'Sunita Sharma',
@@ -48,16 +49,32 @@ export const DEFAULT_DEMO_WORKER = {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('workconnect_user');
-    return saved ? JSON.parse(saved) : null; // Default to null so user must log in or select demo
+    try {
+      const saved = localStorage.getItem('workconnect_user');
+      if (!saved || saved === 'undefined') return null;
+      return JSON.parse(saved);
+    } catch {
+      return null;
+    }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('workconnect_token') || null);
+
+  const [token, setToken] = useState(() => {
+    try {
+      return localStorage.getItem('workconnect_token') || null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('workconnect_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('workconnect_user');
+    try {
+      if (user) {
+        localStorage.setItem('workconnect_user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('workconnect_user');
+      }
+    } catch (e) {
+      console.error('Error persisting user to localStorage:', e);
     }
   }, [user]);
 
@@ -79,30 +96,6 @@ export const AuthProvider = ({ children }) => {
     return DEFAULT_DEMO_WORKER;
   };
 
-  const loginWithCredentials = (email, password) => {
-    const cleanEmail = (email || '').toLowerCase().trim();
-    let loggedUser = null;
-
-    if (cleanEmail === 'business@demo.com' || cleanEmail.includes('business')) {
-      loggedUser = loginAsDemoBusiness();
-    } else if (cleanEmail === 'household@demo.com' || cleanEmail.includes('household')) {
-      loggedUser = loginAsDemoHousehold();
-    } else if (cleanEmail === 'worker@demo.com' || cleanEmail.includes('worker')) {
-      loggedUser = loginAsDemoWorker();
-    } else {
-      // Auto-register new user
-      loggedUser = registerCustomUser({
-        name: cleanEmail.split('@')[0] || 'User',
-        email: cleanEmail,
-        role: 'business',
-        clientType: 'household',
-        phone: '+91 98765 99999',
-        city: 'Rajpura'
-      });
-    }
-    return loggedUser;
-  };
-
   const registerCustomUser = (userData) => {
     const newUser = {
       id: `usr-${Date.now()}`,
@@ -118,9 +111,67 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
+  const loginWithCredentials = (email, password) => {
+    const cleanEmail = (email || '').toLowerCase().trim();
+    const cleanPassword = (password || '').trim();
+
+    // Check predefined demo accounts with strict password validation
+    if (cleanEmail === 'business@demo.com') {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Business demo password is demo123' };
+      }
+      return { user: loginAsDemoBusiness() };
+    }
+    if (cleanEmail === 'household@demo.com') {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Household demo password is demo123' };
+      }
+      return { user: loginAsDemoHousehold() };
+    }
+    if (cleanEmail === 'worker@demo.com') {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Worker demo password is demo123' };
+      }
+      return { user: loginAsDemoWorker() };
+    }
+
+    if (cleanEmail.includes('business')) {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Demo password is demo123' };
+      }
+      return { user: loginAsDemoBusiness() };
+    } else if (cleanEmail.includes('household')) {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Demo password is demo123' };
+      }
+      return { user: loginAsDemoHousehold() };
+    } else if (cleanEmail.includes('worker')) {
+      if (cleanPassword !== 'demo123') {
+        return { error: 'Invalid password. Demo password is demo123' };
+      }
+      return { user: loginAsDemoWorker() };
+    } else {
+      if (!cleanPassword) {
+        return { error: 'Password is required' };
+      }
+      // Auto-register new user
+      const newUser = registerCustomUser({
+        name: cleanEmail.split('@')[0] || 'User',
+        email: cleanEmail,
+        role: 'household',
+        clientType: 'household',
+        phone: '+91 98765 99999',
+        city: 'Rajpura'
+      });
+      return { user: newUser };
+    }
+  };
+
   const switchRole = (targetRole) => {
     if (targetRole === 'business') {
       loginAsDemoBusiness();
+    } else if (targetRole === 'household') {
+      loginAsDemoHousehold();
     } else {
       loginAsDemoWorker();
     }
@@ -129,8 +180,12 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('workconnect_user');
-    localStorage.removeItem('workconnect_token');
+    try {
+      localStorage.removeItem('workconnect_user');
+      localStorage.removeItem('workconnect_token');
+    } catch (e) {
+      console.error('Error clearing localStorage on logout:', e);
+    }
   };
 
   return (
@@ -147,6 +202,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isAuthenticated: !!user,
         isBusiness: user?.role === 'business',
+        isHousehold: user?.role === 'household',
         isWorker: user?.role === 'worker'
       }}
     >

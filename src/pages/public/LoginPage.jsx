@@ -12,12 +12,19 @@ export const LoginPage = ({ onNavigate }) => {
   const { t } = useTranslation();
   const [email, setEmail] = useState('business@demo.com');
   const [password, setPassword] = useState('demo123');
+  const [errorMessage, setErrorMessage] = useState('');
   const { loginWithCredentials, loginAsDemoBusiness, loginAsDemoHousehold, loginAsDemoWorker } = useAuth();
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const loggedUser = loginWithCredentials(email, password);
-    if (loggedUser?.role === 'household' || loggedUser?.clientType === 'household') {
+    setErrorMessage('');
+    const res = loginWithCredentials(email, password);
+    if (!res || res.error) {
+      setErrorMessage(res?.error || 'Invalid email or password.');
+      return;
+    }
+    const loggedUser = res.user || res;
+    if (loggedUser?.role === 'household') {
       onNavigate('/household/dashboard');
     } else if (loggedUser?.role === 'business') {
       onNavigate('/business/dashboard');
@@ -27,21 +34,21 @@ export const LoginPage = ({ onNavigate }) => {
   };
 
   const fillAndLogin = (demoType) => {
-    let loggedUser = null;
+    setErrorMessage('');
     if (demoType === 'business') {
       setEmail('business@demo.com');
       setPassword('demo123');
-      loggedUser = loginAsDemoBusiness();
+      loginAsDemoBusiness();
       onNavigate('/business/dashboard');
     } else if (demoType === 'household') {
       setEmail('household@demo.com');
       setPassword('demo123');
-      loggedUser = loginAsDemoHousehold();
+      loginAsDemoHousehold();
       onNavigate('/household/dashboard');
     } else {
       setEmail('worker@demo.com');
       setPassword('demo123');
-      loggedUser = loginAsDemoWorker();
+      loginAsDemoWorker();
       onNavigate('/worker/dashboard');
     }
   };
@@ -108,13 +115,20 @@ export const LoginPage = ({ onNavigate }) => {
 
         {/* LOGIN FORM CARD */}
         <Card borderVariant="indigo" className="p-6 sm:p-8 space-y-4 bg-white shadow-md">
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-bold flex items-center gap-2">
+              <Icon name="alert-triangle" className="w-4 h-4 text-rose-600 shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <Input
               label="Email Address"
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setErrorMessage(''); }}
               placeholder="e.g. business@demo.com"
             />
             <Input
@@ -122,7 +136,7 @@ export const LoginPage = ({ onNavigate }) => {
               type="password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); setErrorMessage(''); }}
               placeholder="••••••••"
             />
 

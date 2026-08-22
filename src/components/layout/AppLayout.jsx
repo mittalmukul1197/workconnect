@@ -8,7 +8,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
-  const { user, isBusiness, switchRole } = useAuth();
+  const { user, isBusiness, isHousehold, switchRole } = useAuth();
   const { notifications, unreadCount, markAllAsRead } = useNotifications();
 
   return (
@@ -91,7 +91,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
 
             <div
               className="flex items-center gap-2.5 cursor-pointer p-1 rounded-xl hover:bg-slate-100 transition-colors"
-              onClick={() => onNavigate(isBusiness ? '/business/profile' : '/worker/profile')}
+              onClick={() => onNavigate(isHousehold ? '/household/profile' : isBusiness ? '/business/profile' : '/worker/profile')}
             >
               <img
                 src={user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}

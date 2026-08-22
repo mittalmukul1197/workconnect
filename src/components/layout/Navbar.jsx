@@ -10,12 +10,9 @@ import { LanguageSelector } from '../common/LanguageSelector';
 
 export const Navbar = ({ onNavigate }) => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, isHousehold, isBusiness, logout } = useAuth();
   const { unreadCount } = useChat();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-  const isHousehold = user?.role === 'household' || user?.clientType === 'household';
-  const isBusiness = user?.role === 'business';
 
   const getDashboardPath = () => {
     if (isHousehold) return '/household/dashboard';
@@ -130,18 +127,13 @@ export const Navbar = ({ onNavigate }) => {
                 size="sm"
                 variant="primary"
                 icon="sparkles"
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => {
+                  if (window.location.pathname !== '/login' && onNavigate) {
+                    onNavigate('/login');
+                  }
+                }}
               >
                 {t('nav.signInRegister')}
-              </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onNavigate && onNavigate('/login')}
-                className="text-xs text-slate-600 hover:text-indigo-600 font-semibold"
-              >
-                {t('nav.loginPage')}
               </Button>
             </div>
           )}
