@@ -21,7 +21,7 @@ export const DEFAULT_DEMO_HOUSEHOLD = {
   id: 'usr-hh-1',
   email: 'household@demo.com',
   name: 'Rahul Sharma',
-  role: 'business',
+  role: 'household',
   clientType: 'household',
   avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
   phone: '+91 98765 22222',
@@ -146,7 +146,8 @@ export const AuthProvider = ({ children }) => {
         switchRole,
         logout,
         isAuthenticated: !!user,
-        isBusiness: user?.role === 'business',
+        isHousehold: user?.role === 'household' || user?.clientType === 'household',
+        isBusiness: user?.role === 'business' && user?.clientType !== 'household',
         isWorker: user?.role === 'worker'
       }}
     >
