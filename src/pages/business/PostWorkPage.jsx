@@ -15,6 +15,13 @@ export const PostWorkPage = ({ onNavigate }) => {
   };
 
   const handleConfirmAndMatch = () => {
+    if (parsed) {
+      try {
+        localStorage.setItem('workconnect_active_job', JSON.stringify(parsed));
+      } catch (e) {
+        console.error('Error storing active job requirement:', e);
+      }
+    }
     onNavigate('/business/matches');
   };
 
