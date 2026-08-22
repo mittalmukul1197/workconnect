@@ -4,14 +4,17 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { useChat } from '../../context/ChatContext';
+import { useEscrow } from '../../context/EscrowContext';
 import { MOCK_OPPORTUNITIES, OPEN_WORK_OFFERS } from '../../data/mockData';
 
 export const FindWorkPage = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState('open-budget-offers'); // 'open-budget-offers' | 'ai-capacity'
   const [offersList, setOffersList] = useState(OPEN_WORK_OFFERS);
   const { openChatWithUser } = useChat();
+  const { agreeAsWorker } = useEscrow();
 
   const handleWorkerAccept = (offerId) => {
+    agreeAsWorker(offerId || 'proj-501');
     setOffersList((prev) =>
       prev.map((off) => {
         if (off.id === offerId) {

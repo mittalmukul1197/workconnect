@@ -2,7 +2,7 @@ import React from 'react';
 
 // Comprehensive Lucide-style SVG Icon library
 export const Icon = ({ name, className = 'w-5 h-5', style, onClick }) => {
-  const props = { className, style, onClick, xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const props = { className: `${className} shrink-0 max-w-full max-h-full`, style, xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
 
   switch (name) {
     case 'home':

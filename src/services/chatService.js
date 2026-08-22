@@ -165,6 +165,23 @@ export const initChatStorage = () => {
   }
   if (!localStorage.getItem(MESSAGES_KEY)) {
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(DEFAULT_MESSAGES));
+  } else {
+    // Purge any previously auto-generated bot reply messages from storage
+    try {
+      const raw = localStorage.getItem(MESSAGES_KEY);
+      const allMsgs = raw ? JSON.parse(raw) : {};
+      let cleaned = false;
+      Object.keys(allMsgs).forEach((convId) => {
+        const origLen = allMsgs[convId].length;
+        allMsgs[convId] = allMsgs[convId].filter(m => !m.id || !m.id.startsWith('msg-reply-'));
+        if (allMsgs[convId].length !== origLen) cleaned = true;
+      });
+      if (cleaned) {
+        localStorage.setItem(MESSAGES_KEY, JSON.stringify(allMsgs));
+      }
+    } catch (e) {
+      console.warn('Storage cleanup notice:', e);
+    }
   }
 };
 
@@ -393,71 +410,10 @@ const notifyBroadcast = (eventData) => {
   }
 };
 
-// Helper for simulated responses when user sends message in single-tab demo mode
+// Helper for simulated responses - DISABLED as requested: only real messages sent by worker or business will be displayed
 const triggerDemoAutoReplyIfNeeded = ({ conversationId, senderId, receiverId, text }) => {
-  // If messaging one of the demo users and they are NOT currently active in another window, respond with a helpful demo reply after 1.5 seconds
-  const demoAutoReplies = {
-    'usr-wrk-1': [
-      'Thanks for reaching out! I can definitely help with your garment work order.',
-      'I have reviewed the details and my daily capacity is available.',
-      'Shall we finalize the work agreement on WorkConnect?'
-    ],
-    'usr-wrk-2': [
-      'Hello! I received your inquiry for technical trade service.',
-      'I am available tomorrow for site inspection and wiring installation.'
-    ],
-    'usr-bus-1': [
-      'Thank you for your update! We have logged your capacity commitment.',
-      'Please let us know if you need any fabric or raw material delivered to your location.'
-    ]
-  };
-
-  const replies = demoAutoReplies[receiverId];
-  if (!replies) return;
-
-  const randomReply = replies[Math.floor(Math.random() * replies.length)];
-
-  setTimeout(() => {
-    const rawMsgs = localStorage.getItem(MESSAGES_KEY);
-    const msgsMap = rawMsgs ? JSON.parse(rawMsgs) : {};
-    const now = new Date().toISOString();
-
-    const replyMsg = {
-      id: `msg-reply-${Date.now()}`,
-      conversationId,
-      senderId: receiverId,
-      receiverId: senderId,
-      text: randomReply,
-      timestamp: now,
-      readAt: null
-    };
-
-    msgsMap[conversationId] = [...(msgsMap[conversationId] || []), replyMsg];
-    localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgsMap));
-
-    // Update conversation
-    const rawConvs = localStorage.getItem(CONVERSATIONS_KEY);
-    let convs = rawConvs ? JSON.parse(rawConvs) : [];
-    convs = convs.map((c) => {
-      if (c.id === conversationId) {
-        const curUnread = c.unreadCounts ? (c.unreadCounts[senderId] || 0) : 0;
-        return {
-          ...c,
-          lastMessage: randomReply,
-          lastMessageTimestamp: now,
-          updatedAt: now,
-          unreadCounts: {
-            ...c.unreadCounts,
-            [senderId]: curUnread + 1
-          }
-        };
-      }
-      return c;
-    });
-    localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(convs));
-
-    notifyBroadcast({ type: 'NEW_MESSAGE', message: replyMsg, conversationId });
-  }, 1200);
+  // Disabled: No automatic random messages should be generated.
+  return;
 };
 
 export const subscribeToChatEvents = (callback) => {

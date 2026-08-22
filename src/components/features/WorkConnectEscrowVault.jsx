@@ -3,460 +3,556 @@ import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { Icon } from '../common/Icon';
+import { useAuth } from '../../context/AuthContext';
+import { useEscrow } from '../../context/EscrowContext';
 
 export const WorkConnectEscrowVault = ({
-  dealId = 'DL-8821',
+  dealId = 'proj-501',
   dealTitle = '100 Ethnic Kurtis Stitching Order',
   businessName = 'Crafted Threads Boutique',
   workerName = 'Sunita Sharma (Master Tailor)',
   amount = '₹3,000',
   unitDetails = '100 pieces @ ₹30 / piece',
-  initialBusinessAgreed = false,
-  initialWorkerAgreed = false,
   onPaymentComplete
 }) => {
-  // Dual agreement states (Business click & Worker click)
-  const [businessAgreed, setBusinessAgreed] = useState(initialBusinessAgreed);
-  const [workerAgreed, setWorkerAgreed] = useState(initialWorkerAgreed);
+  const { user } = useAuth();
+  const { deals, agreeAsWorker, agreeAsBusiness, payToEscrow, submitWork, releasePayout } = useEscrow();
 
-  // Platform Escrow Vault Lifecycle:
-  // 'pending_agreements' -> 'ready_to_pay' -> 'paid_in_escrow' -> 'work_completed' -> 'released_to_worker'
-  const [escrowStatus, setEscrowStatus] = useState(
-    initialBusinessAgreed && initialWorkerAgreed ? 'ready_to_pay' : 'pending_agreements'
-  );
-  
+  // Active deal data from EscrowContext
+  const activeDeal = deals[dealId] || {
+    id: dealId,
+    title: dealTitle,
+    businessName,
+    workerName,
+    amount,
+    unitDetails,
+    businessAgreed: false,
+    workerAgreed: false,
+    escrowStatus: 'pending_agreements'
+  };
+
+  const { businessAgreed, workerAgreed, escrowStatus } = activeDeal;
+  const isBothAgreed = businessAgreed && workerAgreed;
+
+  // Determine current logged-in role strictly
+  const isWorker = user?.role === 'worker';
+  const isBusiness = !isWorker; // Default to business role if not explicitly worker
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPayoutReceipt, setShowPayoutReceipt] = useState(false);
 
-  // Both sides must agree
-  const isBothAgreed = businessAgreed && workerAgreed;
-
-  // Business Click handler
-  const handleBusinessAgree = () => {
-    setBusinessAgreed(true);
-    if (workerAgreed) {
-      setEscrowStatus('ready_to_pay');
-    }
+  // Handlers
+  const handleWorkerSign = () => {
+    agreeAsWorker(dealId);
   };
 
-  // Worker Click handler
-  const handleWorkerAgree = () => {
-    setWorkerAgreed(true);
-    if (businessAgreed) {
-      setEscrowStatus('ready_to_pay');
-    }
+  const handleBusinessSign = () => {
+    agreeAsBusiness(dealId);
   };
 
-  // Pay WorkConnect (Middleman Vault)
   const handlePayToVault = () => {
     setIsProcessing(true);
     setTimeout(() => {
-      setEscrowStatus('paid_in_escrow');
+      payToEscrow(dealId);
       setIsProcessing(false);
-    }, 900);
+    }, 800);
   };
 
-  // Worker submits work completion
-  const handleCompleteWork = () => {
+  const handleWorkSubmission = () => {
     setIsProcessing(true);
     setTimeout(() => {
-      setEscrowStatus('work_completed');
+      submitWork(dealId);
       setIsProcessing(false);
     }, 700);
   };
 
-  // WorkConnect disburses payout to Worker
-  const handleReleasePayout = () => {
+  const handlePayoutRelease = () => {
     setIsProcessing(true);
     setTimeout(() => {
-      setEscrowStatus('released_to_worker');
+      releasePayout(dealId);
       setIsProcessing(false);
       setShowPayoutReceipt(true);
       if (onPaymentComplete) onPaymentComplete();
-    }, 1000);
+    }, 900);
   };
 
   return (
-    <Card borderVariant="indigo" className="p-6 sm:p-8 space-y-6 bg-white shadow-2xl text-slate-900 border-2 rounded-3xl animate-fade-in">
+    <Card borderVariant="indigo" className="p-5 sm:p-6 space-y-5 bg-white shadow-xl text-slate-900 border-2 rounded-3xl animate-fade-in max-w-4xl mx-auto">
       
-      {/* 🛡️ HEADER: WORKCONNECT MIDDLEMAN ESCROW BANNER */}
-      <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-start sm:items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
-            <Icon name="shield" className="w-6 h-6 animate-pulse" />
+      {/* 🛡️ HEADER BANNER (NO DEMO ROLE SWITCHER - STRICT AUTH ROLE DISPLAY) */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+            <Icon name="shield" className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-black text-base text-white tracking-wide">WorkConnect Platform Escrow</h3>
-              <Badge variant="emerald" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-bold">
-                🛡️ 100% Scam Protection
+              <h3 className="font-extrabold text-sm text-white tracking-wide">WorkConnect Escrow Vault</h3>
+              <Badge variant="emerald" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-bold text-[10px]">
+                🛡️ 100% Anti-Scam Protection
               </Badge>
             </div>
-            <p className="text-xs text-indigo-200 mt-1 max-w-xl">
-              We act as the trusted <strong>Middleman</strong>. Payment is held safely by WorkConnect until both sides agree on the deal and work is completed.
+            <p className="text-[11px] text-indigo-200 mt-0.5">
+              Money is received & held by <strong>WorkConnect (Us)</strong> as middleman. Payment cannot be made until BOTH sides click Agree.
             </p>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-left md:text-right shrink-0">
-          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider block">Escrow Amount</span>
-          <span className="text-2xl font-black text-emerald-400">{amount}</span>
+        {/* Auth Role Badge */}
+        <div className="px-3.5 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/80 text-left sm:text-right shrink-0">
+          <span className="text-[9px] text-slate-400 uppercase font-black tracking-wider block">Logged In Perspective</span>
+          <span className="text-xs font-extrabold text-emerald-400">
+            {isWorker ? `👷 Worker View (${user?.name || 'Sunita Sharma'})` : `🏢 Business View (${user?.name || 'Crafted Threads Boutique'})`}
+          </span>
         </div>
       </div>
 
       {/* 📜 DEAL SUMMARY CARD */}
-      <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
-        <div className="space-y-0.5">
-          <span className="text-[10px] text-slate-400 uppercase font-black tracking-wider">Target Deal</span>
-          <h4 className="font-extrabold text-sm text-slate-900">{dealTitle}</h4>
-          <p className="text-slate-500 font-medium">{unitDetails} • Ref: {dealId}</p>
+      <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
+        <div>
+          <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Target Work Deal</span>
+          <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">{activeDeal.title}</h4>
+          <p className="text-[11px] text-slate-500 font-medium">{activeDeal.unitDetails} • Ref: {activeDeal.id}</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-semibold shadow-xs">
-            🏢 Business: <strong className="text-slate-900">{businessName}</strong>
+        <div className="flex items-center gap-2 flex-wrap text-xs">
+          <div className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium shadow-2xs">
+            🏢 Business: <strong className="text-slate-900">{activeDeal.businessName}</strong>
           </div>
-          <div className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 text-xs font-semibold shadow-xs">
-            👷 Worker: <strong className="text-slate-900">{workerName}</strong>
+          <div className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium shadow-2xs">
+            👷 Worker: <strong className="text-slate-900">{activeDeal.workerName}</strong>
+          </div>
+          <div className="px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-black shadow-2xs">
+            {activeDeal.amount}
           </div>
         </div>
       </div>
 
       {/* 📍 VISUAL ESCROW STEPPER */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase tracking-wider">
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider">
           <span>Escrow Middleman Progress</span>
           <span className="text-indigo-600 font-extrabold">
             {!isBothAgreed && 'Step 1 of 4: Dual Clicks Needed'}
             {isBothAgreed && escrowStatus === 'ready_to_pay' && 'Step 2 of 4: Ready for Payment'}
             {escrowStatus === 'paid_in_escrow' && 'Step 3 of 4: Funds Secured in Vault'}
-            {escrowStatus === 'work_completed' && 'Step 4 of 4: Ready for Release'}
+            {escrowStatus === 'work_submitted' && 'Step 4 of 4: Ready for Payout Release'}
             {escrowStatus === 'released_to_worker' && 'Completed ✓'}
           </span>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
           {/* Step 1 */}
-          <div className={`p-3 rounded-xl border transition-all ${
+          <div className={`p-2.5 rounded-xl border transition-all ${
             isBothAgreed ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold' : 'bg-amber-50 border-amber-300 text-amber-950 font-semibold'
           }`}>
-            <div className="flex items-center justify-between font-extrabold mb-1">
+            <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
               <span>1. Dual Clicks</span>
               <span>{isBothAgreed ? '✓ Done' : '⏳ Pending'}</span>
             </div>
-            <p className="text-[10px] opacity-80">Both parties agree to deal</p>
+            <p className="text-[10px] opacity-80">Both parties agree</p>
           </div>
 
           {/* Step 2 */}
-          <div className={`p-3 rounded-xl border transition-all ${
-            escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_completed' || escrowStatus === 'released_to_worker'
+          <div className={`p-2.5 rounded-xl border transition-all ${
+            escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker'
               ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
               : isBothAgreed
               ? 'bg-indigo-50 border-indigo-300 text-indigo-950 font-bold animate-pulse'
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
-            <div className="flex items-center justify-between font-extrabold mb-1">
+            <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
               <span>2. Pay WorkConnect</span>
               <span>
-                {escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_completed' || escrowStatus === 'released_to_worker' ? '🔒 Secured' : '⏳ Pending'}
+                {escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? '🔒 Secured' : '⏳ Pending'}
               </span>
             </div>
-            <p className="text-[10px] opacity-80">Platform holds funds safely</p>
+            <p className="text-[10px] opacity-80">Money in platform vault</p>
           </div>
 
           {/* Step 3 */}
-          <div className={`p-3 rounded-xl border transition-all ${
-            escrowStatus === 'work_completed' || escrowStatus === 'released_to_worker'
+          <div className={`p-2.5 rounded-xl border transition-all ${
+            escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker'
               ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
               : escrowStatus === 'paid_in_escrow'
               ? 'bg-amber-50 border-amber-300 text-amber-950 font-semibold'
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
-            <div className="flex items-center justify-between font-extrabold mb-1">
+            <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
               <span>3. Work Output</span>
               <span>
-                {escrowStatus === 'work_completed' || escrowStatus === 'released_to_worker' ? '✓ Delivered' : '⏳ In Progress'}
+                {escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? '✓ Delivered' : '⏳ In Progress'}
               </span>
             </div>
             <p className="text-[10px] opacity-80">Worker completes quota</p>
           </div>
 
           {/* Step 4 */}
-          <div className={`p-3 rounded-xl border transition-all ${
+          <div className={`p-2.5 rounded-xl border transition-all ${
             escrowStatus === 'released_to_worker'
               ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold'
-              : escrowStatus === 'work_completed'
+              : escrowStatus === 'work_submitted'
               ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-extrabold animate-pulse'
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
-            <div className="flex items-center justify-between font-extrabold mb-1">
+            <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
               <span>4. Release Payout</span>
               <span>{escrowStatus === 'released_to_worker' ? '💸 Paid' : '🔒 Locked'}</span>
             </div>
-            <p className="text-[10px] opacity-80">Vault disburses to Worker</p>
+            <p className="text-[10px] opacity-80">Disbursed to Worker</p>
           </div>
         </div>
       </div>
 
-      {/* 🤝 SECTION 1: REQUIRED DUAL AGREEMENT CLICKS */}
-      <div className="p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-4">
-        <div className="flex items-center justify-between border-b border-indigo-200 pb-3">
+      {/* 🤝 SECTION 1: ROLE-SCOPED DEAL AGREEMENT */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 space-y-3.5">
+        <div className="flex items-center justify-between border-b border-indigo-200 pb-2.5">
           <div>
-            <h4 className="font-black text-sm text-slate-900 flex items-center gap-2">
-              <Icon name="check-circle" className="w-4.5 h-4.5 text-indigo-600" />
-              <span>Step 1: Required Dual Agreement Clicks</span>
+            <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+              <Icon name="check-circle" className="w-4 h-4 text-indigo-600 shrink-0" />
+              <span>Step 1: Contract Deal Agreement</span>
             </h4>
             <p className="text-[11px] text-slate-600">
-              Payment is <strong>STRICTLY LOCKED</strong> until BOTH Business & Worker click to agree below.
+              Payment options on Business side remain <strong>STRICTLY LOCKED</strong> until BOTH Business & Worker click to agree below.
             </p>
           </div>
 
-          <Badge variant={isBothAgreed ? 'emerald' : 'amber'} className="font-extrabold text-xs">
-            {isBothAgreed ? '🟢 Both Parties Agreed' : '⚠️ Pending Clicks'}
+          <Badge variant={isBothAgreed ? 'emerald' : 'amber'} className="font-extrabold text-[11px]">
+            {isBothAgreed ? '🟢 Both Sides Agreed' : '⚠️ Pending Clicks'}
           </Badge>
         </div>
 
-        {/* 2 Big Clear Cards for Business & Worker */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* AGREEMENT CARDS SCOPED TO USER ROLE */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           
-          {/* Card A: Business */}
-          <div className={`p-4.5 rounded-2xl border space-y-3.5 transition-all ${
-            businessAgreed ? 'bg-emerald-50/90 border-emerald-300 shadow-sm' : 'bg-white border-slate-200 shadow-xs'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🏢</span>
-                <div>
-                  <h5 className="font-extrabold text-xs text-slate-900">Business Sign-Off</h5>
-                  <p className="text-[10px] text-slate-500">{businessName}</p>
+          {/* WORKER VIEW ONLY: Worker Sign-off Card */}
+          {isWorker && (
+            <div className={`p-3.5 rounded-xl border space-y-2.5 transition-all ${
+              workerAgreed ? 'bg-emerald-50 border-emerald-300 shadow-2xs' : 'bg-white border-slate-200 shadow-2xs'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">👷</span>
+                  <div>
+                    <h5 className="font-bold text-xs text-slate-900">Your Worker Sign-Off</h5>
+                    <p className="text-[10px] text-slate-500">{activeDeal.workerName}</p>
+                  </div>
                 </div>
+
+                {workerAgreed ? (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-extrabold text-[10px] tracking-wider uppercase">
+                    ✓ YOU AGREED
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
+                    ACTION NEEDED
+                  </span>
+                )}
               </div>
 
-              {businessAgreed ? (
-                <span className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] tracking-wider uppercase shadow-xs">
-                  ✓ AGREED
-                </span>
+              {!workerAgreed ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  fullWidth
+                  icon="check"
+                  onClick={handleWorkerSign}
+                >
+                  Worker: Click to Agree & Accept Deal
+                </Button>
               ) : (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
-                  AWAITING CLICK
-                </span>
+                <div className="p-2 rounded-lg bg-emerald-100/80 border border-emerald-300 text-[11px] text-emerald-900 font-semibold flex items-center gap-1.5">
+                  <Icon name="check-circle" className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>You signed & agreed! Waiting for Business to deposit escrow funds.</span>
+                </div>
               )}
             </div>
+          )}
 
-            {!businessAgreed ? (
-              <Button
-                size="md"
-                variant="primary"
-                fullWidth
-                icon="check"
-                onClick={handleBusinessAgree}
-                className="shadow-md shadow-indigo-600/15"
-              >
-                Sign & Agree (as Business)
-              </Button>
-            ) : (
-              <div className="p-2.5 rounded-xl bg-emerald-100/70 border border-emerald-300 text-[11px] text-emerald-900 font-bold flex items-center gap-2">
-                <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Business clicked and approved deal terms.</span>
+          {/* WORKER VIEW ONLY: Read-only Business Status Card */}
+          {isWorker && (
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700">🏢 Employer Status ({activeDeal.businessName})</span>
+                {businessAgreed ? (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
+                    ✓ BUSINESS AGREED
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-extrabold text-[10px]">
+                    AWAITING BUSINESS
+                  </span>
+                )}
               </div>
-            )}
-          </div>
+              <p className="text-[11px] text-slate-600">
+                {businessAgreed
+                  ? 'The employer has verified deal terms.'
+                  : 'Waiting for the employer to sign the deal & deposit funds into WorkConnect Escrow.'}
+              </p>
+            </div>
+          )}
 
-          {/* Card B: Worker */}
-          <div className={`p-4.5 rounded-2xl border space-y-3.5 transition-all ${
-            workerAgreed ? 'bg-emerald-50/90 border-emerald-300 shadow-sm' : 'bg-white border-slate-200 shadow-xs'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">👷</span>
-                <div>
-                  <h5 className="font-extrabold text-xs text-slate-900">Worker Sign-Off</h5>
-                  <p className="text-[10px] text-slate-500">{workerName}</p>
+          {/* BUSINESS VIEW ONLY: Business Sign-off Card */}
+          {isBusiness && (
+            <div className={`p-3.5 rounded-xl border space-y-2.5 transition-all ${
+              businessAgreed ? 'bg-emerald-50 border-emerald-300 shadow-2xs' : 'bg-white border-slate-200 shadow-2xs'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🏢</span>
+                  <div>
+                    <h5 className="font-bold text-xs text-slate-900">Your Business Sign-Off</h5>
+                    <p className="text-[10px] text-slate-500">{activeDeal.businessName}</p>
+                  </div>
                 </div>
+
+                {businessAgreed ? (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-extrabold text-[10px] tracking-wider uppercase">
+                    ✓ YOU AGREED
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
+                    ACTION NEEDED
+                  </span>
+                )}
               </div>
 
-              {workerAgreed ? (
-                <span className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black text-[10px] tracking-wider uppercase shadow-xs">
-                  ✓ AGREED
-                </span>
+              {!businessAgreed ? (
+                <Button
+                  size="sm"
+                  variant="primary"
+                  fullWidth
+                  icon="check"
+                  onClick={handleBusinessSign}
+                >
+                  Business: Click to Agree & Approve Terms
+                </Button>
               ) : (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
-                  AWAITING CLICK
-                </span>
+                <div className="p-2 rounded-lg bg-emerald-100/80 border border-emerald-300 text-[11px] text-emerald-900 font-semibold flex items-center gap-1.5">
+                  <Icon name="check-circle" className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>You signed and verified deal terms.</span>
+                </div>
               )}
             </div>
+          )}
 
-            {!workerAgreed ? (
-              <Button
-                size="md"
-                variant="secondary"
-                fullWidth
-                icon="check"
-                onClick={handleWorkerAgree}
-                className="shadow-md shadow-emerald-600/15"
-              >
-                Sign & Agree (as Worker)
-              </Button>
-            ) : (
-              <div className="p-2.5 rounded-xl bg-emerald-100/70 border border-emerald-300 text-[11px] text-emerald-900 font-bold flex items-center gap-2">
-                <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Worker clicked and approved deal terms.</span>
+          {/* BUSINESS VIEW ONLY: Read-only Worker Status Card */}
+          {isBusiness && (
+            <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700">👷 Worker Status ({activeDeal.workerName})</span>
+                {workerAgreed ? (
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
+                    ✓ WORKER AGREED
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-extrabold text-[10px]">
+                    AWAITING WORKER SIGN
+                  </span>
+                )}
               </div>
-            )}
-          </div>
+              <p className="text-[11px] text-slate-600">
+                {workerAgreed
+                  ? 'Worker has agreed to deliver order terms.'
+                  : 'Worker must click "Agree" on their screen to unlock your escrow payment option.'}
+              </p>
+            </div>
+          )}
 
         </div>
       </div>
 
-      {/* 💳 SECTION 2: WORKCONNECT PLATFORM MIDDLEMAN VAULT (PAYMENT ACTION) */}
-      <div className="p-5 sm:p-6 rounded-3xl bg-slate-900 text-white space-y-4 shadow-2xl border border-slate-800">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
+      {/* 💳 SECTION 2: WORKCONNECT PLATFORM MIDDLEMAN VAULT (ROLE-SCOPED ACTION) */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-slate-900 text-white space-y-3.5 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
           <div>
-            <span className="text-[10px] uppercase font-black text-emerald-400 tracking-wider block">
-              Platform Escrow Status
+            <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider block">
+              WorkConnect Platform Vault Status
             </span>
-            <h4 className="font-black text-sm text-white flex items-center gap-2 mt-0.5">
+            <h4 className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2 mt-0.5">
               {!isBothAgreed && (
                 <>
-                  <Icon name="lock" className="w-4 h-4 text-amber-400" />
-                  <span>Payment Disabled (Needs Both Clicks First)</span>
+                  <Icon name="lock" className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>Payment Locked (Requires Clicks from Both Ends)</span>
                 </>
               )}
               {isBothAgreed && escrowStatus === 'ready_to_pay' && (
                 <>
-                  <Icon name="unlock" className="w-4 h-4 text-emerald-400" />
-                  <span>Payment Unlocked! Pay to WorkConnect Middleman Vault</span>
+                  <Icon name="unlock" className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Payment Unlocked! Deposit to WorkConnect Middleman Vault</span>
                 </>
               )}
               {escrowStatus === 'paid_in_escrow' && (
                 <>
-                  <Icon name="shield" className="w-4 h-4 text-emerald-400" />
-                  <span>{amount} Safely Secured in WorkConnect Platform Vault</span>
+                  <Icon name="shield" className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{activeDeal.amount} Safely Held in WorkConnect Platform Vault</span>
                 </>
               )}
-              {escrowStatus === 'work_completed' && (
+              {escrowStatus === 'work_submitted' && (
                 <>
-                  <Icon name="check-circle" className="w-4 h-4 text-emerald-400" />
-                  <span>Work Completed — Ready to Disburse Payout</span>
+                  <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>Work Completed — Ready for Payout Release</span>
                 </>
               )}
               {escrowStatus === 'released_to_worker' && (
                 <>
-                  <Icon name="check-circle" className="w-4 h-4 text-emerald-400" />
+                  <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>Payout Transferred to Worker</span>
                 </>
               )}
             </h4>
           </div>
 
-          <span className="text-2xl font-black text-emerald-400">{amount}</span>
+          <span className="text-xl font-black text-emerald-400">{activeDeal.amount}</span>
         </div>
 
         {/* Clear Explanation Box when Payment is Locked */}
         {!isBothAgreed && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1 animate-fade-in">
-            <div className="flex items-center gap-2 font-black text-amber-300 text-xs">
-              <Icon name="alert-triangle" className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>WHY PAYMENT IS LOCKED RIGHT NOW:</span>
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1">
+            <div className="flex items-center gap-2 font-bold text-amber-300 text-xs">
+              <Icon name="alert-triangle" className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>PAYMENT STATUS:</span>
             </div>
-            <p className="text-[11px] text-amber-100/90 font-medium pl-6">
-              {businessAgreed && !workerAgreed && "🏢 Business has agreed ✓, BUT 👷 Worker has NOT agreed yet. Payment button stays disabled until Worker clicks Agree!"}
-              {!businessAgreed && workerAgreed && "👷 Worker has agreed ✓, BUT 🏢 Business has NOT agreed yet. Payment button stays disabled until Business clicks Agree!"}
-              {!businessAgreed && !workerAgreed && "Neither side has agreed yet. Both Business and Worker must click 'Sign & Agree' above."}
+            <p className="text-[11px] text-amber-100/90 font-medium pl-5.5">
+              {businessAgreed && !workerAgreed && "🏢 Business has agreed ✓, BUT 👷 Worker has NOT agreed yet. Payment button stays locked!"}
+              {!businessAgreed && workerAgreed && "👷 Worker has agreed ✓, BUT 🏢 Business has NOT agreed yet. Payment button stays locked!"}
+              {!businessAgreed && !workerAgreed && "Neither side has agreed yet. Both Business and Worker must click 'Agree' on their respective screens."}
             </p>
           </div>
         )}
 
         {/* Success Notice when Both Agreed */}
         {isBothAgreed && escrowStatus === 'ready_to_pay' && (
-          <div className="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2.5 font-bold animate-scale-up">
-            <Icon name="check-circle" className="w-5 h-5 text-emerald-400 shrink-0" />
-            <span>Both Business & Worker agreed! Business can now make payment securely to WorkConnect Middleman Vault.</span>
+          <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2 font-bold animate-scale-up">
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Both Business & Worker agreed! Business can now deposit payment to WorkConnect.</span>
           </div>
         )}
 
-        {/* Action Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        {/* Role-Scoped Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
           <div className="text-[11px] text-slate-300 max-w-md">
             <p className="leading-relaxed">
-              <strong>Middleman Scam Guarantee:</strong> Payment goes directly to <strong>WorkConnect (Us)</strong> first. We safely hold the money until work is completed properly, then release it to the worker.
+              <strong>Middleman Scam Protection:</strong> Money goes to <strong>WorkConnect (Us)</strong> first. We safely hold it until work is completed properly, then release it to the worker.
             </p>
           </div>
 
           <div className="w-full sm:w-auto shrink-0">
-            {/* Case 1: Locked */}
-            {!isBothAgreed && (
-              <button
-                disabled
-                className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-800/90 text-slate-400 font-black text-xs cursor-not-allowed border border-slate-700/80 flex items-center justify-center gap-2 shadow-inner"
-              >
-                <Icon name="lock" className="w-4 h-4 text-slate-500" />
-                <span>🔒 Payment Locked (Needs Both Clicks)</span>
-              </button>
+            
+            {/* BUSINESS ROLE CONTROLS */}
+            {isBusiness && (
+              <>
+                {!isBothAgreed && (
+                  <button
+                    disabled
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800/90 text-slate-400 font-extrabold text-xs cursor-not-allowed border border-slate-700/80 flex items-center justify-center gap-2 shadow-inner"
+                  >
+                    <Icon name="lock" className="w-4 h-4 text-slate-500 shrink-0" />
+                    <span>🔒 Payment Locked (Needs Worker Sign)</span>
+                  </button>
+                )}
+
+                {isBothAgreed && escrowStatus === 'ready_to_pay' && (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    icon="shield"
+                    onClick={handlePayToVault}
+                    disabled={isProcessing}
+                    className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-600 text-white font-black shadow-lg shadow-emerald-500/25 animate-bounce"
+                  >
+                    {isProcessing ? 'Processing Payment...' : `💳 Pay ${activeDeal.amount} to WorkConnect Vault`}
+                  </Button>
+                )}
+
+                {escrowStatus === 'paid_in_escrow' && (
+                  <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
+                    <Icon name="shield" className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Funds Secured in WorkConnect Vault (Worker is Producing)</span>
+                  </div>
+                )}
+
+                {escrowStatus === 'work_submitted' && (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    icon="zap"
+                    onClick={handlePayoutRelease}
+                    disabled={isProcessing}
+                    className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold shadow-lg shadow-emerald-500/25"
+                  >
+                    {isProcessing ? 'Disbursing...' : 'WorkConnect: Release Payment to Worker'}
+                  </Button>
+                )}
+
+                {escrowStatus === 'released_to_worker' && (
+                  <div className="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center gap-2">
+                    <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Payout Released to Worker ✓</span>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Case 2: Unlocked Pay to Vault */}
-            {isBothAgreed && escrowStatus === 'ready_to_pay' && (
-              <Button
-                variant="primary"
-                size="lg"
-                icon="shield"
-                onClick={handlePayToVault}
-                disabled={isProcessing}
-                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-sm shadow-xl shadow-emerald-500/25 animate-bounce rounded-2xl py-3.5"
-              >
-                {isProcessing ? 'Processing Payment...' : `💳 Pay ${amount} to WorkConnect Escrow Vault`}
-              </Button>
+            {/* WORKER ROLE CONTROLS */}
+            {isWorker && (
+              <>
+                {escrowStatus === 'pending_agreements' && (
+                  <div className="px-4 py-2 rounded-xl bg-slate-800/90 border border-slate-700/80 text-slate-400 text-xs font-bold flex items-center gap-2">
+                    <Icon name="clock" className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Waiting for Dual Clicks & Business Deposit</span>
+                  </div>
+                )}
+
+                {escrowStatus === 'ready_to_pay' && (
+                  <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
+                    <Icon name="clock" className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Both Agreed! Waiting for Business Escrow Deposit</span>
+                  </div>
+                )}
+
+                {escrowStatus === 'paid_in_escrow' && (
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    icon="check"
+                    onClick={handleWorkSubmission}
+                    disabled={isProcessing}
+                    className="w-full sm:w-auto font-bold"
+                  >
+                    {isProcessing ? 'Submitting...' : 'Worker: Submit Completed Work'}
+                  </Button>
+                )}
+
+                {escrowStatus === 'work_submitted' && (
+                  <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
+                    <Icon name="check-circle" className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Work Submitted! Waiting for Employer Payout Sign-off</span>
+                  </div>
+                )}
+
+                {escrowStatus === 'released_to_worker' && (
+                  <div className="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center gap-2">
+                    <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Funds Received in Your Wallet ✓</span>
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Case 3: Paid in Escrow -> Submit Work */}
-            {escrowStatus === 'paid_in_escrow' && (
-              <Button
-                variant="secondary"
-                size="lg"
-                icon="check"
-                onClick={handleCompleteWork}
-                disabled={isProcessing}
-                className="w-full sm:w-auto font-black rounded-2xl py-3.5"
-              >
-                {isProcessing ? 'Submitting...' : 'Worker: Submit Completed Work Output'}
-              </Button>
-            )}
-
-            {/* Case 4: Work Completed -> Release Payout */}
-            {escrowStatus === 'work_completed' && (
-              <Button
-                variant="primary"
-                size="lg"
-                icon="zap"
-                onClick={handleReleasePayout}
-                disabled={isProcessing}
-                className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl py-3.5 shadow-xl shadow-emerald-500/30"
-              >
-                {isProcessing ? 'Disbursing...' : 'WorkConnect: Release Payout to Worker'}
-              </Button>
-            )}
-
-            {/* Case 5: Released */}
-            {escrowStatus === 'released_to_worker' && (
-              <div className="px-5 py-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center gap-2">
-                <Icon name="check-circle" className="w-4 h-4 text-emerald-400" />
-                <span>Funds Paid to Worker ✓</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* 🎉 FINAL SUCCESS CONFIRMATION RECEIPT */}
       {showPayoutReceipt && (
-        <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 space-y-1.5 animate-scale-up shadow-md">
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 space-y-1 animate-scale-up shadow-sm">
           <div className="flex items-center gap-2 font-black text-sm text-emerald-900">
-            <Icon name="check-circle" className="w-5 h-5 text-emerald-600 shrink-0" />
+            <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>100% Scam-Free Escrow Settlement Complete!</span>
           </div>
           <p className="text-[11px] text-slate-700 font-medium leading-relaxed">
-            WorkConnect received <strong className="text-emerald-900 font-bold">{amount}</strong> from Business as middleman, verified mutual agreement and work completion, and successfully transferred payout to <strong className="text-slate-900 font-bold">{workerName}</strong>. Zero scam issues!
+            WorkConnect received <strong className="text-emerald-900 font-bold">{activeDeal.amount}</strong> from Business as middleman, verified mutual agreement and work completion, and successfully transferred payout to <strong className="text-slate-900 font-bold">{activeDeal.workerName}</strong>. Zero scam issues!
           </p>
         </div>
       )}
