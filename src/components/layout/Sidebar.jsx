@@ -8,10 +8,8 @@ import { LanguageSelector } from '../common/LanguageSelector';
 
 export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }) => {
   const { t } = useTranslation();
-  const { user, isBusiness, isWorker, logout } = useAuth();
+  const { user, isHousehold, isBusiness, isWorker, logout } = useAuth();
   const { unreadCount } = useChat();
-
-  const isHousehold = user?.role === 'household' || user?.clientType === 'household';
 
   const householdNav = [
     { path: '/household/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },

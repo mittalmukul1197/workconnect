@@ -23,8 +23,11 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
   const [idVerified, setIdVerified] = useState('Verified (Aadhaar KYC Completed)');
   const [workRadiusKm, setWorkRadiusKm] = useState('10 km');
   const [hasDisability, setHasDisability] = useState(false);
-  const [disabilityType, setDisabilityType] = useState('Locomotor / Physical Disability');
-  const [disabilityAccommodations, setDisabilityAccommodations] = useState(['Flexible Work Hours / Rest Breaks']);
+  const [disabilityTypes, setDisabilityTypes] = useState(['Locomotor / Physical Disability']);
+  const [disabilityOther, setDisabilityOther] = useState('');
+  const [accessibilityNeeds, setAccessibilityNeeds] = useState(['Wheelchair accessible workplace', 'Flexible working hours']);
+  const [accessibilityOther, setAccessibilityOther] = useState('');
+  const [additionalAccessibilityNotes, setAdditionalAccessibilityNotes] = useState('');
 
   // Step 3: Skills / Work Type
   const [primarySkill, setPrimarySkill] = useState('Tailor & Stitching');
@@ -61,8 +64,13 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
         email,
         gender,
         hasDisability,
-        disabilityType: hasDisability ? disabilityType : '',
-        disabilityAccommodations: hasDisability ? disabilityAccommodations : [],
+        disabilityTypes: hasDisability ? disabilityTypes : [],
+        disabilityOther: (hasDisability && disabilityTypes.includes('Other')) ? disabilityOther : '',
+        accessibilityNeeds: hasDisability ? accessibilityNeeds : [],
+        accessibilityOther: (hasDisability && accessibilityNeeds.includes('Other')) ? accessibilityOther : '',
+        additionalAccessibilityNotes: hasDisability ? additionalAccessibilityNotes : '',
+        disabilityType: hasDisability ? (disabilityTypes.length > 0 ? disabilityTypes.join(', ') : (disabilityOther || 'Person with Disability')) : '',
+        disabilityAccommodations: hasDisability ? accessibilityNeeds : [],
         idVerified,
         workRadiusKm,
         role: 'worker',
@@ -128,8 +136,10 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
       ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
       : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
     hasDisability,
-    disabilityType: hasDisability ? disabilityType : '',
-    disabilityAccommodations: hasDisability ? disabilityAccommodations : [],
+    disabilityTypes: hasDisability ? disabilityTypes : [],
+    accessibilityNeeds: hasDisability ? accessibilityNeeds : [],
+    disabilityType: hasDisability ? (disabilityTypes.length > 0 ? disabilityTypes.join(', ') : 'Person with Disability') : '',
+    disabilityAccommodations: hasDisability ? accessibilityNeeds : [],
     gender
   };
 
@@ -270,20 +280,25 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                     />
                   </div>
 
-                  {/* DISABILITY YES / NO SECTION */}
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
-                    <div className="space-y-1">
+                  {/* DISABILITY & ACCESSIBILITY SECTION */}
+                  <div className="p-4.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-5">
+                    <div className="space-y-1 border-b border-slate-200 pb-3">
                       <div className="flex items-center justify-between">
-                        <label className="font-bold text-slate-800 text-xs uppercase tracking-wider">
-                          Do you have any disability or special needs? *
-                        </label>
-                        <Badge variant="indigo" className="text-[10px]">Inclusive Workforce</Badge>
+                        <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+                          <Icon name="shield-check" className="w-4 h-4 text-purple-600" />
+                          <span>Disability & Accessibility</span>
+                        </h4>
+                        <Badge variant="purple" className="text-[10px]">Inclusive Workforce</Badge>
                       </div>
-                      <p className="text-[11px] text-slate-500">
-                        WorkConnect connects skilled persons with disabilities (PwD) with inclusive employers and workplace accommodations.
+                      <p className="text-[11px] text-slate-600 font-medium">
+                        Do you have a disability or any accessibility needs?
+                      </p>
+                      <p className="text-[10px] text-indigo-600 font-semibold pt-0.5">
+                        💡 Sharing this information helps WorkConnect recommend suitable and accessible work opportunities.
                       </p>
                     </div>
 
+                    {/* YES / NO SELECTOR */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         type="button"
@@ -292,17 +307,17 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                         }}
                         className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                           !hasDisability
-                            ? 'border-emerald-600 bg-emerald-50/80 text-emerald-900 font-bold ring-2 ring-emerald-500/20'
+                            ? 'border-emerald-600 bg-emerald-50/90 text-emerald-950 font-bold ring-2 ring-emerald-500/20'
                             : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${
                             !hasDisability ? 'border-emerald-600 bg-emerald-600' : 'border-slate-300'
                           }`}>
-                            {!hasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            {!hasDisability && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
-                          <span className="text-xs">No (Abled / No Special Needs)</span>
+                          <span className="text-xs font-bold">No</span>
                         </div>
                       </button>
 
@@ -310,78 +325,153 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                         type="button"
                         onClick={() => {
                           setHasDisability(true);
-                          if (!disabilityType) setDisabilityType('Locomotor / Physical Disability');
-                          if (disabilityAccommodations.length === 0) setDisabilityAccommodations(['Flexible Work Hours / Rest Breaks']);
+                          if (disabilityTypes.length === 0) setDisabilityTypes(['Locomotor / Physical Disability']);
+                          if (accessibilityNeeds.length === 0) setAccessibilityNeeds(['Wheelchair accessible workplace', 'Flexible working hours']);
                         }}
                         className={`p-3.5 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                           hasDisability
-                            ? 'border-purple-600 bg-purple-50/80 text-purple-900 font-bold ring-2 ring-purple-500/20'
+                            ? 'border-purple-600 bg-purple-50/90 text-purple-950 font-bold ring-2 ring-purple-500/20'
                             : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          <div className={`w-4.5 h-4.5 rounded-full border flex items-center justify-center ${
                             hasDisability ? 'border-purple-600 bg-purple-600' : 'border-slate-300'
                           }`}>
-                            {hasDisability && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            {hasDisability && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
-                          <span className="text-xs">Yes (Person with Disability - PwD)</span>
+                          <span className="text-xs font-bold">Yes (Person with Disability - PwD)</span>
                         </div>
                       </button>
                     </div>
 
-                    {/* CONDITIONAL DISABILITY DETAILS WHEN YES */}
+                    {/* DYNAMIC DISABILITY & ACCESSIBILITY DETAILS WHEN YES */}
                     {hasDisability && (
-                      <div className="space-y-4 pt-3 border-t border-slate-200 animate-fade-in">
-                        <Select
-                          label="Disability Category / Type *"
-                          value={disabilityType}
-                          onChange={(e) => setDisabilityType(e.target.value)}
-                          options={[
-                            'Locomotor / Physical Disability',
-                            'Visual Impairment / Low Vision',
-                            'Hearing & Speech Impairment',
-                            'Intellectual / Learning Disability',
-                            'Multiple Disabilities / Other Special Ability'
-                          ]}
-                        />
-
+                      <div className="space-y-5 pt-3 border-t border-slate-200 animate-fade-in">
+                        {/* DISABILITY TYPE SELECTOR */}
                         <div className="space-y-2">
-                          <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider block">
-                            Workplace Accommodations Needed (Select all that apply)
+                          <label className="font-bold text-slate-800 text-xs block">
+                            Please select your disability type *
                           </label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {[
-                              'Wheelchair Accessible Workspace',
-                              'Flexible Work Hours / Rest Breaks',
-                              'Home-based / Remote Work Option',
-                              'Ergonomic Seating / Adapted Tools',
-                              'Assistive Audio/Visual Support',
-                              'Companion / Support Assistant Allowed'
-                            ].map((acc) => {
-                              const isSelected = disabilityAccommodations.includes(acc);
+                              'Locomotor / Physical Disability',
+                              'Visual Disability',
+                              'Hearing Disability',
+                              'Speech Disability',
+                              'Intellectual Disability',
+                              'Specific Learning Disability',
+                              'Mental Health / Psychosocial Disability',
+                              'Multiple Disabilities',
+                              'Other'
+                            ].map((type) => {
+                              const isChecked = disabilityTypes.includes(type);
                               return (
                                 <button
-                                  key={acc}
+                                  key={type}
                                   type="button"
                                   onClick={() => {
-                                    if (isSelected) {
-                                      setDisabilityAccommodations(disabilityAccommodations.filter((a) => a !== acc));
+                                    if (isChecked) {
+                                      setDisabilityTypes(disabilityTypes.filter((t) => t !== type));
                                     } else {
-                                      setDisabilityAccommodations([...disabilityAccommodations, acc]);
+                                      setDisabilityTypes([...disabilityTypes, type]);
                                     }
                                   }}
-                                  className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2 ${
-                                    isSelected
-                                      ? 'border-purple-500 bg-purple-100/70 text-purple-900 font-semibold'
-                                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                                  className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 ${
+                                    isChecked
+                                      ? 'border-purple-600 bg-purple-100/80 text-purple-950 font-bold shadow-2xs'
+                                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                                   }`}
                                 >
-                                  <Icon name={isSelected ? 'check-circle' : 'circle'} className={`w-3.5 h-3.5 ${isSelected ? 'text-purple-700' : 'text-slate-400'}`} />
-                                  <span>{acc}</span>
+                                  <Icon name={isChecked ? 'check-circle' : 'circle'} className={`w-4 h-4 shrink-0 ${isChecked ? 'text-purple-700' : 'text-slate-400'}`} />
+                                  <span>{type}</span>
                                 </button>
                               );
                             })}
+                          </div>
+
+                          {disabilityTypes.includes('Other') && (
+                            <div className="pt-2 animate-fade-in">
+                              <Input
+                                label="Other — Please specify *"
+                                required
+                                value={disabilityOther}
+                                onChange={(e) => setDisabilityOther(e.target.value)}
+                                placeholder="Describe your specific disability type..."
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* ACCESSIBILITY ACCOMMODATIONS SELECTOR */}
+                        <div className="space-y-2 pt-2 border-t border-slate-200">
+                          <label className="font-bold text-slate-800 text-xs block">
+                            What accessibility support or workplace accommodations do you need? *
+                          </label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {[
+                              'Wheelchair accessible workplace',
+                              'Ramp / step-free access',
+                              'Accessible washroom',
+                              'Flexible working hours',
+                              'Work-from-home / remote work',
+                              'Sign language support',
+                              'Hearing assistance',
+                              'Screen reader compatible tools',
+                              'Large text / visual assistance',
+                              'Accessible transportation',
+                              'Seating accommodation',
+                              'Additional break requirements',
+                              'Other'
+                            ].map((need) => {
+                              const isChecked = accessibilityNeeds.includes(need);
+                              return (
+                                <button
+                                  key={need}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isChecked) {
+                                      setAccessibilityNeeds(accessibilityNeeds.filter((n) => n !== need));
+                                    } else {
+                                      setAccessibilityNeeds([...accessibilityNeeds, need]);
+                                    }
+                                  }}
+                                  className={`p-2.5 rounded-xl border text-left text-xs transition-all flex items-center gap-2.5 ${
+                                    isChecked
+                                      ? 'border-indigo-600 bg-indigo-100/80 text-indigo-950 font-bold shadow-2xs'
+                                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  <Icon name={isChecked ? 'check-circle' : 'circle'} className={`w-4 h-4 shrink-0 ${isChecked ? 'text-indigo-700' : 'text-slate-400'}`} />
+                                  <span>{need}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {accessibilityNeeds.includes('Other') && (
+                            <div className="pt-2 animate-fade-in">
+                              <Input
+                                label="Other Accommodation — Please specify *"
+                                required
+                                value={accessibilityOther}
+                                onChange={(e) => setAccessibilityOther(e.target.value)}
+                                placeholder="Describe other specific accommodation needed..."
+                              />
+                            </div>
+                          )}
+
+                          <div className="pt-2">
+                            <label className="font-bold text-slate-700 text-[11px] block mb-1">
+                              Additional accessibility requirements (Optional)
+                            </label>
+                            <textarea
+                              rows={2}
+                              value={additionalAccessibilityNotes}
+                              onChange={(e) => setAdditionalAccessibilityNotes(e.target.value)}
+                              placeholder="Any additional notes regarding workspace accessibility or support staff assistance..."
+                              className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 shadow-2xs"
+                            />
                           </div>
                         </div>
                       </div>

@@ -5,11 +5,16 @@ import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { useChat } from '../../context/ChatContext';
 
-export const WorkPassportCard = ({ workerUser, profile, compact = false, onNavigate }) => {
+export const WorkPassportCard = ({ workerUser, user, profile, compact = false, onNavigate }) => {
   const { t } = useTranslation();
   const { openChatWithUser } = useChat();
 
-  if (!workerUser) return null;
+  const activeWorker = workerUser || user || {
+    id: 'usr-wrk-1',
+    name: 'Sunita Sharma',
+    profession: 'Master Tailor & Designer',
+    city: 'Rajpura'
+  };
 
   const passport = profile?.workPassport || {
     totalCompletedJobs: 147,
@@ -82,20 +87,20 @@ export const WorkPassportCard = ({ workerUser, profile, compact = false, onNavig
         </div>
       </div>
 
-      {(workerUser.hasDisability || profile?.hasDisability) && (
+      {(activeWorker.hasDisability || profile?.hasDisability) && (
         <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs space-y-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="purple" className="text-[10px]">♿ PwD Inclusive Worker</Badge>
               <span className="font-bold text-purple-950">
-                {workerUser.disabilityType || profile?.disabilityType || 'Special Ability Artisan'}
+                {activeWorker.disabilityType || (activeWorker.disabilityTypes?.join(', ')) || profile?.disabilityType || 'Verified PwD Artisan'}
               </span>
             </div>
           </div>
-          {(workerUser.disabilityAccommodations?.length > 0 || profile?.disabilityAccommodations?.length > 0) && (
+          {(activeWorker.accessibilityNeeds?.length > 0 || activeWorker.disabilityAccommodations?.length > 0 || profile?.disabilityAccommodations?.length > 0) && (
             <p className="text-[11px] text-purple-800 leading-relaxed font-medium">
               <strong className="font-bold">Accommodations Needed:</strong>{' '}
-              {(workerUser.disabilityAccommodations || profile?.disabilityAccommodations || []).join(', ')}
+              {(activeWorker.accessibilityNeeds || activeWorker.disabilityAccommodations || profile?.disabilityAccommodations || []).join(', ')}
             </p>
           )}
         </div>
@@ -108,11 +113,11 @@ export const WorkPassportCard = ({ workerUser, profile, compact = false, onNavig
             fullWidth
             icon="message-square"
             onClick={() => openChatWithUser({
-              id: workerUser.id || 'usr-wrk-1',
-              name: workerUser.name || 'Sunita Sharma',
+              id: activeWorker.id || 'usr-wrk-1',
+              name: activeWorker.name || 'Sunita Sharma',
               role: 'worker',
-              avatar: workerUser.avatar,
-              profession: workerUser.profession || 'Master Tailor & Garment Designer'
+              avatar: activeWorker.avatar,
+              profession: activeWorker.profession || 'Master Tailor & Garment Designer'
             }, onNavigate)}
           >
             {t('chat.messageWorker') || 'Message Worker'}

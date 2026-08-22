@@ -74,7 +74,7 @@ export const SmartAuthModal = ({ isOpen, onClose, onNavigate }) => {
       phone: hPhone,
       address: hArea,
       city: hArea.split(',')[0] || 'Rajpura',
-      role: 'business',
+      role: 'household',
       clientType: 'household',
       industry: 'Household Client',
       email: `${(hName || 'user').toLowerCase().replace(/\s+/g, '')}@workconnect.com`,
@@ -84,7 +84,7 @@ export const SmartAuthModal = ({ isOpen, onClose, onNavigate }) => {
 
     registerCustomUser(userData);
     onClose();
-    if (onNavigate) onNavigate('/business/dashboard');
+    if (onNavigate) onNavigate('/household/dashboard');
   };
 
   const handleNextStep = (e) => {

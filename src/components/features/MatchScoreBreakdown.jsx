@@ -51,6 +51,14 @@ export const MatchScoreBreakdown = ({ match }) => {
           <span>Budget & Rate Fit (10%)</span>
           <span className="font-bold text-slate-900">{breakdown.budgetFitScore}/10</span>
         </div>
+        {(match.hasDisability || breakdown.accessibilityMatchScore !== undefined) && (
+          <div className="flex justify-between text-purple-700 font-semibold pt-1 border-t border-slate-200">
+            <span>♿ Accessibility & Workplace Fit</span>
+            <span className="font-bold text-purple-900">
+              {breakdown.accessibilityMatchScore !== undefined ? `${breakdown.accessibilityMatchScore}/10` : '10/10 (Compatible)'}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

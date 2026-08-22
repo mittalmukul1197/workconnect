@@ -79,7 +79,7 @@ export default function App() {
     if (currentPath === '/messages') pageElement = <MessagesPage onNavigate={navigate} />;
 
     // Household Navigation Routes
-    else if (currentPath === '/household/dashboard') pageElement = <HouseholdDashboard onNavigate={navigate} />;
+    else if (currentPath === '/household/dashboard' || currentPath === '/household' || currentPath === '/household/') pageElement = <HouseholdDashboard onNavigate={navigate} />;
     else if (currentPath === '/household/bookings') pageElement = <HouseholdBookingsPage onNavigate={navigate} />;
     else if (currentPath === '/household/profile') pageElement = <HouseholdProfilePage onNavigate={navigate} />;
     else if (currentPath.startsWith('/household/escrow')) {
@@ -88,7 +88,7 @@ export default function App() {
     }
 
     // Business Navigation Routes
-    else if (currentPath === '/business/dashboard') pageElement = <BusinessDashboard onNavigate={navigate} />;
+    else if (currentPath === '/business/dashboard' || currentPath === '/business' || currentPath === '/business/') pageElement = <BusinessDashboard onNavigate={navigate} />;
     else if (currentPath === '/business/post-work') pageElement = <PostWorkPage onNavigate={navigate} />;
     else if (currentPath === '/business/matches') pageElement = <MatchingPage onNavigate={navigate} />;
     else if (currentPath === '/business/workers') pageElement = <WorkerDirectory onNavigate={navigate} />;
@@ -100,7 +100,7 @@ export default function App() {
     else if (currentPath === '/business/profile') pageElement = <BusinessProfile onNavigate={navigate} />;
 
     // Worker Navigation Routes
-    else if (currentPath === '/worker/dashboard') pageElement = <WorkerDashboard onNavigate={navigate} />;
+    else if (currentPath === '/worker/dashboard' || currentPath === '/worker' || currentPath === '/worker/') pageElement = <WorkerDashboard onNavigate={navigate} />;
     else if (currentPath === '/worker/capacity') pageElement = <WorkerCapacityPage onNavigate={navigate} />;
     else if (currentPath === '/worker/work' || currentPath === '/worker/matches') pageElement = <FindWorkPage onNavigate={navigate} />;
     else if (currentPath === '/worker/projects' || currentPath === '/worker/history') pageElement = <WorkerProjectsPage onNavigate={navigate} />;
