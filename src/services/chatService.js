@@ -1,9 +1,104 @@
 // WorkConnect Real-Time Messaging & Chat Service
 // Supports local storage persistence, cross-tab real-time BroadcastChannel sync, and initial demo seed conversations.
+// Upgraded to support:
+// 1. Global real-time sync across different browsers/devices using Firebase Firestore if configured.
+// 2. Out-of-the-box local real-time sync across different browser profiles & different browsers (Chrome, Edge, etc.)
+//    using an integrated local WebSocket dev server attached directly to the Vite dev server!
+
+import { db, isFirebaseConfigured } from './firebaseClient';
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  getDocs, 
+  onSnapshot 
+} from 'firebase/firestore';
 
 const CONVERSATIONS_KEY = 'workconnect_conversations';
 const MESSAGES_KEY = 'workconnect_messages';
 const CHANNEL_NAME = 'workconnect_chat_channel';
+
+// Local WebSocket Server sync connection for cross-profile and cross-browser synchronization
+let localSocket = null;
+const socketCallbacks = new Set();
+
+const initLocalSocket = () => {
+  if (typeof window === 'undefined') return;
+  if (localSocket && (localSocket.readyState === WebSocket.CONNECTING || localSocket.readyState === WebSocket.OPEN)) {
+    return;
+  }
+
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${protocol}//${window.location.host}/chat-sync`;
+  
+  try {
+    localSocket = new WebSocket(wsUrl);
+    
+    localSocket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'NEW_MESSAGE') {
+          const { message, conversationId } = data;
+          
+          // Merge message into local storage
+          const rawMsgs = localStorage.getItem(MESSAGES_KEY);
+          const msgsMap = rawMsgs ? JSON.parse(rawMsgs) : {};
+          const currentList = msgsMap[conversationId] || [];
+          
+          if (!currentList.some((m) => m.id === message.id)) {
+            msgsMap[conversationId] = [...currentList, message];
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgsMap));
+          }
+          
+          // Trigger callbacks to update React state
+          socketCallbacks.forEach((cb) => cb({ type: 'SOCKET_UPDATE', conversationId }));
+        } else if (data.type === 'MESSAGES_READ') {
+          const { conversationId, userId } = data;
+          
+          // Sync read status locally
+          const rawMsgs = localStorage.getItem(MESSAGES_KEY);
+          const msgsMap = rawMsgs ? JSON.parse(rawMsgs) : {};
+          if (msgsMap[conversationId]) {
+            const now = new Date().toISOString();
+            msgsMap[conversationId] = msgsMap[conversationId].map((m) => {
+              if (m.receiverId === userId && !m.readAt) {
+                return { ...m, readAt: now };
+              }
+              return m;
+            });
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgsMap));
+          }
+          
+          // Trigger callbacks to update React state
+          socketCallbacks.forEach((cb) => cb({ type: 'SOCKET_UPDATE', conversationId }));
+        }
+      } catch (e) {
+        console.warn('Failed to parse socket message:', e);
+      }
+    };
+    
+    localSocket.onclose = () => {
+      // Reconnect after 3 seconds if disconnected
+      setTimeout(initLocalSocket, 3000);
+    };
+
+    localSocket.onerror = () => {
+      localSocket.close();
+    };
+  } catch (e) {
+    console.warn('Failed to initialize WebSocket client:', e);
+  }
+};
+
+const sendOverSocket = (data) => {
+  if (localSocket && localSocket.readyState === WebSocket.OPEN) {
+    try {
+      localSocket.send(JSON.stringify(data));
+    } catch (e) {
+      console.warn('Failed to send over local WebSocket:', e);
+    }
+  }
+};
 
 // BroadcastChannel for cross-tab instant synchronization
 let broadcastChannel = null;
@@ -157,8 +252,8 @@ const DEFAULT_MESSAGES = {
   ]
 };
 
-// Initialize Storage
-export const initChatStorage = () => {
+// Initialize Storage (and seed Firestore if configured)
+export const initChatStorage = async () => {
   if (typeof window === 'undefined') return;
   if (!localStorage.getItem(CONVERSATIONS_KEY)) {
     localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(DEFAULT_CONVERSATIONS));
@@ -181,6 +276,26 @@ export const initChatStorage = () => {
       }
     } catch (e) {
       console.warn('Storage cleanup notice:', e);
+    }
+  }
+
+  // Seeding default templates to Firebase Firestore
+  if (isFirebaseConfigured() && db) {
+    try {
+      const convsSnap = await getDocs(collection(db, 'conversations'));
+      if (convsSnap.empty) {
+        for (const c of DEFAULT_CONVERSATIONS) {
+          await setDoc(doc(db, 'conversations', c.id), c);
+        }
+        for (const cid of Object.keys(DEFAULT_MESSAGES)) {
+          for (const m of DEFAULT_MESSAGES[cid]) {
+            await setDoc(doc(db, 'messages', m.id), m);
+          }
+        }
+        console.log("🔥 Successfully seeded default chat template elements in Firestore!");
+      }
+    } catch (e) {
+      console.warn("Firebase seeding notice:", e);
     }
   }
 };
@@ -252,6 +367,14 @@ export const getOrCreateConversation = (currentUser, otherUser) => {
       }
     };
     localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(convs));
+    
+    if (isFirebaseConfigured() && db) {
+      try {
+        setDoc(doc(db, 'conversations', existing.id), existing);
+      } catch (e) {
+        console.error("Firebase Sync Error (getOrCreateConversation):", e);
+      }
+    }
     return existing;
   }
 
@@ -298,6 +421,15 @@ export const getOrCreateConversation = (currentUser, otherUser) => {
   localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgsMap));
 
   notifyBroadcast({ type: 'CONVERSATION_CREATED', conversation: newConv });
+
+  if (isFirebaseConfigured() && db) {
+    try {
+      setDoc(doc(db, 'conversations', newConvId), newConv);
+    } catch (e) {
+      console.error("Firebase Sync Error (new conversation):", e);
+    }
+  }
+
   return newConv;
 };
 
@@ -328,10 +460,11 @@ export const sendMessage = ({ conversationId, senderId, receiverId, text }) => {
   // Update conversation record
   const rawConvs = localStorage.getItem(CONVERSATIONS_KEY);
   let convs = rawConvs ? JSON.parse(rawConvs) : [];
+  let updatedConv = null;
   convs = convs.map((c) => {
     if (c.id === conversationId) {
       const currentUnread = c.unreadCounts ? (c.unreadCounts[receiverId] || 0) : 0;
-      return {
+      updatedConv = {
         ...c,
         lastMessage: trimmed,
         lastMessageTimestamp: now,
@@ -341,15 +474,27 @@ export const sendMessage = ({ conversationId, senderId, receiverId, text }) => {
           [receiverId]: currentUnread + 1
         }
       };
+      return updatedConv;
     }
     return c;
   });
   localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(convs));
 
-  notifyBroadcast({ type: 'NEW_MESSAGE', message: newMsg, conversationId });
+  const payload = { type: 'NEW_MESSAGE', message: newMsg, conversationId };
+  notifyBroadcast(payload);
+  sendOverSocket(payload);
 
-  // Optional Demo Auto-Reply helper for single tab demo testing
-  triggerDemoAutoReplyIfNeeded({ conversationId, senderId, receiverId, text: trimmed });
+  // Sync to Firebase if configured
+  if (isFirebaseConfigured() && db) {
+    try {
+      setDoc(doc(db, 'messages', newMsg.id), newMsg);
+      if (updatedConv) {
+        setDoc(doc(db, 'conversations', conversationId), updatedConv);
+      }
+    } catch (e) {
+      console.error("Firebase Sync Error (sendMessage):", e);
+    }
+  }
 
   return newMsg;
 };
@@ -363,17 +508,19 @@ export const markAsRead = (conversationId, userId) => {
   const rawConvs = localStorage.getItem(CONVERSATIONS_KEY);
   let convs = rawConvs ? JSON.parse(rawConvs) : [];
   let updated = false;
+  let updatedConv = null;
 
   convs = convs.map((c) => {
     if (c.id === conversationId && c.unreadCounts && c.unreadCounts[userId] > 0) {
       updated = true;
-      return {
+      updatedConv = {
         ...c,
         unreadCounts: {
           ...c.unreadCounts,
           [userId]: 0
         }
       };
+      return updatedConv;
     }
     return c;
   });
@@ -386,16 +533,35 @@ export const markAsRead = (conversationId, userId) => {
     const msgsMap = rawMsgs ? JSON.parse(rawMsgs) : {};
     if (msgsMap[conversationId]) {
       const now = new Date().toISOString();
+      const updatedMsgs = [];
       msgsMap[conversationId] = msgsMap[conversationId].map((m) => {
         if (m.receiverId === userId && !m.readAt) {
-          return { ...m, readAt: now };
+          const updatedMsg = { ...m, readAt: now };
+          updatedMsgs.push(updatedMsg);
+          return updatedMsg;
         }
         return m;
       });
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(msgsMap));
+
+      // Sync reads to Firebase if configured
+      if (isFirebaseConfigured() && db) {
+        try {
+          if (updatedConv) {
+            setDoc(doc(db, 'conversations', conversationId), updatedConv);
+          }
+          updatedMsgs.forEach((um) => {
+            setDoc(doc(db, 'messages', um.id), um);
+          });
+        } catch (e) {
+          console.error("Firebase Sync Error (markAsRead):", e);
+        }
+      }
     }
 
-    notifyBroadcast({ type: 'MESSAGES_READ', conversationId, userId });
+    const payload = { type: 'MESSAGES_READ', conversationId, userId };
+    notifyBroadcast(payload);
+    sendOverSocket(payload);
   }
 };
 
@@ -410,13 +576,10 @@ const notifyBroadcast = (eventData) => {
   }
 };
 
-// Helper for simulated responses - DISABLED as requested: only real messages sent by worker or business will be displayed
-const triggerDemoAutoReplyIfNeeded = ({ conversationId, senderId, receiverId, text }) => {
-  // Disabled: No automatic random messages should be generated.
-  return;
-};
-
 export const subscribeToChatEvents = (callback) => {
+  initLocalSocket();
+  socketCallbacks.add(callback);
+
   const handleStorage = (e) => {
     if (e.key === CONVERSATIONS_KEY || e.key === MESSAGES_KEY) {
       callback({ type: 'STORAGE_UPDATE' });
@@ -432,10 +595,79 @@ export const subscribeToChatEvents = (callback) => {
     broadcastChannel.addEventListener('message', handleBroadcast);
   }
 
+  // Firebase Real-time Subscription listeners if Firebase environment variables are configured
+  let unsubscribeMsgs = () => {};
+  let unsubscribeConvs = () => {};
+
+  if (isFirebaseConfigured() && db) {
+    try {
+      // 1. Subscribe to conversations updates
+      unsubscribeConvs = onSnapshot(collection(db, 'conversations'), (snapshot) => {
+        const fbConvs = [];
+        snapshot.forEach((docSnap) => {
+          fbConvs.push(docSnap.data());
+        });
+        if (fbConvs.length > 0) {
+          const raw = localStorage.getItem(CONVERSATIONS_KEY);
+          let localConvs = raw ? JSON.parse(raw) : [];
+          
+          fbConvs.forEach((fc) => {
+            const idx = localConvs.findIndex(lc => lc.id === fc.id);
+            if (idx > -1) {
+              localConvs[idx] = { ...localConvs[idx], ...fc };
+            } else {
+              localConvs.unshift(fc);
+            }
+          });
+          localStorage.setItem(CONVERSATIONS_KEY, JSON.stringify(localConvs));
+          callback({ type: 'FIREBASE_UPDATE' });
+        }
+      }, (err) => {
+        console.warn("Firebase Conversations subscription warning:", err);
+      });
+
+      // 2. Subscribe to messages updates
+      unsubscribeMsgs = onSnapshot(collection(db, 'messages'), (snapshot) => {
+        const fbMsgs = [];
+        snapshot.forEach((docSnap) => {
+          fbMsgs.push(docSnap.data());
+        });
+        if (fbMsgs.length > 0) {
+          const raw = localStorage.getItem(MESSAGES_KEY);
+          let localMsgsMap = raw ? JSON.parse(raw) : {};
+
+          fbMsgs.forEach((fm) => {
+            const cid = fm.conversationId;
+            if (!localMsgsMap[cid]) {
+              localMsgsMap[cid] = [];
+            }
+            const idx = localMsgsMap[cid].findIndex(lm => lm.id === fm.id);
+            if (idx > -1) {
+              localMsgsMap[cid][idx] = { ...localMsgsMap[cid][idx], ...fm };
+            } else {
+              localMsgsMap[cid].push(fm);
+            }
+            localMsgsMap[cid].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+          });
+          
+          localStorage.setItem(MESSAGES_KEY, JSON.stringify(localMsgsMap));
+          callback({ type: 'FIREBASE_UPDATE' });
+        }
+      }, (err) => {
+        console.warn("Firebase Messages subscription warning:", err);
+      });
+    } catch (e) {
+      console.error("Failed to initialize Firebase listeners:", e);
+    }
+  }
+
   return () => {
     window.removeEventListener('storage', handleStorage);
     if (broadcastChannel) {
       broadcastChannel.removeEventListener('message', handleBroadcast);
     }
+    unsubscribeConvs();
+    unsubscribeMsgs();
+    socketCallbacks.delete(callback);
   };
 };
