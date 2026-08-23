@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { Icon } from '../common/Icon';
 
 export const HouseholdCostEstimator = ({ onBookService }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('electrician');
   const [quantity, setQuantity] = useState(2);
   const [urgency, setUrgency] = useState('today');
@@ -12,45 +14,45 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
 
   const categories = {
     electrician: {
-      name: 'Electrician (Wiring & Switches)',
+      name: t('householdEstimator.electrician'),
       icon: 'zap',
-      unitLabel: 'Points / Fixtures',
+      unitLabel: t('householdEstimator.pointsFixtures'),
       basePricePerUnit: 180,
       visitFee: 150,
       estimatedMinutesPerUnit: 25,
       suggestedTitle: 'Electrical Wiring & Switchboard Repair'
     },
     plumber: {
-      name: 'Plumbing & Pipe Fitting',
+      name: t('householdEstimator.plumber'),
       icon: 'droplet',
-      unitLabel: 'Taps / Leaks',
+      unitLabel: t('householdEstimator.tapsLeaks'),
       basePricePerUnit: 150,
       visitFee: 120,
       estimatedMinutesPerUnit: 30,
       suggestedTitle: 'Plumbing Tap Leak Repair & Fixtures'
     },
     carpenter: {
-      name: 'Carpenter & Furniture Repair',
+      name: t('householdEstimator.carpenter'),
       icon: 'hammer',
-      unitLabel: 'Furniture Items / Locks',
+      unitLabel: t('householdEstimator.furnitureItemsLocks'),
       basePricePerUnit: 250,
       visitFee: 180,
       estimatedMinutesPerUnit: 45,
       suggestedTitle: 'Woodwork Repair & Lock Installation'
     },
     painter: {
-      name: 'Wall Touchup & Painting',
+      name: t('householdEstimator.painter'),
       icon: 'brush',
-      unitLabel: 'Walls / Rooms',
+      unitLabel: t('householdEstimator.wallsRooms'),
       basePricePerUnit: 350,
       visitFee: 200,
       estimatedMinutesPerUnit: 60,
       suggestedTitle: 'Single Room Touchup & Wall Paint'
     },
     labour: {
-      name: 'Heavy Lifting & House Shifting',
+      name: t('householdEstimator.labour'),
       icon: 'hard-hat',
-      unitLabel: 'Helpers Needed',
+      unitLabel: t('householdEstimator.helpersNeeded'),
       basePricePerUnit: 550,
       visitFee: 100,
       estimatedMinutesPerUnit: 120,
@@ -80,13 +82,13 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-black tracking-tight text-white">Household Smart Cost Estimator</h3>
-            <p className="text-xs text-indigo-200 font-medium">Calculate instant transparent estimates before booking local trade pros</p>
+            <h3 className="text-lg font-black tracking-tight text-white">{t('householdEstimator.title')}</h3>
+            <p className="text-xs text-indigo-200 font-medium">{t('householdEstimator.subtitle')}</p>
           </div>
         </div>
 
         <Badge variant="indigo" className="bg-indigo-500/20 text-indigo-300 border-indigo-400/30">
-          ⚡ Real-Time Price Engine
+          {t('householdEstimator.badge')}
         </Badge>
       </div>
 
@@ -94,7 +96,7 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
         {/* Left Inputs */}
         <div className="lg:col-span-7 space-y-4">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-indigo-200 uppercase tracking-wider">Select Household Trade Service</label>
+            <label className="text-xs font-bold text-indigo-200 uppercase tracking-wider">{t('householdEstimator.selectService')}</label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {Object.entries(categories).map(([key, cat]) => (
                 <button
@@ -131,15 +133,15 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-indigo-200 uppercase tracking-wider">Required Timeline</label>
+              <label className="text-xs font-bold text-indigo-200 uppercase tracking-wider">{t('householdEstimator.timeline')}</label>
               <select
                 value={urgency}
                 onChange={(e) => setUrgency(e.target.value)}
                 className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500"
               >
-                <option value="today">📅 Standard Slot (Today)</option>
-                <option value="immediate">⚡ Rapid SOS Urgent (&lt; 1 Hour)</option>
-                <option value="scheduled">🗓️ Scheduled Next Day</option>
+                <option value="today">{t('householdEstimator.todaySlot')}</option>
+                <option value="immediate">{t('householdEstimator.urgentSos')}</option>
+                <option value="scheduled">{t('householdEstimator.scheduledNextDay')}</option>
               </select>
             </div>
           </div>
@@ -153,7 +155,7 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
               className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 bg-slate-900 border-slate-700"
             />
             <label htmlFor="materials" className="cursor-pointer">
-              Include estimated material costs (wiring, tape, fittings, replacement parts)
+              {t('householdEstimator.includeMaterials')}
             </label>
           </div>
         </div>
@@ -161,25 +163,25 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
         {/* Right Output Summary Card */}
         <div className="lg:col-span-5 p-5 rounded-2xl bg-gradient-to-b from-slate-900 to-indigo-950 border border-indigo-500/40 space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
-            <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300">Estimated Cost Breakdown</span>
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-300">{t('householdEstimator.breakdownTitle')}</span>
             <div className="space-y-2 text-xs text-slate-300 border-b border-slate-800 pb-3">
               <div className="flex justify-between">
-                <span>Labor ({quantity} × ₹{currentCat.basePricePerUnit})</span>
+                <span>{t('householdEstimator.laborCost', { count: quantity, rate: currentCat.basePricePerUnit })}</span>
                 <span className="font-bold text-white">₹{subtotal}</span>
               </div>
               <div className="flex justify-between">
-                <span>Inspection & Doorstep Visit Fee</span>
+                <span>{t('householdEstimator.visitFee')}</span>
                 <span className="font-bold text-white">₹{visitFee}</span>
               </div>
               {materialsNeeded && (
                 <div className="flex justify-between text-indigo-300">
-                  <span>Estimated Spare Parts / Fittings</span>
+                  <span>{t('householdEstimator.spareParts')}</span>
                   <span className="font-bold text-indigo-200">₹{materialEst}</span>
                 </div>
               )}
               {urgency === 'immediate' && (
                 <div className="flex justify-between text-amber-400">
-                  <span>Urgent Rapid Dispatch Charge</span>
+                  <span>{t('householdEstimator.urgentCharge')}</span>
                   <span className="font-bold">+25%</span>
                 </div>
               )}
@@ -187,11 +189,11 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
 
             <div className="flex items-baseline justify-between pt-1">
               <div>
-                <span className="text-xs text-slate-400 block font-medium">Total Estimated Budget</span>
+                <span className="text-xs text-slate-400 block font-medium">{t('householdEstimator.totalEstimate')}</span>
                 <span className="text-2xl font-black text-emerald-400">₹{totalEstimate}</span>
               </div>
               <span className="text-xs text-indigo-300 font-bold bg-indigo-950/80 px-2.5 py-1 rounded-lg border border-indigo-800">
-                ⏱️ ~{totalTimeMinutes} mins work
+                {t('householdEstimator.estimatedTime', { mins: totalTimeMinutes })}
               </span>
             </div>
           </div>
@@ -204,7 +206,7 @@ export const HouseholdCostEstimator = ({ onBookService }) => {
             onClick={() => onBookService && onBookService(currentCat, totalEstimate)}
             className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black shadow-lg shadow-emerald-500/20"
           >
-            Book Now at Estimated Rate (₹{totalEstimate})
+            {t('householdEstimator.bookNowRate', { amount: totalEstimate })}
           </Button>
         </div>
       </div>

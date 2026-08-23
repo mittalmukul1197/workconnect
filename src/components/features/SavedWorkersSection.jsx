@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
 import { Icon } from '../common/Icon';
 
 export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
+  const { t } = useTranslation();
   const [favoriteWorkers, setFavoriteWorkers] = useState([
     {
       id: 'wrk-101',
@@ -52,9 +54,9 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
         <div>
           <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
             <Icon name="heart" className="w-5 h-5 text-rose-500 fill-rose-500" />
-            <span>My Favorite Household Artisans</span>
+            <span>{t('savedWorkers.title')}</span>
           </h2>
-          <p className="text-xs text-slate-500 font-medium">Rehire verified local trade pros who have previously served your doorstep</p>
+          <p className="text-xs text-slate-500 font-medium">{t('savedWorkers.subtitle')}</p>
         </div>
       </div>
 
@@ -78,13 +80,13 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
                 </div>
                 <p className="text-[11px] text-slate-500 truncate">{wrk.trade}</p>
                 <Badge variant="indigo" className="text-[9px] mt-1 bg-indigo-50 text-indigo-700 border-indigo-200">
-                  {wrk.completedJobsForUser} Doorstep Visits Completed
+                  {t('savedWorkers.doorstepVisitsCompleted', { count: wrk.completedJobsForUser })}
                 </Badge>
               </div>
             </div>
 
             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700">
-              <span>Standard Rate:</span>
+              <span>{t('savedWorkers.standardRate')}</span>
               <span className="text-emerald-700">{wrk.rate}</span>
             </div>
 
@@ -95,9 +97,9 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
                 icon="message-square"
                 onClick={() => onNavigate && onNavigate('/messages')}
                 className="text-xs py-2 font-bold"
-                title="Chat Worker"
+                title={t('savedWorkers.messageWorker')}
               >
-                Message Worker
+                {t('savedWorkers.messageWorker')}
               </Button>
               <Button
                 size="sm"
@@ -106,7 +108,7 @@ export const SavedWorkersSection = ({ onNavigate, onRebook }) => {
                 onClick={() => onRebook && onRebook(wrk)}
                 className="text-xs py-2 bg-indigo-600 hover:bg-indigo-700 shadow-xs font-bold"
               >
-                Re-Hire
+                {t('savedWorkers.reHire')}
               </Button>
             </div>
           </Card>

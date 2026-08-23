@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -8,6 +9,7 @@ import { WorkConnectEscrowVault } from '../../components/features/WorkConnectEsc
 import { MOCK_PROJECTS } from '../../data/mockData';
 
 export const ProjectDetailPage = ({ projectId, onNavigate }) => {
+  const { t } = useTranslation();
   const [project, setProject] = useState(MOCK_PROJECTS[0]);
   const { openChatWithUser } = useChat();
 
@@ -26,10 +28,10 @@ export const ProjectDetailPage = ({ projectId, onNavigate }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-slate-900">{project.title}</h1>
-          <p className="text-xs text-slate-500 font-medium">Project ID: {project.id} • Target Quota: {project.totalQuantity} {project.unitLabel}</p>
+          <p className="text-xs text-slate-500 font-medium">{t('projectDetail.projectId', { id: project.id })} • {t('projectDetail.targetQuota', { count: project.totalQuantity, unit: project.unitLabel })}</p>
         </div>
         <Button size="sm" variant="outline" icon="arrow-left" onClick={() => onNavigate('/business/projects')}>
-          Back to Projects
+          {t('projectDetail.backProjects')}
         </Button>
       </div>
 
@@ -48,7 +50,7 @@ export const ProjectDetailPage = ({ projectId, onNavigate }) => {
       <SelfHealingSimulator project={project} onRebalanced={handleRebalanced} />
 
       <Card borderVariant="indigo" className="p-6 space-y-4 bg-white shadow-sm">
-        <h3 className="font-bold text-sm text-slate-900 border-b border-slate-100 pb-2">Assigned Workforce Allocation</h3>
+        <h3 className="font-bold text-sm text-slate-900 border-b border-slate-100 pb-2">{t('projectDetail.assignedWorkforce')}</h3>
         <div className="space-y-3">
           {project.assignedWorkers.map((w, idx) => (
             <div key={idx} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
@@ -69,7 +71,7 @@ export const ProjectDetailPage = ({ projectId, onNavigate }) => {
                     profession: 'Assigned Garment Specialist'
                   }, onNavigate)}
                 >
-                  Message
+                  {t('projectDetail.message')}
                 </Button>
               </div>
             </div>

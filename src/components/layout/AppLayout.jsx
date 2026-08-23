@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { Icon } from '../common/Icon';
 
 export const AppLayout = ({ currentPath, onNavigate, children }) => {
+  const { t } = useTranslation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
 
@@ -53,7 +55,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchSubmit}
-                placeholder={isBusiness ? "Search workers by skill, location..." : "Search available doorstep services & workers..."}
+                placeholder={isBusiness ? t('appLayout.searchBusinessPlaceholder') : t('appLayout.searchHouseholdPlaceholder')}
                 className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-indigo-500 w-64 lg:w-80 shadow-2xs"
               />
             </div>
@@ -81,9 +83,9 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
                   <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                     <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                       <Icon name="bell" className="w-4 h-4 text-indigo-600" />
-                      <span>Notifications</span>
+                      <span>{t('appLayout.notifications')}</span>
                     </h4>
-                    <span className="text-[11px] text-slate-500">{notifications.length} total</span>
+                    <span className="text-[11px] text-slate-500">{notifications.length} {t('appLayout.total')}</span>
                   </div>
 
                   <div className="max-h-72 overflow-y-auto space-y-2">
@@ -118,7 +120,7 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
                 className="w-7 h-7 rounded-lg object-cover border border-slate-200"
               />
               <span className="text-xs font-bold text-slate-800 hidden md:inline truncate max-w-[100px]">
-                {user?.name?.split(' ')[0] || 'Profile'}
+                {user?.name?.split(' ')[0] || t('appLayout.profile')}
               </span>
             </div>
 
@@ -128,10 +130,10 @@ export const AppLayout = ({ currentPath, onNavigate, children }) => {
                 onNavigate('/login');
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all shadow-xs"
-              title="Logout from account"
+              title={t('nav.logout') || 'Logout'}
             >
               <Icon name="log-out" className="w-4 h-4 text-rose-600" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t('nav.logout')}</span>
             </button>
           </div>
         </header>

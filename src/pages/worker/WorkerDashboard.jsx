@@ -8,10 +8,21 @@ import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { WorkPassportCard } from '../../components/features/WorkPassportCard';
 import { MOCK_OPPORTUNITIES } from '../../data/mockData';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 
 export const WorkerDashboard = ({ onNavigate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
+
+  const dynamicTexts = [
+    '25 pcs available today',
+    '147 tasks completed',
+    'High rating from boutiques',
+    'Frequent local employers',
+    'Matched with your capacity & location',
+    ...MOCK_OPPORTUNITIES.map((o) => o.title)
+  ];
+  const dynamicTrans = useAutoTranslate(dynamicTexts, i18n.language);
 
   const workerUser = {
     id: user?.id || 'usr-wrk-1',
@@ -49,10 +60,10 @@ export const WorkerDashboard = ({ onNavigate }) => {
 
       {/* QUICK STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title={t('worker.dailyCapacity')} value="30 pcs/day" subtext="25 pcs available today" icon="zap" variant="emerald" />
-        <StatCard title={t('worker.onTimeRate')} value="96%" subtext="147 tasks completed" icon="check-circle" variant="primary" />
-        <StatCard title={t('worker.qualityScore')} value="94 / 100" subtext="High rating from boutiques" icon="star" variant="amber" />
-        <StatCard title={t('worker.repeatClients')} value="8" subtext="Frequent local employers" icon="users" variant="sky" />
+        <StatCard title={t('worker.dailyCapacity')} value="30 pcs/day" subtext={dynamicTrans['25 pcs available today'] || '25 pcs available today'} icon="zap" variant="emerald" />
+        <StatCard title={t('worker.onTimeRate')} value="96%" subtext={dynamicTrans['147 tasks completed'] || '147 tasks completed'} icon="check-circle" variant="primary" />
+        <StatCard title={t('worker.qualityScore')} value="94 / 100" subtext={dynamicTrans['High rating from boutiques'] || 'High rating from boutiques'} icon="star" variant="amber" />
+        <StatCard title={t('worker.repeatClients')} value="8" subtext={dynamicTrans['Frequent local employers'] || 'Frequent local employers'} icon="users" variant="sky" />
       </div>
 
       {/* WORK PASSPORT SUMMARY & OPPORTUNITY FEED */}
@@ -61,7 +72,7 @@ export const WorkerDashboard = ({ onNavigate }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-extrabold text-slate-900">{t('worker.opportunitiesTitle')}</h2>
-              <p className="text-xs text-slate-500 font-medium">Matched with your capacity & location</p>
+              <p className="text-xs text-slate-500 font-medium">{dynamicTrans['Matched with your capacity & location'] || 'Matched with your capacity & location'}</p>
             </div>
             <Button variant="outline" size="sm" onClick={() => onNavigate('/worker/work')}>
               {t('common.viewAll')}
@@ -69,27 +80,31 @@ export const WorkerDashboard = ({ onNavigate }) => {
           </div>
 
           <div className="space-y-4">
-            {MOCK_OPPORTUNITIES.map((opp) => (
-              <Card key={opp.id} borderVariant="emerald" className="p-5 space-y-4 bg-white shadow-sm hover:shadow-md">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-sm text-slate-900">{opp.title}</h3>
-                      <Badge variant="indigo">{opp.matchScore}% Match</Badge>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-0.5">Posted by {opp.clientName} • {opp.distance}</p>
-                  </div>
-                  <span className="text-sm font-black text-emerald-700">{opp.offeredRate}</span>
-                </div>
+            {MOCK_OPPORTUNITIES.map((opp) => {
+              const displayTitle = dynamicTrans[opp.title] || opp.title;
 
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-slate-600">Capacity Needed: <strong>{opp.requiredCapacity}</strong></span>
-                  <Button size="sm" variant="secondary" icon="check-circle" onClick={() => onNavigate('/worker/projects')}>
-                    {t('worker.acceptOrder')}
-                  </Button>
-                </div>
-              </Card>
-            ))}
+              return (
+                <Card key={opp.id} borderVariant="emerald" className="p-5 space-y-4 bg-white shadow-sm hover:shadow-md">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-sm text-slate-900">{displayTitle}</h3>
+                        <Badge variant="indigo">{opp.matchScore || 95}% Match</Badge>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Posted by {opp.businessName || opp.clientName || 'Crafted Threads'} • {opp.distanceKm ? `${opp.distanceKm} km` : '3 km'}</p>
+                    </div>
+                    <span className="text-sm font-black text-emerald-700">{opp.budgetPerUnit || opp.offeredRate}</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-xs text-slate-600">Capacity Needed: <strong>{opp.requiredDailyCapacityPerWorker || 10} units/day</strong></span>
+                    <Button size="sm" variant="secondary" icon="check-circle" onClick={() => onNavigate('/worker/projects')}>
+                      {t('worker.acceptOrder')}
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </div>
 

@@ -14,30 +14,30 @@ export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }
   const householdNav = [
     { path: '/household/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
     { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
-    { path: '/household/bookings', label: 'My Bookings', icon: 'clock', badge: 'Doorstep' },
-    { path: '/household/profile', label: 'Household Profile', icon: 'user' }
+    { path: '/household/bookings', label: t('sidebar.myBookings') || 'My Bookings', icon: 'clock', badge: 'Doorstep' },
+    { path: '/household/profile', label: t('sidebar.householdProfile') || 'Household Profile', icon: 'user' }
   ];
 
   const businessNav = [
     { path: '/business/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
     { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
     { path: '/business/post-work', label: t('nav.postWork'), icon: 'plus', badge: 'AI Parser' },
-    { path: '/business/matches', label: 'AI Matches', icon: 'sparkles' },
+    { path: '/business/matches', label: t('sidebar.aiMatches') || 'AI Matches', icon: 'sparkles' },
     { path: '/business/workers', label: t('nav.workerDirectory'), icon: 'users' },
-    { path: '/business/projects', label: 'My Projects', icon: 'briefcase' },
-    { path: '/business/history', label: 'Work History', icon: 'clock' },
-    { path: '/business/profile', label: 'Company Profile', icon: 'building' }
+    { path: '/business/projects', label: t('sidebar.myProjects') || 'My Projects', icon: 'briefcase' },
+    { path: '/business/history', label: t('sidebar.workHistory') || 'Work History', icon: 'clock' },
+    { path: '/business/profile', label: t('sidebar.companyProfile') || 'Company Profile', icon: 'building' }
   ];
 
   const workerNav = [
     { path: '/worker/dashboard', label: t('nav.dashboard'), icon: 'bar-chart' },
     { path: '/messages', label: t('chat.messages') || 'Messages', icon: 'message-square', badge: unreadCount > 0 ? `${unreadCount} New` : null },
     { path: '/worker/work', label: t('nav.findWork'), icon: 'search', badge: 'Reverse' },
-    { path: '/worker/capacity', label: 'My Capacity', icon: 'zap' },
-    { path: '/worker/matches', label: 'Matched Jobs', icon: 'sparkles' },
-    { path: '/worker/projects', label: 'Assigned Work', icon: 'briefcase' },
-    { path: '/worker/profile', label: 'Work Passport', icon: 'shield-check' },
-    { path: '/worker/history', label: 'Earning History', icon: 'clock' }
+    { path: '/worker/capacity', label: t('sidebar.myCapacity') || 'My Capacity', icon: 'zap' },
+    { path: '/worker/matches', label: t('sidebar.matchedJobs') || 'Matched Jobs', icon: 'sparkles' },
+    { path: '/worker/projects', label: t('sidebar.assignedWork') || 'Assigned Work', icon: 'briefcase' },
+    { path: '/worker/profile', label: t('workPassport.title'), icon: 'shield-check' },
+    { path: '/worker/history', label: t('sidebar.earningHistory') || 'Earning History', icon: 'clock' }
   ];
 
   const navItems = isHousehold ? householdNav : isBusiness ? businessNav : workerNav;
@@ -88,7 +88,7 @@ export const Sidebar = ({ currentPath, onNavigate, isMobileOpen, onCloseMobile }
 
           <nav className="space-y-1">
             <div className="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-              {isHousehold ? 'Household Portal' : isBusiness ? 'Business Management' : 'Worker Portal'}
+              {isHousehold ? t('sidebar.householdPortal') : isBusiness ? t('sidebar.businessManagement') : t('sidebar.workerPortal')}
             </div>
             {navItems.map((item) => {
               const isActive = currentPath === item.path;

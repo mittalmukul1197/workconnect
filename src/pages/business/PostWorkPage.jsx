@@ -5,12 +5,15 @@ import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { parseNaturalLanguageRequirementAsync } from '../../services/workDecomposer';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 
 export const PostWorkPage = ({ onNavigate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [nlPrompt, setNlPrompt] = useState('I need 2 labours for paint in my hall i can give them 700/day');
   const [parsed, setParsed] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const dynamicTrans = useAutoTranslate([parsed?.workType, parsed?.requiredSkill], i18n.language);
 
   const handleParse = async () => {
     setIsLoading(true);
@@ -114,11 +117,13 @@ export const PostWorkPage = ({ onNavigate }) => {
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 text-[10px] uppercase font-bold">{t('postWork.workType')}</span>
-                  <p className="font-bold text-slate-900 mt-0.5">{parsed.workType}</p>
+                  <p className="font-bold text-slate-900 mt-0.5">{dynamicTrans[parsed.workType] || parsed.workType}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 text-[10px] uppercase font-bold">{t('postWork.requiredSkill')}</span>
-                  <p className={`font-bold mt-0.5 ${parsed.needsClarification ? 'text-amber-700' : 'text-indigo-700'}`}>{parsed.requiredSkill || parsed.skillName}</p>
+                  <p className={`font-bold mt-0.5 ${parsed.needsClarification ? 'text-amber-700' : 'text-indigo-700'}`}>
+                    {dynamicTrans[parsed.requiredSkill || parsed.skillName] || parsed.requiredSkill || parsed.skillName}
+                  </p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 text-[10px] uppercase font-bold">{t('postWork.workersNeeded')}</span>

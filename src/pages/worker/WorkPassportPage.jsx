@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { WorkPassportCard } from '../../components/features/WorkPassportCard';
 
 export const WorkPassportPage = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const workerUser = {
@@ -19,7 +21,7 @@ export const WorkPassportPage = ({ onNavigate }) => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl mx-auto text-slate-900">
-      <h1 className="text-2xl font-black text-slate-900">Public Work Passport Profile</h1>
+      <h1 className="text-2xl font-black text-slate-900">{t('workPassport.title')}</h1>
       <WorkPassportCard workerUser={workerUser} compact={false} />
     </div>
   );
