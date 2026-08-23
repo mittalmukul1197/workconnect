@@ -70,7 +70,7 @@ const DEFAULT_DEMO_WORKER = {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('workconnect_user');
+      const saved = sessionStorage.getItem('workconnect_user') || localStorage.getItem('workconnect_user');
       if (!saved || saved === 'undefined') return null;
       return JSON.parse(saved);
     } catch {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(() => {
     try {
-      return localStorage.getItem('workconnect_token') || null;
+      return sessionStorage.getItem('workconnect_token') || localStorage.getItem('workconnect_token') || null;
     } catch {
       return null;
     }
@@ -89,14 +89,30 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     try {
       if (user) {
+        sessionStorage.setItem('workconnect_user', JSON.stringify(user));
         localStorage.setItem('workconnect_user', JSON.stringify(user));
       } else {
+        sessionStorage.removeItem('workconnect_user');
         localStorage.removeItem('workconnect_user');
       }
     } catch (e) {
       console.error('Error persisting user to localStorage:', e);
     }
   }, [user]);
+
+  useEffect(() => {
+    try {
+      if (token) {
+        sessionStorage.setItem('workconnect_token', token);
+        localStorage.setItem('workconnect_token', token);
+      } else {
+        sessionStorage.removeItem('workconnect_token');
+        localStorage.removeItem('workconnect_token');
+      }
+    } catch (e) {
+      console.error('Error persisting token:', e);
+    }
+  }, [token]);
 
   const loginAsDemoBusiness = () => {
     setUser(DEFAULT_DEMO_BUSINESS);
@@ -201,6 +217,7 @@ export const AuthProvider = ({ children }) => {
     setUser((prev) => {
       const updated = { ...prev, ...updatedFields };
       try {
+        sessionStorage.setItem('workconnect_user', JSON.stringify(updated));
         localStorage.setItem('workconnect_user', JSON.stringify(updated));
       } catch (e) {
         console.error('Error saving updated user profile:', e);
@@ -213,10 +230,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setToken(null);
     try {
+      sessionStorage.removeItem('workconnect_user');
+      sessionStorage.removeItem('workconnect_token');
       localStorage.removeItem('workconnect_user');
       localStorage.removeItem('workconnect_token');
     } catch (e) {
-      console.error('Error clearing localStorage on logout:', e);
+      console.error('Error clearing storage on logout:', e);
     }
   };
 
