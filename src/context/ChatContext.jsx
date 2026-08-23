@@ -23,8 +23,8 @@ export const ChatProvider = ({ children }) => {
   const reloadData = useCallback(() => {
     initChatStorage();
     if (!user?.id) {
-      setConversations([]);
-      setMessages([]);
+      setConversations((prev) => prev.length > 0 ? [] : prev);
+      setMessages((prev) => prev.length > 0 ? [] : prev);
       return;
     }
 
@@ -32,7 +32,16 @@ export const ChatProvider = ({ children }) => {
     if (activeConversationId) {
       apiMarkAsRead(activeConversationId, user.id);
       const msgs = getMessages(activeConversationId);
-      setMessages(msgs);
+      
+      setMessages((prev) => {
+        // Compare message list to avoid redundant renders
+        const prevIds = prev.map((m) => `${m.id}::${m.timestamp}::${m.readAt}`).join(',');
+        const nextIds = msgs.map((m) => `${m.id}::${m.timestamp}::${m.readAt}`).join(',');
+        if (prevIds !== nextIds) {
+          return msgs;
+        }
+        return prev;
+      });
     }
 
     const userConvs = getConversations(user.id);
@@ -47,7 +56,15 @@ export const ChatProvider = ({ children }) => {
       return c;
     });
 
-    setConversations(updatedUserConvs);
+    setConversations((prev) => {
+      // Simple change detection for conversations
+      const prevIdsStr = prev.map(c => `${c.id}::${c.lastMessageTimestamp}::${c.unreadCounts?.[user.id] || 0}`).join(',');
+      const nextIdsStr = updatedUserConvs.map(c => `${c.id}::${c.lastMessageTimestamp}::${c.unreadCounts?.[user.id] || 0}`).join(',');
+      if (prevIdsStr !== nextIdsStr) {
+        return updatedUserConvs;
+      }
+      return prev;
+    });
   }, [user?.id, activeConversationId]);
 
   useEffect(() => {
@@ -59,12 +76,21 @@ export const ChatProvider = ({ children }) => {
     reloadData();
   }, [user?.id, reloadData]);
 
-  // Subscribe to real-time cross-tab and storage events
+  // Subscribe to real-time cross-tab and storage events, plus a polling fallback
   useEffect(() => {
     const unsubscribe = subscribeToChatEvents(() => {
       reloadData();
     });
-    return () => unsubscribe();
+
+    // 1-second polling to ensure sync even if BroadcastChannel or storage events are blocked by browser policies
+    const pollInterval = setInterval(() => {
+      reloadData();
+    }, 1000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
   }, [reloadData]);
 
   // Handle setting active conversation

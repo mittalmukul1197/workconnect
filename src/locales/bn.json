@@ -103,7 +103,7 @@
   "business": {
     "welcome": "স্বাগতম",
     "businessOwner": "ব্যবসা মালিক",
-    "postNewWork": "+ নতুন কাজ পোস্ট করুন",
+    "postNewWork": "নতুন কাজ পোস্ট করুন",
     "activeProjects": "চলমান প্রকল্প",
     "recommendedWorkers": "সুপারিশকৃত কারিগর",
     "productionProgress": "উৎপাদন অগ্রগতি",
