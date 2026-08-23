@@ -6,6 +6,8 @@ import paTranslations from './locales/pa.json';
 import mrTranslations from './locales/mr.json';
 import bnTranslations from './locales/bn.json';
 import taTranslations from './locales/ta.json';
+import { getCached, setCached, isCached } from './services/translationCache';
+import { translateText } from './services/translationService';
 
 const savedLanguage = localStorage.getItem('workconnectLanguage') || 'en';
 
@@ -24,6 +26,25 @@ i18n
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false
+    },
+    saveMissing: true,
+    missingKeyHandler: (lngs, ns, key, fallbackValue) => {
+      lngs.forEach(async (lng) => {
+        if (lng === 'en') return;
+        if (!fallbackValue || fallbackValue === key) return;
+
+        if (isCached(lng, fallbackValue)) {
+          const cached = getCached(lng, fallbackValue);
+          i18n.addResource(lng, ns, key, cached);
+          return;
+        }
+
+        const translated = await translateText(fallbackValue, lng);
+        if (translated && translated !== fallbackValue) {
+          setCached(lng, fallbackValue, translated);
+          i18n.addResource(lng, ns, key, translated);
+        }
+      });
     }
   });
 

@@ -123,7 +123,7 @@ export const Navbar = ({ onNavigate }) => {
                 title={t('nav.logout') || 'Logout'}
               >
                 <Icon name="log-out" className="w-3.5 h-3.5 text-rose-600" />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline">{t('nav.logout')}</span>
               </button>
             </div>
           ) : (

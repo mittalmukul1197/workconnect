@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -10,6 +11,7 @@ import { MOCK_OPPORTUNITIES, OPEN_WORK_OFFERS } from '../../data/mockData';
 import { rankJobsForWorker } from '../../services/matchingEngine';
 
 export const FindWorkPage = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { openChatWithUser } = useChat();
   const { agreeAsWorker } = useEscrow();
@@ -68,11 +70,11 @@ export const FindWorkPage = ({ onNavigate }) => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900">Work Discovery Marketplace</h1>
-            <Badge variant="success">AI Reverse Capacity Matching</Badge>
+            <h1 className="text-2xl font-black text-slate-900">{t('findWork.title')}</h1>
+            <Badge variant="success">{t('findWork.badge')}</Badge>
           </div>
           <p className="text-xs text-slate-600 font-medium">
-            Custom recommendations for <strong className="text-slate-900">{currentWorker.name}</strong> ({currentWorker.profession || currentWorker.primarySkill || 'Artisan'})
+            {t('findWork.subtitle')} <strong className="text-slate-900">{currentWorker.name}</strong> ({currentWorker.profession || currentWorker.primarySkill || 'Artisan'})
           </p>
         </div>
 
@@ -86,7 +88,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            AI Matched Jobs ({rankedOpportunities.length})
+            {t('findWork.aiTab')} ({rankedOpportunities.length})
           </button>
           <button
             onClick={() => setActiveTab('open-budget-offers')}
@@ -96,7 +98,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Client Budget Offers ({rankedOffers.filter((o) => o.status === 'pending').length} Open)
+            {t('findWork.budgetTab')} ({rankedOffers.filter((o) => o.status === 'pending').length} {t('findWork.open')})
           </button>
         </div>
       </div>
@@ -108,11 +110,11 @@ export const FindWorkPage = ({ onNavigate }) => {
             <div className="flex items-center gap-2 font-medium">
               <Icon name="sparkles" className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>
-                Jobs are dynamically scored for your profile ({currentWorker.primarySkill || 'Trade'} • {currentWorker.dailyCapacity || 'Capacity'} • {currentWorker.city || 'Location'}).
+                {t('findWork.aiMatchedInfo')} ({currentWorker.primarySkill || 'Trade'} • {currentWorker.dailyCapacity || 'Capacity'} • {currentWorker.city || 'Location'}).
               </span>
             </div>
             {currentWorker.hasDisability && (
-              <Badge variant="purple" className="text-[10px] shrink-0">♿ PwD Inclusive Filter On</Badge>
+              <Badge variant="purple" className="text-[10px] shrink-0">{t('findWork.pwdFilter')}</Badge>
             )}
           </div>
 
@@ -131,10 +133,10 @@ export const FindWorkPage = ({ onNavigate }) => {
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-bold text-base text-slate-900">{opp.title}</h3>
-                        <Badge variant={isBest ? 'success' : 'indigo'}>{match.totalScore}% AI Match</Badge>
+                        <Badge variant={isBest ? 'success' : 'indigo'}>{match.totalScore}% {t('findWork.inclusivePreference')}</Badge>
                         {match.isInclusivePreference && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-200">
-                            ♿ Inclusive Workplace
+                            {t('findWork.inclusiveWorkplace')}
                           </span>
                         )}
                       </div>
@@ -144,7 +146,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Pay Rate</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('findWork.payRate')}</span>
                       <span className="text-lg font-black text-emerald-700">{opp.budgetPerUnit}</span>
                     </div>
                   </div>
@@ -152,7 +154,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                   {/* Why Recommended Reasons */}
                   {match.reasons && match.reasons.length > 0 && (
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Why this job is recommended for you</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{t('findWork.whyRecommended')}</span>
                       <div className="flex flex-wrap gap-2 pt-0.5">
                         {match.reasons.map((r, i) => (
                           <span key={i} className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
@@ -165,7 +167,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                   )}
 
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                    <span className="text-slate-500 font-medium">Deadline: <strong className="text-slate-800">{opp.deadlineDays} Days</strong></span>
+                    <span className="text-slate-500 font-medium">{t('findWork.deadline')} <strong className="text-slate-800">{opp.deadlineDays} {t('findWork.daysLabel')}</strong></span>
                     <div className="flex items-center gap-2">
                       <Button
                         size="sm"
@@ -178,10 +180,10 @@ export const FindWorkPage = ({ onNavigate }) => {
                           profession: opp.title
                         }, onNavigate)}
                       >
-                        Message Employer
+                        {t('findWork.messageEmployer')}
                       </Button>
                       <Button size="sm" variant="primary" icon="check" onClick={() => onNavigate('/worker/projects')}>
-                        Accept Work Order
+                        {t('findWork.acceptWork')}
                       </Button>
                     </div>
                   </div>
@@ -198,7 +200,7 @@ export const FindWorkPage = ({ onNavigate }) => {
           <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-800 flex items-center justify-between">
             <div className="flex items-center gap-2 font-medium">
               <Icon name="sparkles" className="w-4 h-4 text-emerald-600" />
-              <span>Clients have posted doorstep work requirements with custom budgets. You choose which to accept!</span>
+              <span>{t('findWork.budgetOffersInfo')}</span>
             </div>
           </div>
 
@@ -217,15 +219,15 @@ export const FindWorkPage = ({ onNavigate }) => {
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-bold text-base text-slate-900">{opp.title}</h3>
-                        <Badge variant="indigo">{match.totalScore}% AI Match</Badge>
+                        <Badge variant="indigo">{match.totalScore}% {t('findWork.inclusivePreference')}</Badge>
                         <Badge variant="primary">{opp.skillRequired}</Badge>
                       </div>
                       <p className="text-xs text-slate-500 mt-1">
-                        Posted by <strong className="text-slate-800">{opp.requesterName}</strong> • {opp.city} ({opp.area}) • Urgency: <span className="text-amber-700 font-bold">{opp.urgency}</span>
+                        {t('findWork.postedBy')} <strong className="text-slate-800">{opp.requesterName}</strong> • {opp.city} ({opp.area}) • {t('findWork.urgency')} <span className="text-amber-700 font-bold">{opp.urgency}</span>
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Offered Budget</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('findWork.offeredBudget')}</span>
                       <span className="text-lg font-black text-emerald-700">{opp.offeredBudget}</span>
                     </div>
                   </div>
@@ -241,12 +243,12 @@ export const FindWorkPage = ({ onNavigate }) => {
                     <div className="text-xs text-slate-600">
                       {opp.status === 'accepted' ? (
                         <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                          <Icon name="check-circle" className="w-4 h-4 text-emerald-600" /> You accepted this work order!
+                          <Icon name="check-circle" className="w-4 h-4 text-emerald-600" /> {t('findWork.accepted')}
                         </span>
                       ) : opp.status === 'declined' ? (
-                        <span className="text-rose-700 font-medium">You declined this offer.</span>
+                        <span className="text-rose-700 font-medium">{t('findWork.declined')}</span>
                       ) : (
-                        <span>Review requirement and accept to confirm booking.</span>
+                        <span>{t('findWork.reviewAndAccept')}</span>
                       )}
                     </div>
 
@@ -263,7 +265,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                             profession: opp.title || 'Hirer'
                           }, onNavigate)}
                         >
-                          Message Hirer
+                          {t('findWork.messageHirer')}
                         </Button>
                         <Button
                           size="sm"
@@ -271,7 +273,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                           onClick={() => handleWorkerDecline(opp.id)}
                           className="text-rose-600 hover:bg-rose-50"
                         >
-                          Decline
+                          {t('findWork.decline')}
                         </Button>
                         <Button
                           size="sm"
@@ -279,7 +281,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                           icon="check"
                           onClick={() => handleWorkerAccept(opp.id)}
                         >
-                          Accept Offer
+                          {t('findWork.accept')}
                         </Button>
                       </div>
                     )}
@@ -297,7 +299,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                             profession: opp.title || 'Hirer'
                           }, onNavigate)}
                         >
-                          Message Hirer
+                          {t('findWork.messageHirer')}
                         </Button>
                         <Button
                           size="sm"
@@ -305,7 +307,7 @@ export const FindWorkPage = ({ onNavigate }) => {
                           icon="arrow-right"
                           onClick={() => onNavigate('/worker/projects')}
                         >
-                          View Active Project
+                          {t('findWork.viewProject')}
                         </Button>
                       </div>
                     )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
@@ -6,6 +7,7 @@ import { Button } from '../../components/common/Button';
 import { Icon } from '../../components/common/Icon';
 
 export const WorkerProfilePage = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const worker = {
@@ -39,7 +41,7 @@ export const WorkerProfilePage = ({ onNavigate }) => {
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-black text-white">{worker.name}</h1>
               <Badge variant="emerald" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-xs">
-                🔒 Verified Artisan Credential
+                {t('workerProfile.badge')}
               </Badge>
             </div>
             <p className="text-xs text-cyan-200/80 font-semibold">{worker.profession} • {worker.city}</p>
@@ -53,7 +55,7 @@ export const WorkerProfilePage = ({ onNavigate }) => {
           onClick={() => onNavigate('/worker/profile')}
           className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-slate-950 font-black shadow-lg shadow-emerald-400/30 border border-emerald-200 text-xs px-5 py-2.5 rounded-2xl shrink-0"
         >
-          View Work Passport Card
+          {t('workerProfile.viewPassport')}
         </Button>
       </div>
 
@@ -61,7 +63,7 @@ export const WorkerProfilePage = ({ onNavigate }) => {
       <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 text-xs font-semibold flex items-center gap-3 shadow-xs">
         <Icon name="lock" className="w-5 h-5 text-amber-600 shrink-0" />
         <p className="text-[11px] leading-relaxed text-amber-950">
-          <strong className="font-extrabold text-amber-900">Authenticated Platform Record:</strong> To protect employer trust and workforce authenticity, worker identity credentials, skill ratings, and accessibility requirements are verified and locked by WorkConnect KYC Officers.
+          <strong className="font-extrabold text-amber-900">{t('workerProfile.authNotice')}</strong> {t('workerProfile.authDesc')}
         </p>
       </div>
 
@@ -69,7 +71,7 @@ export const WorkerProfilePage = ({ onNavigate }) => {
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
             <Icon name="user" className="w-5 h-5 text-emerald-600" />
-            <span>Worker Profile & Artisan Details</span>
+            <span>{t('workerProfile.title')}</span>
           </h2>
           <Badge variant="indigo" className="text-xs font-extrabold px-3 py-1">
             {worker.idVerified}
@@ -79,37 +81,37 @@ export const WorkerProfilePage = ({ onNavigate }) => {
         {/* Read-Only Information Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Full Legal Name</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.legalName')}</span>
             <p className="font-extrabold text-slate-900 text-sm">{worker.name}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Artisan Trade Specialization</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.tradeName')}</span>
             <p className="font-extrabold text-emerald-700 text-sm">{worker.profession}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Contact Phone Number</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.contactPhone')}</span>
             <p className="font-extrabold text-slate-900">{worker.phone}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Verified Email Address</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.verifiedEmail')}</span>
             <p className="font-extrabold text-slate-900">{worker.email}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Daily Production Capacity</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.dailyCapacity')}</span>
             <p className="font-extrabold text-emerald-700">{worker.dailyCapacity}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Standard Work Rate</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.workRate')}</span>
             <p className="font-extrabold text-emerald-700">{worker.expectedRate}</p>
           </div>
 
           <div className="sm:col-span-2 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Registered Doorstep Address</span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">{t('workerProfile.doorstepAddress')}</span>
             <p className="font-extrabold text-slate-900">{worker.address}</p>
           </div>
         </div>
@@ -120,20 +122,20 @@ export const WorkerProfilePage = ({ onNavigate }) => {
             <div>
               <h3 className="font-extrabold text-xs uppercase text-purple-950 tracking-wider flex items-center gap-2">
                 <Icon name="shield-check" className="w-4 h-4 text-purple-600" />
-                <span>Disability & Workplace Accessibility Record</span>
+                <span>{t('workerProfile.disabilityRecord')}</span>
               </h3>
               <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                Authenticated records used exclusively for accessibility-matched job recommendations
+                {t('workerProfile.disabilityRecordDesc')}
               </p>
             </div>
 
             {worker.hasDisability ? (
               <Badge variant="purple" className="text-xs px-3 py-1 font-extrabold">
-                ♿ Person with Disability (PwD)
+                {t('workerProfile.pwdBadge')}
               </Badge>
             ) : (
               <Badge variant="success" className="text-xs px-3 py-1 font-extrabold">
-                Standard / Abled
+                {t('workerProfile.abled')}
               </Badge>
             )}
           </div>
@@ -143,14 +145,14 @@ export const WorkerProfilePage = ({ onNavigate }) => {
               <div className="flex items-center gap-2 bg-purple-100/70 p-3 rounded-xl border border-purple-200">
                 <Icon name="check-circle" className="w-4 h-4 text-purple-700 shrink-0" />
                 <span className="font-extrabold text-purple-950">
-                  Verified Disability Category: {worker.disabilityType}
+                  {t('workerProfile.verifiedCategory')} {worker.disabilityType}
                 </span>
               </div>
 
               {worker.disabilityAccommodations?.length > 0 && (
                 <div className="space-y-1.5">
                   <span className="font-bold block text-slate-700 text-[11px] uppercase tracking-wider">
-                    Requested Workplace Accommodations:
+                    {t('workerProfile.accommodations')}
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {worker.disabilityAccommodations.map((acc, idx) => (
@@ -164,14 +166,14 @@ export const WorkerProfilePage = ({ onNavigate }) => {
 
               {worker.additionalAccessibilityNotes && (
                 <div className="p-3 rounded-xl bg-white border border-slate-200 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Additional Requirement Notes</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">{t('workerProfile.additionalNotes')}</span>
                   <p className="text-xs text-slate-700 font-medium italic">"{worker.additionalAccessibilityNotes}"</p>
                 </div>
               )}
             </div>
           ) : (
             <p className="text-xs text-slate-600 font-medium">
-              No physical disability accommodations indicated for this artisan profile.
+              {t('workerProfile.noDisability')}
             </p>
           )}
         </div>

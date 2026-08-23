@@ -135,10 +135,10 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm leading-snug">
-              Interactive <span className="text-shining-gold-rainbow font-black drop-shadow-md">Household Bookings</span>
+              {t('householdBookings.title')}
             </h1>
             <p className="text-xs sm:text-sm text-cyan-100 font-medium leading-relaxed">
-              Live real-time worker tracking, security OTPs, platform escrow management & rating controls
+              {t('householdBookings.subtitle')}
             </p>
           </div>
 
@@ -147,7 +147,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
             className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-xl shadow-cyan-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-cyan-200 shrink-0"
           >
             <Icon name="plus" className="w-4 h-4 text-slate-950" />
-            <span>Book New Service</span>
+            <span>{t('householdBookings.newBooking')}</span>
           </button>
         </div>
       </div>
@@ -163,7 +163,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            All Bookings ({bookingsList.length})
+            {t('householdBookings.filterAll')} ({bookingsList.length})
           </button>
           <button
             onClick={() => setFilterTab('active')}
@@ -173,7 +173,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            ⚡ Active & En Route ({bookingsList.filter((b) => b.status !== 'Completed').length})
+            ⚡ {t('householdBookings.filterActive')} ({bookingsList.filter((b) => b.status !== 'Completed').length})
           </button>
           <button
             onClick={() => setFilterTab('completed')}
@@ -183,7 +183,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            ✅ Completed ({bookingsList.filter((b) => b.status === 'Completed').length})
+            ✅ {t('householdBookings.filterCompleted')} ({bookingsList.filter((b) => b.status === 'Completed').length})
           </button>
         </div>
 
@@ -294,16 +294,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                     onClick={() => onNavigate && onNavigate('/messages')}
                     className="text-xs font-bold"
                   >
-                    Message Worker
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    icon="message-square"
-                    onClick={() => onNavigate('/messages')}
-                    className="text-xs font-bold"
-                  >
-                    Chat
+                    {t('householdBookings.callWorker')}
                   </Button>
                 </div>
               </div>
@@ -311,7 +302,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 flex flex-col justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase text-slate-500 tracking-wider block">
-                    Service Destination Address & Security
+                    {t('householdBookings.otpInstruction')}
                   </span>
                   <p className="text-xs font-bold text-slate-900 mt-1">{bk.address}</p>
                 </div>
@@ -319,7 +310,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between gap-2">
                   {/* Security OTP Toggle */}
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold block uppercase">Doorstep Security OTP</span>
+                    <span className="text-[10px] text-slate-400 font-bold block uppercase">{t('householdBookings.securityOtp')}</span>
                     {otpVisibleId === bk.id ? (
                       <span className="text-lg font-black tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200">
                         {bk.otp}
@@ -330,7 +321,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                         className="text-xs font-extrabold text-indigo-600 hover:underline flex items-center gap-1"
                       >
                         <Icon name="shield" className="w-3.5 h-3.5" />
-                        Click to Reveal Doorstop OTP
+                        {t('householdBookings.showOtp')}
                       </button>
                     )}
                   </div>
@@ -343,7 +334,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                       onClick={() => setLiveMapBooking(bk)}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs"
                     >
-                      🗺️ Live Map Track
+                      {t('householdBookings.trackLive')}
                     </Button>
                   )}
                 </div>
@@ -354,7 +345,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-indigo-700 flex items-center gap-1">
-                  🛡️ Platform Escrow: <strong className="text-slate-900">{bk.escrowStatus}</strong>
+                  {t('householdBookings.escrowSection')} <strong className="text-slate-900">{bk.escrowStatus}</strong>
                 </span>
               </div>
 
@@ -366,7 +357,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                   onClick={() => onNavigate && onNavigate(`/household/escrow/${bk.id}`)}
                   className="font-bold border-indigo-200 text-indigo-700 hover:bg-indigo-50"
                 >
-                  Manage Escrow & Sign-Off
+                  {t('householdBookings.viewEscrow')}
                 </Button>
 
                 {bk.status === 'Completed' ? (
@@ -378,7 +369,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                       onClick={() => setRatingModalBooking(bk)}
                       className="bg-amber-500 hover:bg-amber-600 text-white font-bold"
                     >
-                      {reviewSubmittedId === bk.id ? 'Review Submitted ✓' : 'Rate & Tip Worker ⭐'}
+                      {reviewSubmittedId === bk.id ? t('householdBookings.reviewSubmitted') : t('householdBookings.rateWorker')}
                     </Button>
 
                     <Button
@@ -391,7 +382,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                       }}
                       className="font-bold"
                     >
-                      Re-Book Worker
+                      {t('householdDashboard.bookDoorstepPro')}
                     </Button>
                   </>
                 ) : (
@@ -424,7 +415,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-200 to-indigo-300 tracking-tight">
-                      Live Doorstep GPS Radar Track
+                      {t('householdBookings.liveTracking')}
                     </h3>
                     <Badge variant="emerald" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/40 text-[10px] py-0.5 animate-pulse">
                       📡 5G Active Telemetry
@@ -441,13 +432,13 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                     onClick={() => setMapMode('cyber')}
                     className={`px-2.5 py-1 rounded-lg transition-all ${mapMode === 'cyber' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
                   >
-                    🗺️ Cyber
+                    {t('householdBookings.mapMode')} Cyber
                   </button>
                   <button
                     onClick={() => setMapMode('satellite')}
                     className={`px-2.5 py-1 rounded-lg transition-all ${mapMode === 'satellite' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
                   >
-                    🛰️ Satellite
+                    Satellite
                   </button>
                 </div>
 
@@ -485,7 +476,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                   </div>
                   <div className="flex items-center gap-2 pt-1">
                     <span className="text-emerald-400 font-black text-xs bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800">
-                      ETA: {workerEta} Mins ({workerDistance} km away)
+                      {t('householdBookings.eta')} {workerEta} Mins ({workerDistance} km away)
                     </span>
                     <span className="text-indigo-300 text-[10px] font-bold">🚀 24 km/h</span>
                   </div>
@@ -515,12 +506,12 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                   </div>
 
                   <div className="flex items-center gap-1.5 bg-indigo-950/90 px-3 py-1 rounded-lg border border-indigo-500/40 text-amber-300 font-black animate-pulse">
-                    <span>🛵 Worker En Route ({workerDistance} km)</span>
+                    <span>🛵 {t('householdBookings.workerDistance')} ({workerDistance} km)</span>
                   </div>
 
                   <div className="flex items-center gap-1.5 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
                     <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span>🏠 Doorstep</span>
+                    <span>🏠 {t('householdProfile.doorstepAddress')}</span>
                   </div>
                 </div>
               </div>
@@ -528,7 +519,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               {/* Bottom Security & Quick Call Telemetry */}
               <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs bg-slate-900/95 backdrop-blur-xl p-3 rounded-2xl border border-indigo-500/30">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-300 font-medium">Doorstep Security OTP:</span>
+                  <span className="text-[11px] text-slate-300 font-medium">{t('householdBookings.securityOtp')}</span>
                   <span className="text-base font-black text-amber-300 bg-amber-950/80 px-3 py-0.5 rounded-lg border border-amber-600/50 tracking-widest shadow-inner">
                     {liveMapBooking.otp}
                   </span>
@@ -546,7 +537,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                         : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-slate-700'
                     }`}
                   >
-                    {driverAlerted ? '🔔 Driver Notified!' : '📢 Alert Driver'}
+                    {driverAlerted ? t('householdBookings.driverAlerted') : t('householdBookings.alertDriver')}
                   </button>
 
                   <Button
@@ -559,7 +550,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
                     }}
                     className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-slate-950 font-black border-none shadow-md shadow-cyan-400/20 text-xs px-3 py-1.5"
                   >
-                    Message Worker
+                    {t('householdBookings.callWorker')}
                   </Button>
                 </div>
               </div>
@@ -573,13 +564,11 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               onClick={() => setLiveMapBooking(null)}
               className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-indigo-600/30 border border-indigo-400/30"
             >
-              Close Live Radar Map
+              {t('common.close')}
             </Button>
           </div>
         </div>
       )}
-
-
 
       {/* RATING & TIP MODAL */}
       {ratingModalBooking && (
@@ -596,8 +585,8 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               <div className="w-16 h-16 rounded-full mx-auto p-1 bg-amber-100 text-amber-600 flex items-center justify-center text-2xl font-black">
                 ⭐
               </div>
-              <h3 className="text-xl font-black text-slate-900">Rate & Tip {ratingModalBooking.workerName}</h3>
-              <p className="text-xs text-slate-500 font-medium">How was your doorstep service experience?</p>
+              <h3 className="text-xl font-black text-slate-900">{t('householdBookings.ratingTitle')} {ratingModalBooking.workerName}</h3>
+              <p className="text-xs text-slate-500 font-medium">{t('householdBookings.ratingDesc')}</p>
             </div>
 
             <div className="flex justify-center gap-2">
@@ -614,7 +603,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">Add Tip for Worker (Optional)</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">{t('householdBookings.addTip')}</label>
               <div className="grid grid-cols-4 gap-2">
                 {[0, 20, 50, 100].map((amt) => (
                   <button
@@ -634,12 +623,12 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">Write Review Note</label>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block">{t('householdBookings.reviewComment')}</label>
               <textarea
                 rows={2}
                 value={reviewComment}
                 onChange={(e) => setReviewComment(e.target.value)}
-                placeholder="Great punctuality, fixed switchboard cleanly..."
+                placeholder={t('householdBookings.reviewPlaceholder')}
                 className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-indigo-500"
               />
             </div>
@@ -655,7 +644,7 @@ export const HouseholdBookingsPage = ({ onNavigate }) => {
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
             >
-              Submit Rating & Tip (₹{tipAmount})
+              {t('householdBookings.submitReview')} (₹{tipAmount})
             </Button>
           </div>
         </div>

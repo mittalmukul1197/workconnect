@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -7,17 +8,19 @@ import { WorkConnectEscrowVault } from '../../components/features/WorkConnectEsc
 import { MOCK_PROJECTS } from '../../data/mockData';
 
 export const BusinessProjects = ({ onNavigate }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6 animate-fade-in text-slate-900">
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50/80 via-white to-purple-50/80 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900">Active Business Projects</h1>
-            <Badge variant="primary">Platform Managed</Badge>
+            <h1 className="text-2xl font-black text-slate-900">{t('projects.title')}</h1>
+            <Badge variant="primary">{t('projects.badge')}</Badge>
           </div>
           <p className="text-xs text-slate-600 font-medium">
-            Monitor real-time team output, sign deal contracts, deposit funds into middleman escrow, and run AI workforce rebalancing.
+            {t('projects.subtitle')}
           </p>
         </div>
 
@@ -27,7 +30,7 @@ export const BusinessProjects = ({ onNavigate }) => {
           onClick={() => onNavigate('/business/post-work')}
           className="shadow-md shadow-indigo-600/20 shrink-0"
         >
-          Post New Requirement
+          {t('projects.postNew')}
         </Button>
       </div>
 
@@ -43,10 +46,10 @@ export const BusinessProjects = ({ onNavigate }) => {
                   <Badge variant="success">{proj.status}</Badge>
                 </div>
                 <p className="text-xs text-slate-500 font-medium mt-0.5">
-                  Target Quota: <strong className="text-slate-900">{proj.totalQuantity || 100} {proj.unitLabel || 'pieces'}</strong> • <strong className="text-indigo-700 font-extrabold">{proj.workerCount || 3} Workers Assigned</strong> • Deadline: <strong className="text-amber-700 font-extrabold">{proj.deadlineDate || '26 Aug 2026'}</strong>
+                  {t('projects.targetQuota')} <strong className="text-slate-900">{proj.totalQuantity || 100} {proj.unitLabel || 'pieces'}</strong> • <strong className="text-indigo-700 font-extrabold">{proj.workerCount || 3} {t('projects.workersAssigned')}</strong> • {t('projects.deadline')} <strong className="text-amber-700 font-extrabold">{proj.deadlineDate || '26 Aug 2026'}</strong>
                 </p>
                 <p className="text-xs text-slate-600 font-bold mt-1">
-                  Allocated Budget: <strong className="text-emerald-700 text-sm font-black">{proj.offeredBudget || '₹3,000'}</strong> <span className="text-[11px] font-normal text-slate-500">({proj.ratePerUnit || '₹30 / piece'})</span>
+                  {t('projects.allocatedBudget')} <strong className="text-emerald-700 text-sm font-black">{proj.offeredBudget || '₹3,000'}</strong> <span className="text-[11px] font-normal text-slate-500">({proj.ratePerUnit || '₹30 / piece'})</span>
                 </p>
               </div>
 
@@ -57,14 +60,14 @@ export const BusinessProjects = ({ onNavigate }) => {
                 onClick={() => onNavigate(`/business/project/${proj.id}`)}
                 className="shrink-0 shadow-sm"
               >
-                Open Project Tracker & Simulator →
+                {t('projects.openTracker')}
               </Button>
             </div>
 
             {/* Production Progress Bar */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
               <div className="flex justify-between font-bold">
-                <span className="text-slate-700">Real-Time Production Output</span>
+                <span className="text-slate-700">{t('projects.realTimeOutput')}</span>
                 <span className="text-indigo-600">{proj.completedQuantity} / {proj.totalQuantity} {proj.unitLabel} Completed ({Math.round((proj.completedQuantity / proj.totalQuantity) * 100)}%)</span>
               </div>
               <div className="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
@@ -79,7 +82,7 @@ export const BusinessProjects = ({ onNavigate }) => {
             <div className="pt-2">
               <h4 className="font-extrabold text-xs text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Icon name="shield" className="w-4 h-4 text-emerald-600" />
-                <span>Financial Contract & Middleman Escrow Vault</span>
+                <span>{t('projects.escrowSection')}</span>
               </h4>
               <WorkConnectEscrowVault
                 dealId={proj.id}

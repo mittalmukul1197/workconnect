@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../components/layout/Navbar';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
@@ -8,8 +9,11 @@ import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 import { WorkPassportCard } from '../../components/features/WorkPassportCard';
 import { useAuth } from '../../context/AuthContext';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
 
 export const WorkerOnboardingPage = ({ onNavigate }) => {
+  const { t, i18n } = useTranslation();
+  const currentLang = i18n.language;
   const { registerCustomUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -126,10 +130,52 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
     'Salon & Beauty Specialist'
   ];
 
+  const disabilityOptions = [
+    'Locomotor / Physical Disability',
+    'Visual Disability',
+    'Hearing Disability',
+    'Speech Disability',
+    'Intellectual Disability',
+    'Specific Learning Disability',
+    'Mental Health / Psychosocial Disability',
+    'Multiple Disabilities',
+    'Other'
+  ];
+
+  const accommodationOptions = [
+    'Wheelchair accessible workplace',
+    'Ramp / step-free access',
+    'Accessible washroom',
+    'Flexible working hours',
+    'Work-from-home / remote work',
+    'Sign language support',
+    'Hearing assistance',
+    'Screen reader compatible tools',
+    'Large text / visual assistance',
+    'Accessible transportation',
+    'Seating accommodation',
+    'Additional break requirements',
+    'Other'
+  ];
+
+  const shiftOptions = [
+    'Full Day (9:00 AM - 6:00 PM)',
+    'Morning Shift (8:00 AM - 2:00 PM)',
+    'Evening Shift (2:00 PM - 8:00 PM)',
+    'Home-based Workshop',
+    'On-site Doorstep Delivery'
+  ];
+
+  // Auto Translate all options dynamically
+  const transSkills = useAutoTranslate(skillOptions, currentLang);
+  const transDisabilities = useAutoTranslate(disabilityOptions, currentLang);
+  const transAccommodations = useAutoTranslate(accommodationOptions, currentLang);
+  const transShifts = useAutoTranslate(shiftOptions, currentLang);
+
   const previewWorker = {
     id: 'usr-wrk-new',
     name: fullName || 'Sunita Sharma',
-    profession: `${primarySkill} Specialist`,
+    profession: `${transSkills[primarySkill] || primarySkill} Specialist`,
     city: city || 'Rajpura',
     state: 'Punjab',
     avatar: gender === 'Male'
@@ -138,15 +184,15 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
     hasDisability,
     disabilityTypes: hasDisability ? disabilityTypes : [],
     accessibilityNeeds: hasDisability ? accessibilityNeeds : [],
-    disabilityType: hasDisability ? (disabilityTypes.length > 0 ? disabilityTypes.join(', ') : 'Person with Disability') : '',
-    disabilityAccommodations: hasDisability ? accessibilityNeeds : [],
+    disabilityType: hasDisability ? (disabilityTypes.length > 0 ? disabilityTypes.map(t => transDisabilities[t] || t).join(', ') : 'Person with Disability') : '',
+    disabilityAccommodations: hasDisability ? accessibilityNeeds.map(n => transAccommodations[n] || n) : [],
     gender
   };
 
   const previewProfile = {
     experienceYears,
     skills: [
-      { name: primarySkill, score: 96 },
+      { name: transSkills[primarySkill] || primarySkill, score: 96 },
       { name: 'Quality Craftsmanship', score: 94 }
     ],
     workPassport: {
@@ -170,12 +216,12 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
         {/* Progress Bar & Header */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700">
-            <span>Step {currentStep} of {totalSteps}</span>
+            <span>{t('onboarding.stepOf', { current: currentStep, total: totalSteps })}</span>
             <span>•</span>
-            <span>Worker Profile Setup</span>
+            <span>{t('onboarding.workerBadge')}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black text-slate-900">Build Your Work Passport Profile</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-slate-900">{t('onboarding.workerTitle')}</h1>
 
           {/* Stepper Dots */}
           <div className="flex items-center justify-center gap-1.5 pt-2">
@@ -207,13 +253,13 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="user" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 1: Basic Personal Details</h3>
-                      <p className="text-[11px] text-slate-500">Full name and primary contact details</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step1_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step1_worker_desc')}</p>
                     </div>
                   </div>
 
                   <Input
-                    label="Full Name *"
+                    label={t('onboarding.fullName')}
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -222,7 +268,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Input
-                      label="Phone Number *"
+                      label={t('phoneNumber')}
                       type="tel"
                       required
                       value={phone}
@@ -230,7 +276,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       placeholder="e.g. +91 98765 11111"
                     />
                     <Input
-                      label="Email Address *"
+                      label={t('email')}
                       type="email"
                       required
                       value={email}
@@ -238,7 +284,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       placeholder="e.g. worker@demo.com"
                     />
                     <Select
-                      label="Gender *"
+                      label={t('gender')}
                       value={gender}
                       onChange={(e) => setGender(e.target.value)}
                       options={['Female', 'Male', 'Non-Binary', 'Prefer not to say']}
@@ -255,14 +301,14 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="shield-check" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 2: Verification, Work Zone & Disability</h3>
-                      <p className="text-[11px] text-slate-500">Government identity, travel radius & disability accessibility</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step2_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step2_worker_desc')}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Select
-                      label="ID Verification Status *"
+                      label={t('onboarding.idVerification')}
                       value={idVerified}
                       onChange={(e) => setIdVerified(e.target.value)}
                       options={[
@@ -273,7 +319,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                     />
 
                     <Select
-                      label="Preferred Travel Radius *"
+                      label={t('onboarding.travelRadius')}
                       value={workRadiusKm}
                       onChange={(e) => setWorkRadiusKm(e.target.value)}
                       options={['5 km radius', '10 km radius', '15 km radius', 'Entire City & District']}
@@ -286,15 +332,15 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <div className="flex items-center justify-between">
                         <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
                           <Icon name="shield-check" className="w-4 h-4 text-purple-600" />
-                          <span>Disability & Accessibility</span>
+                          <span>{t('onboarding.disabilitySection')}</span>
                         </h4>
-                        <Badge variant="purple" className="text-[10px]">Inclusive Workforce</Badge>
+                        <Badge variant="purple" className="text-[10px]">{t('onboarding.inclusiveWorkforce')}</Badge>
                       </div>
                       <p className="text-[11px] text-slate-600 font-medium">
-                        Do you have a disability or any accessibility needs?
+                        {t('onboarding.disabilityQuestion')}
                       </p>
                       <p className="text-[10px] text-indigo-600 font-semibold pt-0.5">
-                        💡 Sharing this information helps WorkConnect recommend suitable and accessible work opportunities.
+                        {t('onboarding.disabilityTip')}
                       </p>
                     </div>
 
@@ -317,7 +363,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                           }`}>
                             {!hasDisability && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
-                          <span className="text-xs font-bold">No</span>
+                          <span className="text-xs font-bold">{t('onboarding.disabilityNo')}</span>
                         </div>
                       </button>
 
@@ -340,7 +386,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                           }`}>
                             {hasDisability && <div className="w-2 h-2 rounded-full bg-white" />}
                           </div>
-                          <span className="text-xs font-bold">Yes (Person with Disability - PwD)</span>
+                          <span className="text-xs font-bold">{t('onboarding.disabilityYes')}</span>
                         </div>
                       </button>
                     </div>
@@ -351,20 +397,10 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                         {/* DISABILITY TYPE SELECTOR */}
                         <div className="space-y-2">
                           <label className="font-bold text-slate-800 text-xs block">
-                            Please select your disability type *
+                            {t('onboarding.disabilityTypeLabel')}
                           </label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {[
-                              'Locomotor / Physical Disability',
-                              'Visual Disability',
-                              'Hearing Disability',
-                              'Speech Disability',
-                              'Intellectual Disability',
-                              'Specific Learning Disability',
-                              'Mental Health / Psychosocial Disability',
-                              'Multiple Disabilities',
-                              'Other'
-                            ].map((type) => {
+                            {disabilityOptions.map((type) => {
                               const isChecked = disabilityTypes.includes(type);
                               return (
                                 <button
@@ -384,7 +420,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                                   }`}
                                 >
                                   <Icon name={isChecked ? 'check-circle' : 'circle'} className={`w-4 h-4 shrink-0 ${isChecked ? 'text-purple-700' : 'text-slate-400'}`} />
-                                  <span>{type}</span>
+                                  <span>{transDisabilities[type] || type}</span>
                                 </button>
                               );
                             })}
@@ -406,24 +442,10 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                         {/* ACCESSIBILITY ACCOMMODATIONS SELECTOR */}
                         <div className="space-y-2 pt-2 border-t border-slate-200">
                           <label className="font-bold text-slate-800 text-xs block">
-                            What accessibility support or workplace accommodations do you need? *
+                            {t('onboarding.accessibilityLabel')}
                           </label>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {[
-                              'Wheelchair accessible workplace',
-                              'Ramp / step-free access',
-                              'Accessible washroom',
-                              'Flexible working hours',
-                              'Work-from-home / remote work',
-                              'Sign language support',
-                              'Hearing assistance',
-                              'Screen reader compatible tools',
-                              'Large text / visual assistance',
-                              'Accessible transportation',
-                              'Seating accommodation',
-                              'Additional break requirements',
-                              'Other'
-                            ].map((need) => {
+                            {accommodationOptions.map((need) => {
                               const isChecked = accessibilityNeeds.includes(need);
                               return (
                                 <button
@@ -443,7 +465,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                                   }`}
                                 >
                                   <Icon name={isChecked ? 'check-circle' : 'circle'} className={`w-4 h-4 shrink-0 ${isChecked ? 'text-indigo-700' : 'text-slate-400'}`} />
-                                  <span>{need}</span>
+                                  <span>{transAccommodations[need] || need}</span>
                                 </button>
                               );
                             })}
@@ -463,7 +485,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
 
                           <div className="pt-2">
                             <label className="font-bold text-slate-700 text-[11px] block mb-1">
-                              Additional accessibility requirements (Optional)
+                              {t('onboarding.additionalAccessibility')}
                             </label>
                             <textarea
                               rows={2}
@@ -488,20 +510,26 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="zap" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 3: Trade Skill & Work Category</h3>
-                      <p className="text-[11px] text-slate-500">Select your core profession & secondary skills</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step3_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step3_worker_desc')}</p>
                     </div>
                   </div>
 
-                  <Select
-                    label="Primary Skill / Trade Category *"
-                    value={primarySkill}
-                    onChange={(e) => setPrimarySkill(e.target.value)}
-                    options={skillOptions}
-                  />
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.primarySkillLabel')}</label>
+                    <select
+                      value={primarySkill}
+                      onChange={(e) => setPrimarySkill(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500"
+                    >
+                      {skillOptions.map((opt) => (
+                        <option key={opt} value={opt}>{transSkills[opt] || opt}</option>
+                      ))}
+                    </select>
+                  </div>
 
                   <Input
-                    label="Secondary Skills (Comma Separated) *"
+                    label={t('onboarding.secondarySkillsLabel')}
                     required
                     value={secondarySkills}
                     onChange={(e) => setSecondarySkills(e.target.value)}
@@ -518,13 +546,13 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="clock" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 4: Experience & Past Work</h3>
-                      <p className="text-[11px] text-slate-500">Years of work history & portfolio summary</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step4_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step4_worker_desc')}</p>
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Years of Work Experience *</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.yearsExperience')}</label>
                     <input
                       type="number"
                       min="0"
@@ -537,7 +565,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Work Summary & Achievements *</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.workSummary')}</label>
                     <textarea
                       rows={3}
                       required
@@ -558,13 +586,13 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="currency" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 5: Expected Payment & Rate</h3>
-                      <p className="text-[11px] text-slate-500">Specify expected daily wage or per-unit rate</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step5_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step5_worker_desc')}</p>
                     </div>
                   </div>
 
                   <Input
-                    label="Expected Pay Rate (Per Day / Per Piece) *"
+                    label={t('onboarding.expectedPayRate')}
                     required
                     value={expectedRate}
                     onChange={(e) => setExpectedRate(e.target.value)}
@@ -581,31 +609,31 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="sparkles" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 6: Work Capacity & Availability</h3>
-                      <p className="text-[11px] text-slate-500">Powers WorkConnect Reverse Capacity Matching</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step6_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step6_worker_desc')}</p>
                     </div>
                   </div>
 
                   <Input
-                    label="Daily Work Capacity *"
+                    label={t('onboarding.dailyWorkCapacity')}
                     required
                     value={dailyCapacity}
                     onChange={(e) => setDailyCapacity(e.target.value)}
                     placeholder="e.g. 30 pieces/day or Full Day Available"
                   />
 
-                  <Select
-                    label="Preferred Shift / Work Mode *"
-                    value={preferredShift}
-                    onChange={(e) => setPreferredShift(e.target.value)}
-                    options={[
-                      'Full Day (9:00 AM - 6:00 PM)',
-                      'Morning Shift (8:00 AM - 2:00 PM)',
-                      'Evening Shift (2:00 PM - 8:00 PM)',
-                      'Home-based Workshop',
-                      'On-site Doorstep Delivery'
-                    ]}
-                  />
+                  <div className="space-y-1">
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.preferredShift')}</label>
+                    <select
+                      value={preferredShift}
+                      onChange={(e) => setPreferredShift(e.target.value)}
+                      className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500"
+                    >
+                      {shiftOptions.map((opt) => (
+                        <option key={opt} value={opt}>{transShifts[opt] || opt}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               )}
 
@@ -617,13 +645,13 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="map-pin" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 7: Residential Location & Address</h3>
-                      <p className="text-[11px] text-slate-500">Enables exact local coordinate distance matching</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step7_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step7_worker_desc')}</p>
                     </div>
                   </div>
 
                   <Input
-                    label="Street Address / House Number *"
+                    label={t('onboarding.streetAddressHouse')}
                     required
                     value={streetAddress}
                     onChange={(e) => setStreetAddress(e.target.value)}
@@ -632,21 +660,21 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <Input
-                      label="Area / Locality *"
+                      label={t('onboarding.areaLocality')}
                       required
                       value={area}
                       onChange={(e) => setArea(e.target.value)}
                       placeholder="e.g. Model Town"
                     />
                     <Input
-                      label="City *"
+                      label={t('common.city')}
                       required
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. Rajpura"
                     />
                     <Input
-                      label="Pin Code *"
+                      label={t('onboarding.pinCode')}
                       required
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
@@ -664,8 +692,8 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                       <Icon name="check-circle" className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900">Step 8: Review Work Passport Profile</h3>
-                      <p className="text-[11px] text-slate-500">Confirm your compiled artisan trust credentials</p>
+                      <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step8_worker_title')}</h3>
+                      <p className="text-[11px] text-slate-500">{t('onboarding.step8_worker_desc')}</p>
                     </div>
                   </div>
 
@@ -673,21 +701,23 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-extrabold text-base text-slate-900">{fullName}</h4>
-                        <p className="text-xs text-emerald-700 font-bold">{primarySkill} Specialist • {experienceYears} Yrs Exp.</p>
+                        <p className="text-xs text-emerald-700 font-bold">{transSkills[primarySkill] || primarySkill} Specialist • {experienceYears} Yrs Exp.</p>
                         <p className="text-xs text-slate-500 mt-0.5">{streetAddress}, {area}, {city} ({gender})</p>
                       </div>
-                      <Badge variant="success">★ 4.9 Top Artisan</Badge>
+                      <Badge variant="success">{t('onboarding.topArtisan')}</Badge>
                     </div>
 
                     {hasDisability && (
                       <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 space-y-1">
                         <div className="flex items-center gap-1.5">
-                          <Badge variant="purple" className="text-[10px]">♿ PwD Inclusive Worker</Badge>
-                          <span className="text-[11px] font-bold text-purple-900">{disabilityType}</span>
+                          <Badge variant="purple" className="text-[10px]">{t('onboarding.inclusiveWorkforce')}</Badge>
+                          <span className="text-[11px] font-bold text-purple-900">
+                            {disabilityTypes.map(t => transDisabilities[t] || t).join(', ')}
+                          </span>
                         </div>
-                        {disabilityAccommodations.length > 0 && (
+                        {accessibilityNeeds.length > 0 && (
                           <p className="text-[10px] text-purple-700">
-                            Accommodations: {disabilityAccommodations.join(', ')}
+                            {t('onboarding.accommodations')} {accessibilityNeeds.map(n => transAccommodations[n] || n).join(', ')}
                           </p>
                         )}
                       </div>
@@ -695,11 +725,11 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
 
                     <div className="pt-2 border-t border-emerald-200 grid grid-cols-2 gap-2 text-xs">
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Capacity</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('onboarding.capacity')}</span>
                         <span className="font-bold text-slate-800">{dailyCapacity}</span>
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Expected Pay</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('onboarding.expectedPay')}</span>
                         <span className="font-bold text-emerald-700">{expectedRate}</span>
                       </div>
                     </div>
@@ -711,12 +741,12 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
               <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                 {currentStep > 1 ? (
                   <Button type="button" variant="ghost" size="md" onClick={handlePrev}>
-                    ← Back
+                    {t('onboarding.back')}
                   </Button>
                 ) : <div />}
 
                 <Button type="submit" variant="secondary" size="md" icon="arrow-right" iconPosition="right">
-                  {currentStep === totalSteps ? 'Complete Profile & Open Dashboard' : 'Next Step →'}
+                  {currentStep === totalSteps ? t('onboarding.completeProfile') : t('onboarding.nextStep')}
                 </Button>
               </div>
 
@@ -726,7 +756,7 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
           {/* Live Passport Card Preview (2 Cols) */}
           <div className="lg:col-span-2 space-y-3">
             <h3 className="font-bold text-xs text-slate-500 uppercase tracking-wider text-center lg:text-left">
-              Live Work Passport Preview
+              {t('onboarding.livePreview')}
             </h3>
             <WorkPassportCard workerUser={previewWorker} profile={previewProfile} compact />
           </div>
@@ -734,9 +764,8 @@ export const WorkerOnboardingPage = ({ onNavigate }) => {
       </main>
 
       <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-200">
-        WorkConnect Worker Passport Onboarding
+        {t('onboarding.footer_worker')}
       </footer>
     </div>
   );
 };
-

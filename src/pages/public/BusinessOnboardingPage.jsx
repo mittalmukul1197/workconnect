@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../components/layout/Navbar';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
@@ -9,6 +10,7 @@ import { Icon } from '../../components/common/Icon';
 import { useAuth } from '../../context/AuthContext';
 
 export const BusinessOnboardingPage = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const { registerCustomUser } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -101,12 +103,12 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
         {/* Progress Bar & Header */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-bold text-indigo-700">
-            <span>Step {currentStep} of {totalSteps}</span>
+            <span>{t('onboarding.stepOf', { current: currentStep, total: totalSteps })}</span>
             <span>•</span>
-            <span>Business Onboarding</span>
+            <span>{t('onboarding.businessBadge')}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black text-slate-900">Setup Your Business Profile</h1>
+          <h1 className="text-2xl sm:text-4xl font-black text-slate-900">{t('onboarding.businessTitle')}</h1>
 
           {/* Stepper Dots */}
           <div className="flex items-center justify-center gap-1.5 pt-2">
@@ -136,13 +138,13 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="user" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 1: Basic Contact Details</h3>
-                    <p className="text-[11px] text-slate-500">Contact person info for workforce coordination</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step1_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step1_business_desc')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="Contact Person Name *"
+                  label={t('onboarding.contactName')}
                   required
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
@@ -151,7 +153,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
-                    label="Business Email Address *"
+                    label={t('onboarding.businessEmail')}
                     type="email"
                     required
                     value={email}
@@ -159,7 +161,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     placeholder="e.g. business@demo.com"
                   />
                   <Input
-                    label="Phone Number *"
+                    label={t('onboarding.phoneNumber')}
                     type="tel"
                     required
                     value={phone}
@@ -178,13 +180,13 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="building" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 2: Business & Firm Details</h3>
-                    <p className="text-[11px] text-slate-500">Official business identity & registration</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step2_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step2_business_desc')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="Business / Firm / Company Name *"
+                  label={t('onboarding.businessFirmName')}
                   required
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
@@ -193,13 +195,13 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
-                    label="GSTIN / License Number (Optional)"
+                    label={t('onboarding.gstinLabel')}
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value)}
                     placeholder="e.g. 03AAAAA0000A1Z5"
                   />
                   <Input
-                    label="Year Established *"
+                    label={t('onboarding.yearEstablished')}
                     type="number"
                     required
                     value={establishedYear}
@@ -218,8 +220,8 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="sparkles" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 3: Select Business Type Category</h3>
-                    <p className="text-[11px] text-slate-500">Helps AI match relevant skilled workers</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step3_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step3_business_desc')}</p>
                   </div>
                 </div>
 
@@ -250,13 +252,13 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="map-pin" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 4: Business Location & Address</h3>
-                    <p className="text-[11px] text-slate-500">Coordinates nearby worker discovery radius</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step4_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step4_business_desc')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="Street Address / Shop Number *"
+                  label={t('onboarding.streetAddress')}
                   required
                   value={streetAddress}
                   onChange={(e) => setStreetAddress(e.target.value)}
@@ -265,21 +267,21 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <Input
-                    label="Area / Landmark *"
+                    label={t('onboarding.areaLandmark')}
                     required
                     value={area}
                     onChange={(e) => setArea(e.target.value)}
                     placeholder="e.g. Sector 2, Focal Point"
                   />
                   <Input
-                    label="City *"
+                    label={t('common.city')}
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="e.g. Rajpura"
                   />
                   <Input
-                    label="Pin Code *"
+                    label={t('onboarding.pinCode')}
                     required
                     value={pincode}
                     onChange={(e) => setPincode(e.target.value)}
@@ -297,14 +299,14 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="users" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 5: Workers Required</h3>
-                    <p className="text-[11px] text-slate-500">Specify workforce count & skill profile needed</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step5_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step5_business_desc')}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Number of Workers Needed *</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.workersNeeded')}</label>
                     <input
                       type="number"
                       min="1"
@@ -317,7 +319,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                   </div>
 
                   <Input
-                    label="Required Worker Skill Role *"
+                    label={t('onboarding.workerSkillRole')}
                     required
                     value={workerTypeNeeded}
                     onChange={(e) => setWorkerTypeNeeded(e.target.value)}
@@ -326,7 +328,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                 </div>
 
                 <Select
-                  label="Urgency / Start Timeline *"
+                  label={t('onboarding.urgencyTimeline')}
                   value={urgency}
                   onChange={(e) => setUrgency(e.target.value)}
                   options={[
@@ -347,13 +349,13 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="briefcase" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 6: Work Details & Scope</h3>
-                    <p className="text-[11px] text-slate-500">Describe specific task output requirements</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step6_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step6_business_desc')}</p>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Work Task Description & Guidelines *</label>
+                  <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('onboarding.workDescription')}</label>
                   <textarea
                     rows={3}
                     required
@@ -365,7 +367,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                 </div>
 
                 <Input
-                  label="Estimated Duration / Timeline *"
+                  label={t('onboarding.estimatedDuration')}
                   required
                   value={durationDays}
                   onChange={(e) => setDurationDays(e.target.value)}
@@ -382,20 +384,20 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="currency" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 7: Offered Budget & Pay Rate</h3>
-                    <p className="text-[11px] text-slate-500">Daily wage, monthly salary, or piece-rate offered</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step7_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step7_business_desc')}</p>
                   </div>
                 </div>
 
                 <Input
-                  label="Offered Budget / Pay Rate *"
+                  label={t('onboarding.offeredBudgetRate')}
                   required
                   value={offeredBudget}
                   onChange={(e) => setOfferedBudget(e.target.value)}
                   placeholder="e.g. ₹600/day or ₹35/pc"
                 />
                 <p className="text-[11px] text-slate-500 italic">
-                  💡 Transparent compensation rates increase worker acceptance rates by up to 85%!
+                  {t('onboarding.budgetTip')}
                 </p>
               </div>
             )}
@@ -408,8 +410,8 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                     <Icon name="check-circle" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-slate-900">Step 8: Review Business Profile</h3>
-                    <p className="text-[11px] text-slate-500">Confirm your compiled business profile credentials</p>
+                    <h3 className="font-bold text-sm text-slate-900">{t('onboarding.step8_business_title')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('onboarding.step8_business_desc')}</p>
                   </div>
                 </div>
 
@@ -420,16 +422,16 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
                       <p className="text-xs text-indigo-700 font-bold">{businessType} • Est. {establishedYear}</p>
                       <p className="text-xs text-slate-500 mt-0.5">{streetAddress}, {area}, {city} ({pincode})</p>
                     </div>
-                    <Badge variant="success">Verified Business</Badge>
+                    <Badge variant="success">{t('onboarding.verifiedBusiness')}</Badge>
                   </div>
 
                   <div className="pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Contact Person</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('onboarding.contactPerson')}</span>
                       <span className="font-bold text-slate-800">{contactName} ({phone})</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Active Need</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('onboarding.activeNeed')}</span>
                       <span className="font-bold text-slate-800">{workerCount} × {workerTypeNeeded}</span>
                     </div>
                   </div>
@@ -441,12 +443,12 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               {currentStep > 1 ? (
                 <Button type="button" variant="ghost" size="md" onClick={handlePrev}>
-                  ← Back
+                  {t('onboarding.back')}
                 </Button>
               ) : <div />}
 
               <Button type="submit" variant="primary" size="md" icon="arrow-right" iconPosition="right">
-                {currentStep === totalSteps ? 'Complete Profile & Open Dashboard' : 'Next Step →'}
+                {currentStep === totalSteps ? t('onboarding.completeProfile') : t('onboarding.nextStep')}
               </Button>
             </div>
 
@@ -455,7 +457,7 @@ export const BusinessOnboardingPage = ({ onNavigate }) => {
       </main>
 
       <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-200">
-        WorkConnect Business Profile Setup
+        {t('onboarding.footer_business')}
       </footer>
     </div>
   );

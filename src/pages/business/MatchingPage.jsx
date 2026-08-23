@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
@@ -8,6 +9,7 @@ import { MOCK_WORKERS } from '../../data/mockData';
 import { rankWorkersForJob } from '../../services/matchingEngine';
 
 export const MatchingPage = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const [activeJob, setActiveJob] = useState(() => {
     try {
       const saved = localStorage.getItem('workconnect_active_job');
@@ -61,16 +63,16 @@ export const MatchingPage = ({ onNavigate }) => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-black text-slate-900">AI Candidate Ranking Matrix</h1>
-              <Badge variant="primary">8-Dimension Dynamic Scoring</Badge>
+              <h1 className="text-2xl font-black text-slate-900">{t('matching.title')}</h1>
+              <Badge variant="primary">{t('matching.badge')}</Badge>
             </div>
             <p className="text-xs text-slate-500 font-medium">
-              Real-time matching across Skill Fit, Availability, Capacity, Proximity, Experience, Reliability, Budget & Accessibility.
+              {t('matching.subtitle')}
             </p>
           </div>
 
           <Button variant="outline" size="sm" icon="plus" onClick={() => onNavigate('/business/post-work')}>
-            Post New Requirement
+            {t('matching.postNew')}
           </Button>
         </div>
 
@@ -79,15 +81,15 @@ export const MatchingPage = ({ onNavigate }) => {
           <div className="flex items-center justify-between">
             <span className="font-bold text-slate-900 flex items-center gap-2">
               <Icon name="briefcase" className="w-4 h-4 text-indigo-600" />
-              <span>Active Matching Target: <strong>{currentJob.skillName}</strong> ({currentJob.totalQuantity} {currentJob.unitLabel})</span>
+              <span>{t('matching.activeTarget')} <strong>{currentJob.skillName}</strong> ({currentJob.totalQuantity} {currentJob.unitLabel})</span>
             </span>
             <Badge variant="indigo">
-              {currentJob.workersNeeded} Workers Needed • {currentJob.deadlineDays} Days
+              {currentJob.workersNeeded} {t('matching.workersNeeded')} • {currentJob.deadlineDays} {t('matching.days')}
             </Badge>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-indigo-200/60">
-            <span className="text-[11px] font-bold text-slate-500">Test Requirement Presets:</span>
+            <span className="text-[11px] font-bold text-slate-500">{t('matching.testPresets')}</span>
             <button
               onClick={() => handleSelectPreset('Stitching', 'Garment Manufacturing & Apparel', 30, 'pieces')}
               className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all ${
@@ -145,11 +147,11 @@ export const MatchingPage = ({ onNavigate }) => {
 
                 <div className="text-right space-y-1">
                   <Badge variant={isTopMatch ? 'success' : match.totalScore >= 85 ? 'primary' : 'secondary'}>
-                    {match.totalScore}% AI Match
+                    {match.totalScore}% {t('matching.aiMatch')}
                   </Badge>
                   {match.isInclusivePreference && (
                     <span className="block text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-900 border border-purple-200">
-                      ♿ Inclusive Match
+                      {t('matching.inclusiveMatch')}
                     </span>
                   )}
                 </div>
@@ -165,7 +167,7 @@ export const MatchingPage = ({ onNavigate }) => {
                 fullWidth
                 onClick={() => onNavigate('/business/projects')}
               >
-                Assign to Work Order Team
+                {t('matching.assign')}
               </Button>
             </Card>
           );

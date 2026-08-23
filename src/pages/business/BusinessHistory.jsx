@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/common/Card';
 import { Button } from '../../components/common/Button';
 import { Badge } from '../../components/common/Badge';
 import { Icon } from '../../components/common/Icon';
 
 export const BusinessHistory = ({ onNavigate }) => {
+  const { t } = useTranslation();
   const [filterCategory, setFilterCategory] = useState('All');
   const [downloadSuccessAlert, setDownloadSuccessAlert] = useState(null);
 
@@ -60,7 +62,7 @@ export const BusinessHistory = ({ onNavigate }) => {
   );
 
   const handleDownloadInvoice = (txnId) => {
-    setDownloadSuccessAlert(`Invoice for ${txnId} downloaded successfully!`);
+    setDownloadSuccessAlert(t('history.downloadAlert'));
     setTimeout(() => {
       setDownloadSuccessAlert(null);
     }, 4000);
@@ -71,15 +73,15 @@ export const BusinessHistory = ({ onNavigate }) => {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-3xl border border-indigo-100 bg-white shadow-sm">
         <div>
-          <h1 className="text-2xl font-black text-slate-900">Completed Work Order History</h1>
+          <h1 className="text-2xl font-black text-slate-900">{t('history.title')}</h1>
           <p className="text-xs text-slate-500 font-medium">
-            28 projects completed with a 96% on-time delivery rate. All payouts settled 100% scam-free via WorkConnect Platform Escrow.
+            {t('history.subtitle')}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Badge variant="emerald" className="py-1 px-3 text-xs">
-            🛡️ 100% Escrow Verified
+            {t('history.escrowVerified')}
           </Badge>
         </div>
       </div>
@@ -108,7 +110,7 @@ export const BusinessHistory = ({ onNavigate }) => {
                 : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
-            {cat} Orders
+            {cat === 'All' ? t('history.allOrders') : cat}
           </button>
         ))}
       </div>
@@ -124,25 +126,25 @@ export const BusinessHistory = ({ onNavigate }) => {
                   <Badge variant="indigo">{item.category}</Badge>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                  Completed on: <strong className="text-slate-800">{item.completedDate}</strong> • Ref: {item.id}
+                  {t('history.completedOn')} <strong className="text-slate-800">{item.completedDate}</strong> • {t('history.ref')} {item.id}
                 </p>
               </div>
 
               <div className="text-left sm:text-right shrink-0">
-                <span className="text-[10px] uppercase text-slate-400 font-bold block">Settled Amount</span>
+                <span className="text-[10px] uppercase text-slate-400 font-bold block">{t('history.settledAmount')}</span>
                 <span className="text-lg font-black text-emerald-700">{item.totalPaid}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-0.5">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Assigned Local Artisan</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase">{t('history.assignedArtisan')}</span>
                 <p className="font-bold text-slate-900">{item.workerName}</p>
-                <p className="text-amber-700 font-bold text-[11px]">★ {item.ratingGiven} Rating Given</p>
+                <p className="text-amber-700 font-bold text-[11px]">★ {item.ratingGiven} {t('history.ratingGiven')}</p>
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-0.5">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Escrow Settlement Receipt</span>
+                <span className="text-[10px] text-slate-400 font-bold uppercase">{t('history.escrowReceipt')}</span>
                 <p className="font-mono text-indigo-700 font-bold text-[11px]">{item.escrowTxnId}</p>
                 <p className="text-emerald-700 font-semibold text-[10px]">{item.status}</p>
               </div>
@@ -154,7 +156,7 @@ export const BusinessHistory = ({ onNavigate }) => {
                   icon="file-text"
                   onClick={() => handleDownloadInvoice(item.escrowTxnId)}
                 >
-                  Download Escrow Receipt
+                  {t('history.downloadReceipt')}
                 </Button>
               </div>
             </div>

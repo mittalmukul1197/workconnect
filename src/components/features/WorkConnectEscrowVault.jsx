@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../common/Card';
 import { Button } from '../common/Button';
 import { Badge } from '../common/Badge';
@@ -15,6 +16,7 @@ export const WorkConnectEscrowVault = ({
   unitDetails = '100 pieces @ ₹30 / piece',
   onPaymentComplete
 }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { deals, agreeAsWorker, agreeAsBusiness, payToEscrow, submitWork, releasePayout } = useEscrow();
 
@@ -40,7 +42,7 @@ export const WorkConnectEscrowVault = ({
   const isBusiness = !isWorker && !isHousehold;
   const isHirer = isHousehold || isBusiness; // Either household client or business employer
 
-  const clientRoleLabel = isHousehold ? 'Household Client' : 'Business';
+  const clientRoleLabel = isHousehold ? t('role.hirer') : t('role.business');
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPayoutReceipt, setShowPayoutReceipt] = useState(false);
@@ -80,6 +82,16 @@ export const WorkConnectEscrowVault = ({
     }, 900);
   };
 
+  const getPerspectiveText = () => {
+    if (isWorker) {
+      return `${t('role.worker')} ${t('common.details')} (${user?.name || 'Sunita Sharma'})`;
+    }
+    if (isHousehold) {
+      return `${t('role.hirer')} ${t('common.details')} (${user?.name || 'Rahul Sharma'})`;
+    }
+    return `${t('role.business')} ${t('common.details')} (${user?.name || 'Crafted Threads Boutique'})`;
+  };
+
   return (
     <Card borderVariant="indigo" className="p-5 sm:p-6 space-y-5 bg-white shadow-xl text-slate-900 border-2 rounded-3xl animate-fade-in max-w-4xl mx-auto">
       
@@ -91,22 +103,22 @@ export const WorkConnectEscrowVault = ({
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-extrabold text-sm text-white tracking-wide">WorkConnect Escrow Vault</h3>
+              <h3 className="font-extrabold text-sm text-white tracking-wide">{t('escrow.vaultTitle')}</h3>
               <Badge variant="emerald" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 font-bold text-[10px]">
-                🛡️ 100% Anti-Scam Protection
+                {t('escrow.antiScamBadge')}
               </Badge>
             </div>
             <p className="text-[11px] text-indigo-200 mt-0.5">
-              Money is received & held by <strong>WorkConnect (Us)</strong> as middleman. Payment cannot be made until BOTH sides click Agree.
+              {t('escrow.headerDesc')}
             </p>
           </div>
         </div>
 
         {/* Auth Role Badge */}
         <div className="px-3.5 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/80 text-left sm:text-right shrink-0">
-          <span className="text-[9px] text-slate-400 uppercase font-black tracking-wider block">Logged In Perspective</span>
+          <span className="text-[9px] text-slate-400 uppercase font-black tracking-wider block">{t('escrow.loggedPerspective')}</span>
           <span className="text-xs font-extrabold text-emerald-400">
-            {isWorker ? `👷 Worker View (${user?.name || 'Sunita Sharma'})` : isHousehold ? `🏠 Household Client View (${user?.name || 'Rahul Sharma'})` : `🏢 Business View (${user?.name || 'Crafted Threads Boutique'})`}
+            {getPerspectiveText()}
           </span>
         </div>
       </div>
@@ -114,17 +126,17 @@ export const WorkConnectEscrowVault = ({
       {/* 📜 DEAL SUMMARY CARD */}
       <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
         <div>
-          <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Target Work Deal</span>
+          <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">{t('escrow.targetDeal')}</span>
           <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">{activeDeal.title}</h4>
           <p className="text-[11px] text-slate-500 font-medium">{activeDeal.unitDetails} • Ref: {activeDeal.id}</p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap text-xs">
           <div className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium shadow-2xs">
-            {isHousehold ? '🏠 Client: ' : '🏢 Business: '}<strong className="text-slate-900">{isHousehold ? (user?.name || 'Rahul Sharma') : activeDeal.businessName}</strong>
+            {isHousehold ? t('escrow.clientLabel') : t('escrow.businessLabel')}<strong className="text-slate-900">{isHousehold ? (user?.name || 'Rahul Sharma') : activeDeal.businessName}</strong>
           </div>
           <div className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-800 text-[11px] font-medium shadow-2xs">
-            👷 Worker: <strong className="text-slate-900">{activeDeal.workerName}</strong>
+            {t('escrow.workerLabel')} <strong className="text-slate-900">{activeDeal.workerName}</strong>
           </div>
           <div className="px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-black shadow-2xs">
             {activeDeal.amount}
@@ -135,13 +147,13 @@ export const WorkConnectEscrowVault = ({
       {/* 📍 VISUAL ESCROW STEPPER */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-          <span>Escrow Middleman Progress</span>
+          <span>{t('escrow.progressTitle')}</span>
           <span className="text-indigo-600 font-extrabold">
-            {!isBothAgreed && 'Step 1 of 4: Dual Clicks Needed'}
-            {isBothAgreed && escrowStatus === 'ready_to_pay' && 'Step 2 of 4: Ready for Payment'}
-            {escrowStatus === 'paid_in_escrow' && 'Step 3 of 4: Funds Secured in Vault'}
-            {escrowStatus === 'work_submitted' && 'Step 4 of 4: Ready for Payout Release'}
-            {escrowStatus === 'released_to_worker' && 'Completed ✓'}
+            {!isBothAgreed && t('escrow.step1Clicks')}
+            {isBothAgreed && escrowStatus === 'ready_to_pay' && t('escrow.step2Ready')}
+            {escrowStatus === 'paid_in_escrow' && t('escrow.step3Secured')}
+            {escrowStatus === 'work_submitted' && t('escrow.step4Ready')}
+            {escrowStatus === 'released_to_worker' && t('escrow.stepCompleted')}
           </span>
         </div>
 
@@ -151,10 +163,10 @@ export const WorkConnectEscrowVault = ({
             isBothAgreed ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-semibold' : 'bg-amber-50 border-amber-300 text-amber-950 font-semibold'
           }`}>
             <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
-              <span>1. Dual Clicks</span>
-              <span>{isBothAgreed ? '✓ Done' : '⏳ Pending'}</span>
+              <span>{t('escrow.step1Name')}</span>
+              <span>{isBothAgreed ? t('escrow.done') : t('escrow.pending')}</span>
             </div>
-            <p className="text-[10px] opacity-80">Both parties agree</p>
+            <p className="text-[10px] opacity-80">{t('escrow.dualApprovalNotice')}</p>
           </div>
 
           {/* Step 2 */}
@@ -166,12 +178,12 @@ export const WorkConnectEscrowVault = ({
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
             <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
-              <span>2. Pay WorkConnect</span>
+              <span>{t('escrow.step2Name')}</span>
               <span>
-                {escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? '🔒 Secured' : '⏳ Pending'}
+                {escrowStatus === 'paid_in_escrow' || escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? t('escrow.secured') : t('escrow.pending')}
               </span>
             </div>
-            <p className="text-[10px] opacity-80">Money in platform vault</p>
+            <p className="text-[10px] opacity-80">{t('escrow.step2')}</p>
           </div>
 
           {/* Step 3 */}
@@ -183,12 +195,12 @@ export const WorkConnectEscrowVault = ({
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
             <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
-              <span>3. Work Output</span>
+              <span>{t('escrow.step3Name')}</span>
               <span>
-                {escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? '✓ Delivered' : '⏳ In Progress'}
+                {escrowStatus === 'work_submitted' || escrowStatus === 'released_to_worker' ? t('escrow.delivered') : t('escrow.inProgress')}
               </span>
             </div>
-            <p className="text-[10px] opacity-80">Worker completes job</p>
+            <p className="text-[10px] opacity-80">{t('escrow.step3')}</p>
           </div>
 
           {/* Step 4 */}
@@ -200,10 +212,10 @@ export const WorkConnectEscrowVault = ({
               : 'bg-slate-100 border-slate-200 text-slate-400'
           }`}>
             <div className="flex items-center justify-between font-bold text-[11px] mb-0.5">
-              <span>4. Release Payout</span>
-              <span>{escrowStatus === 'released_to_worker' ? '💸 Paid' : '🔒 Locked'}</span>
+              <span>{t('escrow.step4Name')}</span>
+              <span>{escrowStatus === 'released_to_worker' ? t('escrow.paid') : t('escrow.locked')}</span>
             </div>
-            <p className="text-[10px] opacity-80">Disbursed to Worker</p>
+            <p className="text-[10px] opacity-80">{t('escrow.step4')}</p>
           </div>
         </div>
       </div>
@@ -214,15 +226,15 @@ export const WorkConnectEscrowVault = ({
           <div>
             <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
               <Icon name="check-circle" className="w-4 h-4 text-indigo-600 shrink-0" />
-              <span>Step 1: Contract Deal Agreement</span>
+              <span>{t('escrow.step1Contract')}</span>
             </h4>
             <p className="text-[11px] text-slate-600">
-              Payment options on {clientRoleLabel} side remain <strong>STRICTLY LOCKED</strong> until BOTH {clientRoleLabel} & Worker click to agree below.
+              {t('escrow.step1Desc', { role: clientRoleLabel })}
             </p>
           </div>
 
           <Badge variant={isBothAgreed ? 'emerald' : 'amber'} className="font-extrabold text-[11px]">
-            {isBothAgreed ? '🟢 Both Sides Agreed' : '⚠️ Pending Clicks'}
+            {isBothAgreed ? t('escrow.bothAgreed') : t('escrow.pendingClicks')}
           </Badge>
         </div>
 
@@ -238,18 +250,18 @@ export const WorkConnectEscrowVault = ({
                 <div className="flex items-center gap-2">
                   <span className="text-base">👷</span>
                   <div>
-                    <h5 className="font-bold text-xs text-slate-900">Your Worker Sign-Off</h5>
+                    <h5 className="font-bold text-xs text-slate-900">{t('escrow.yourWorkerSignOff')}</h5>
                     <p className="text-[10px] text-slate-500">{activeDeal.workerName}</p>
                   </div>
                 </div>
 
                 {workerAgreed ? (
                   <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-extrabold text-[10px] tracking-wider uppercase">
-                    ✓ YOU AGREED
+                    {t('escrow.youAgreed')}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
-                    ACTION NEEDED
+                    {t('escrow.actionNeeded')}
                   </span>
                 )}
               </div>
@@ -262,12 +274,12 @@ export const WorkConnectEscrowVault = ({
                   icon="check"
                   onClick={handleWorkerSign}
                 >
-                  Worker: Click to Agree & Accept Deal
+                  {t('escrow.workerSignOff')}
                 </Button>
               ) : (
                 <div className="p-2 rounded-lg bg-emerald-100/80 border border-emerald-300 text-[11px] text-emerald-900 font-semibold flex items-center gap-1.5">
                   <Icon name="check-circle" className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>You signed & agreed! Waiting for {clientRoleLabel} to deposit escrow funds.</span>
+                  <span>{t('escrow.youSignedWaiting', { role: clientRoleLabel })}</span>
                 </div>
               )}
             </div>
@@ -277,21 +289,21 @@ export const WorkConnectEscrowVault = ({
           {isWorker && (
             <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-700">{isHousehold ? '🏠 Household Client' : '🏢 Business'} Status</span>
+                <span className="font-bold text-slate-700">{t('escrow.hirerStatus', { role: clientRoleLabel })}</span>
                 {businessAgreed ? (
                   <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
-                    ✓ HIRER AGREED
+                    {t('escrow.hirerAgreed')}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-extrabold text-[10px]">
-                    AWAITING HIRER SIGN
+                    {t('escrow.awaitingHirer')}
                   </span>
                 )}
               </div>
               <p className="text-[11px] text-slate-600">
                 {businessAgreed
-                  ? 'The hirer has verified deal terms.'
-                  : 'Waiting for the hirer to sign the deal & deposit funds into WorkConnect Escrow.'}
+                  ? t('escrow.hirerAgreedDesc')
+                  : t('escrow.awaitingHirerDesc')}
               </p>
             </div>
           )}
@@ -305,18 +317,18 @@ export const WorkConnectEscrowVault = ({
                 <div className="flex items-center gap-2">
                   <span className="text-base">{isHousehold ? '🏠' : '🏢'}</span>
                   <div>
-                    <h5 className="font-bold text-xs text-slate-900">Your {clientRoleLabel} Sign-Off</h5>
+                    <h5 className="font-bold text-xs text-slate-900">{t('escrow.yourHirerSignOff', { role: clientRoleLabel })}</h5>
                     <p className="text-[10px] text-slate-500">{isHousehold ? (user?.name || 'Rahul Sharma') : activeDeal.businessName}</p>
                   </div>
                 </div>
 
                 {businessAgreed ? (
                   <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-extrabold text-[10px] tracking-wider uppercase">
-                    ✓ YOU AGREED
+                    {t('escrow.youAgreed')}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px] border border-slate-300 uppercase">
-                    ACTION NEEDED
+                    {t('escrow.actionNeeded')}
                   </span>
                 )}
               </div>
@@ -329,12 +341,12 @@ export const WorkConnectEscrowVault = ({
                   icon="check"
                   onClick={handleHirerSign}
                 >
-                  {clientRoleLabel}: Click to Agree & Approve Terms
+                  {t('escrow.clickAgreeApprove', { role: clientRoleLabel })}
                 </Button>
               ) : (
                 <div className="p-2 rounded-lg bg-emerald-100/80 border border-emerald-300 text-[11px] text-emerald-900 font-semibold flex items-center gap-1.5">
                   <Icon name="check-circle" className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                  <span>You signed and verified deal terms.</span>
+                  <span>{t('escrow.youSignedVerified')}</span>
                 </div>
               )}
             </div>
@@ -344,21 +356,21 @@ export const WorkConnectEscrowVault = ({
           {isHirer && (
             <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-700">👷 Worker Status ({activeDeal.workerName})</span>
+                <span className="font-bold text-slate-700">{t('escrow.workerStatus', { name: activeDeal.workerName })}</span>
                 {workerAgreed ? (
                   <span className="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">
-                    ✓ WORKER AGREED
+                    {t('escrow.workerAgreed')}
                   </span>
                 ) : (
                   <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-extrabold text-[10px]">
-                    AWAITING WORKER SIGN
+                    {t('escrow.awaitingWorker')}
                   </span>
                 )}
               </div>
               <p className="text-[11px] text-slate-600">
                 {workerAgreed
-                  ? 'Worker has agreed to deliver order terms.'
-                  : 'Worker must click "Agree" on their screen to unlock your escrow payment option.'}
+                  ? t('escrow.workerAgreedDesc')
+                  : t('escrow.awaitingWorkerDesc')}
               </p>
             </div>
           )}
@@ -371,37 +383,37 @@ export const WorkConnectEscrowVault = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
           <div>
             <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider block">
-              WorkConnect Platform Vault Status
+              {t('escrow.vaultStatus')}
             </span>
             <h4 className="font-extrabold text-xs sm:text-sm text-white flex items-center gap-2 mt-0.5">
               {!isBothAgreed && (
                 <>
                   <Icon name="lock" className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Payment Locked (Requires Clicks from Both Ends)</span>
+                  <span>{t('escrow.payLockedBoth')}</span>
                 </>
               )}
               {isBothAgreed && escrowStatus === 'ready_to_pay' && (
                 <>
                   <Icon name="unlock" className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Payment Unlocked! Deposit to WorkConnect Middleman Vault</span>
+                  <span>{t('escrow.payUnlockedDeposit')}</span>
                 </>
               )}
               {escrowStatus === 'paid_in_escrow' && (
                 <>
                   <Icon name="shield" className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>{activeDeal.amount} Safely Held in WorkConnect Platform Vault</span>
+                  <span>{t('escrow.amountSafelyHeld', { amount: activeDeal.amount })}</span>
                 </>
               )}
               {escrowStatus === 'work_submitted' && (
                 <>
                   <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Work Completed — Ready for Payout Release</span>
+                  <span>{t('escrow.workCompletedReady')}</span>
                 </>
               )}
               {escrowStatus === 'released_to_worker' && (
                 <>
                   <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span>Payout Transferred to Worker</span>
+                  <span>{t('escrow.payoutTransferred')}</span>
                 </>
               )}
             </h4>
@@ -415,12 +427,12 @@ export const WorkConnectEscrowVault = ({
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1">
             <div className="flex items-center gap-2 font-bold text-amber-300 text-xs">
               <Icon name="alert-triangle" className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span>PAYMENT STATUS:</span>
+              <span>{t('escrow.payStatus')}</span>
             </div>
             <p className="text-[11px] text-amber-100/90 font-medium pl-5.5">
-              {businessAgreed && !workerAgreed && `${clientRoleLabel} has agreed ✓, BUT 👷 Worker has NOT agreed yet. Payment button stays locked!`}
-              {!businessAgreed && workerAgreed && `👷 Worker has agreed ✓, BUT ${clientRoleLabel} has NOT agreed yet. Payment button stays locked!`}
-              {!businessAgreed && !workerAgreed && `Neither side has agreed yet. Both ${clientRoleLabel} and Worker must click 'Agree' on their respective screens.`}
+              {businessAgreed && !workerAgreed && t('escrow.payStatusDesc1', { role: clientRoleLabel })}
+              {!businessAgreed && workerAgreed && t('escrow.payStatusDesc2', { role: clientRoleLabel })}
+              {!businessAgreed && !workerAgreed && t('escrow.payStatusDesc3', { role: clientRoleLabel })}
             </p>
           </div>
         )}
@@ -429,7 +441,7 @@ export const WorkConnectEscrowVault = ({
         {isBothAgreed && escrowStatus === 'ready_to_pay' && (
           <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-200 text-xs flex items-center gap-2 font-bold animate-scale-up">
             <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>Both {clientRoleLabel} & Worker agreed! {clientRoleLabel} can now deposit payment to WorkConnect.</span>
+            <span>{t('escrow.payStatusDesc4', { role: clientRoleLabel })}</span>
           </div>
         )}
 
@@ -437,7 +449,7 @@ export const WorkConnectEscrowVault = ({
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
           <div className="text-[11px] text-slate-300 max-w-md">
             <p className="leading-relaxed">
-              <strong>Middleman Scam Protection:</strong> Money goes to <strong>WorkConnect (Us)</strong> first. We safely hold it until work is completed properly, then release it to the worker.
+              {t('escrow.scamProtectionDesc')}
             </p>
           </div>
 
@@ -452,7 +464,7 @@ export const WorkConnectEscrowVault = ({
                     className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800/90 text-slate-400 font-extrabold text-xs cursor-not-allowed border border-slate-700/80 flex items-center justify-center gap-2 shadow-inner"
                   >
                     <Icon name="lock" className="w-4 h-4 text-slate-500 shrink-0" />
-                    <span>🔒 Payment Locked (Needs Worker Sign)</span>
+                    <span>{t('escrow.paymentLockedNeedsWorker')}</span>
                   </button>
                 )}
 
@@ -465,14 +477,14 @@ export const WorkConnectEscrowVault = ({
                     disabled={isProcessing}
                     className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-600 text-white font-black shadow-lg shadow-emerald-500/25 animate-bounce"
                   >
-                    {isProcessing ? 'Processing Payment...' : `💳 Pay ${activeDeal.amount} to WorkConnect Vault`}
+                    {isProcessing ? t('escrow.processingPayment') : t('escrow.payAmountVault', { amount: activeDeal.amount })}
                   </Button>
                 )}
 
                 {escrowStatus === 'paid_in_escrow' && (
                   <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
                     <Icon name="shield" className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>Funds Secured in WorkConnect Vault (Worker is Executing)</span>
+                    <span>{t('escrow.fundsSecuredExecuting')}</span>
                   </div>
                 )}
 
@@ -485,14 +497,14 @@ export const WorkConnectEscrowVault = ({
                     disabled={isProcessing}
                     className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold shadow-lg shadow-emerald-500/25"
                   >
-                    {isProcessing ? 'Disbursing...' : 'WorkConnect: Release Payment to Worker'}
+                    {isProcessing ? t('escrow.disbursing') : t('escrow.releasePaymentWorker')}
                   </Button>
                 )}
 
                 {escrowStatus === 'released_to_worker' && (
                   <div className="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center gap-2">
                     <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Payout Released to Worker ✓</span>
+                    <span>{t('escrow.payoutReleased')}</span>
                   </div>
                 )}
               </>
@@ -504,14 +516,14 @@ export const WorkConnectEscrowVault = ({
                 {escrowStatus === 'pending_agreements' && (
                   <div className="px-4 py-2 rounded-xl bg-slate-800/90 border border-slate-700/80 text-slate-400 text-xs font-bold flex items-center gap-2">
                     <Icon name="clock" className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Waiting for Dual Clicks & Escrow Deposit</span>
+                    <span>{t('escrow.waitingDualClicks')}</span>
                   </div>
                 )}
 
                 {escrowStatus === 'ready_to_pay' && (
                   <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
                     <Icon name="clock" className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>Both Agreed! Waiting for Client Escrow Deposit</span>
+                    <span>{t('escrow.bothAgreedWaitingClient')}</span>
                   </div>
                 )}
 
@@ -524,21 +536,21 @@ export const WorkConnectEscrowVault = ({
                     disabled={isProcessing}
                     className="w-full sm:w-auto font-bold"
                   >
-                    {isProcessing ? 'Submitting...' : 'Worker: Submit Completed Work'}
+                    {isProcessing ? t('escrow.submitting') : t('escrow.submitWork')}
                   </Button>
                 )}
 
                 {escrowStatus === 'work_submitted' && (
                   <div className="px-4 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold flex items-center gap-2">
                     <Icon name="check-circle" className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>Work Submitted! Waiting for Client Payout Sign-off</span>
+                    <span>{t('escrow.workSubmittedWaiting')}</span>
                   </div>
                 )}
 
                 {escrowStatus === 'released_to_worker' && (
                   <div className="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-black flex items-center gap-2">
                     <Icon name="check-circle" className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Funds Received in Your Wallet ✓</span>
+                    <span>{t('escrow.fundsReceivedWallet')}</span>
                   </div>
                 )}
               </>
@@ -553,10 +565,10 @@ export const WorkConnectEscrowVault = ({
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 space-y-1 animate-scale-up shadow-sm">
           <div className="flex items-center gap-2 font-black text-sm text-emerald-900">
             <Icon name="check-circle" className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>100% Scam-Free Escrow Settlement Complete!</span>
+            <span>{t('escrow.scamFreeComplete')}</span>
           </div>
           <p className="text-[11px] text-slate-700 font-medium leading-relaxed">
-            WorkConnect received <strong className="text-emerald-900 font-bold">{activeDeal.amount}</strong> from {clientRoleLabel} as middleman, verified mutual agreement and work completion, and successfully transferred payout to <strong className="text-slate-900 font-bold">{activeDeal.workerName}</strong>. Zero scam issues!
+            {t('escrow.settlementDesc', { amount: activeDeal.amount, role: clientRoleLabel, name: activeDeal.workerName })}
           </p>
         </div>
       )}

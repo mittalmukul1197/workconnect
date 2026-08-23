@@ -136,17 +136,17 @@ export const HouseholdDashboard = ({ onNavigate }) => {
           <div className="space-y-3 max-w-2xl">
             <div className="flex items-center gap-2.5 flex-wrap">
               <span className="bg-slate-900/90 text-teal-300 border border-teal-400/50 text-xs py-1 px-3 rounded-xl font-black shadow-sm flex items-center gap-1.5">
-                🏠 Household Care Portal
+                {t('householdDashboard.portalBadge')}
               </span>
               {passActivated && (
                 <span className="bg-emerald-400 text-slate-950 text-xs py-1 px-3.5 rounded-full font-black shadow-md shadow-emerald-400/40 flex items-center gap-1.5 border border-emerald-300">
-                  🛡️ 30-Day Work Shield Active
+                  {t('householdDashboard.shieldBadge')}
                 </span>
               )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white drop-shadow-sm leading-snug">
-              Welcome back, <span className="text-shining-gold-rainbow font-black drop-shadow-md">{householdUser.name}</span> 👋
+              {t('householdDashboard.welcomeBack')} <span className="text-shining-gold-rainbow font-black drop-shadow-md">{householdUser.name}</span> 👋
             </h1>
 
             <p className="text-xs sm:text-sm text-cyan-100 font-extrabold flex items-center gap-3 flex-wrap pt-0.5">
@@ -166,15 +166,15 @@ export const HouseholdDashboard = ({ onNavigate }) => {
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-cyan-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-cyan-200"
             >
               <Icon name="zap" className="w-4 h-4 text-slate-950" />
-              <span>Book Doorstep Service</span>
+              <span>{t('householdDashboard.bookDoorstep')}</span>
             </button>
 
             <button
-              onClick={() => onNavigate('/household/shield')}
+              onClick={() => setHomeShieldModalOpen(true)}
               className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-400/30 transition-all scale-100 hover:scale-105 active:scale-95 border border-emerald-200"
             >
               <Icon name="shield" className="w-4 h-4 text-slate-950" />
-              <span>HomeCare Protection Shield</span>
+              <span>{t('householdDashboard.shieldBtn')}</span>
             </button>
           </div>
         </div>
@@ -182,10 +182,10 @@ export const HouseholdDashboard = ({ onNavigate }) => {
 
       {/* QUICK STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Active Doorstep Orders" value="1" subtext="Worker en route (ETA 12m)" icon="clock" variant="primary" />
-        <StatCard title="Completed Services" value="14" subtext="100% mutual escrow payout" icon="check-circle" variant="emerald" />
-        <StatCard title="My Custom Offers" value={householdOffers.length.toString()} subtext="Direct budget requests" icon="plus" variant="amber" />
-        <StatCard title="Favorite Artisans" value="3" subtext="Saved local technicians" icon="heart" variant="sky" />
+        <StatCard title={t('householdDashboard.statActive')} value="1" subtext={t('householdDashboard.statActiveSubtext')} icon="clock" variant="primary" />
+        <StatCard title={t('householdDashboard.statCompleted')} value="14" subtext={t('householdDashboard.statCompletedSubtext')} icon="check-circle" variant="emerald" />
+        <StatCard title={t('householdDashboard.statOffers')} value={householdOffers.length.toString()} subtext={t('householdDashboard.statOffersSubtext')} icon="plus" variant="amber" />
+        <StatCard title={t('householdDashboard.statFavorites')} value="3" subtext={t('householdDashboard.statFavoritesSubtext')} icon="heart" variant="sky" />
       </div>
 
       {/* DEDICATED HOUSEHOLD NAVIGATION TABS WITH ELECTRIC GRADIENTS */}
@@ -199,7 +199,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
           }`}
         >
           <Icon name="home" className="w-4 h-4" />
-          <span>Doorstep Trade Services</span>
+          <span>{t('householdDashboard.tabDoorstep')}</span>
         </button>
 
         <button
@@ -211,7 +211,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
           }`}
         >
           <Icon name="plus" className="w-4 h-4 text-cyan-400" />
-          <span>Post Household Custom Offer</span>
+          <span>{t('householdDashboard.tabCustom')}</span>
         </button>
 
         <button
@@ -223,7 +223,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
           }`}
         >
           <Icon name="calculator" className="w-4 h-4 text-teal-400" />
-          <span>Home Repair Cost Calculator</span>
+          <span>{t('householdDashboard.tabCalculator')}</span>
         </button>
 
         <button
@@ -235,7 +235,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
           }`}
         >
           <Icon name="heart" className="w-4 h-4 text-rose-400" />
-          <span>Saved Household Pros</span>
+          <span>{t('householdDashboard.tabFavorites')}</span>
         </button>
       </div>
 
@@ -247,10 +247,10 @@ export const HouseholdDashboard = ({ onNavigate }) => {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-600 animate-ping" />
-                <span>Active Live Doorstep Dispatch</span>
+                <span>{t('householdDashboard.activeLive')}</span>
               </h2>
               <Button size="sm" variant="ghost" onClick={() => onNavigate('/household/bookings')}>
-                Manage All Bookings & Live Map →
+                {t('householdDashboard.manageBookings')}
               </Button>
             </div>
 
@@ -263,7 +263,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                       <p className="text-[11px] text-slate-500">{bk.time} • Ref: #{bk.id}</p>
                     </div>
                     <Badge variant="primary" className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white font-black animate-pulse">
-                      ⚡ En Route ({bk.eta})
+                      {t('householdDashboard.enRoute')} ({bk.eta})
                     </Badge>
                   </div>
 
@@ -276,20 +276,20 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                       />
                       <div>
                         <h4 className="font-extrabold text-slate-900">{bk.workerName}</h4>
-                        <p className="text-[10px] text-slate-500 font-medium">★ {bk.rating} • Verified Local Electrician</p>
+                        <p className="text-[10px] text-slate-500 font-medium">★ {bk.rating} • {t('householdDashboard.verifiedElectrician')}</p>
                       </div>
                     </div>
                     <span className="font-black text-emerald-700 text-base">{bk.budget}</span>
                   </div>
 
                   <div className="flex items-center justify-between pt-1 text-xs">
-                    <span className="text-slate-600 font-medium">Doorstep ETA: <strong className="text-fuchsia-700 font-black">{bk.eta}</strong></span>
+                    <span className="text-slate-600 font-medium">{t('householdDashboard.doorstepEta')} <strong className="text-fuchsia-700 font-black">{bk.eta}</strong></span>
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" icon="phone" onClick={() => alert(`Calling ${bk.workerName} at ${bk.workerPhone}`)}>
-                        Call
+                        {t('householdDashboard.call')}
                       </Button>
                       <Button size="sm" variant="primary" icon="clock" onClick={() => onNavigate('/household/bookings')} className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white">
-                        Track Live Progress
+                        {t('householdDashboard.trackLive')}
                       </Button>
                     </div>
                   </div>
@@ -319,18 +319,18 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                     <div className="w-10 h-10 rounded-2xl bg-fuchsia-50 text-fuchsia-600 flex items-center justify-center group-hover:bg-gradient-to-tr group-hover:from-fuchsia-600 group-hover:to-pink-600 group-hover:text-white transition-all border border-fuchsia-100 shadow-xs">
                       <Icon name={service.icon} className="w-5 h-5" />
                     </div>
-                    <Badge variant="success" className="text-[9px]">Verified Pro</Badge>
+                    <Badge variant="success" className="text-[9px]">{t('householdDashboard.verifiedPro')}</Badge>
                   </div>
 
                   <div>
                     <h3 className="font-extrabold text-xs text-slate-900 group-hover:text-fuchsia-600 transition-colors line-clamp-1">
                       {service.name}
                     </h3>
-                    <p className="text-[10px] text-slate-500 mt-0.5 font-semibold">From {service.startingPrice} / {service.unit}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5 font-semibold">{t('householdDashboard.from')} {service.startingPrice} / {service.unit}</p>
                   </div>
 
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-bold text-fuchsia-600">
-                    <span>Book Doorstep Pro</span>
+                    <span>{t('householdDashboard.bookDoorstepPro')}</span>
                     <span>→</span>
                   </div>
                 </Card>
@@ -352,8 +352,8 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                     <Icon name="plus" className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm text-slate-900">Post Household Work & Custom Budget</h3>
-                    <p className="text-[11px] text-slate-500">Specify your household repair need & what you want to pay</p>
+                    <h3 className="font-extrabold text-sm text-slate-900">{t('householdDashboard.postOfferTitle')}</h3>
+                    <p className="text-[11px] text-slate-500">{t('householdDashboard.postOfferDesc')}</p>
                   </div>
                 </div>
 
@@ -361,30 +361,30 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                   <div className="p-3.5 rounded-2xl bg-cyan-50 border border-cyan-200 text-xs text-cyan-900 space-y-1 animate-scale-up">
                     <div className="flex items-center gap-2 font-bold text-cyan-700">
                       <Icon name="check-circle" className="w-4 h-4 text-emerald-600" />
-                      <span>Household Requirement Live!</span>
+                      <span>{t('householdDashboard.offerLive')}</span>
                     </div>
                     <p className="text-[11px] text-slate-600">
-                      Your offer is live for nearby workers to review and accept.
+                      {t('householdDashboard.offerLiveDesc')}
                     </p>
                   </div>
                 )}
 
                 <form onSubmit={handlePostHouseholdRequirement} className="space-y-4 text-xs">
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Household Repair Title *</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('householdDashboard.repairTitle')}</label>
                     <input
                       type="text"
                       required
                       value={reqTitle}
                       onChange={(e) => setReqTitle(e.target.value)}
-                      placeholder="e.g. Need 1 Electrician to fix bedroom switchboard & fan"
+                      placeholder={t('householdDashboard.repairTitlePlaceholder')}
                       className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:bg-white"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Trade Category *</label>
+                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('householdDashboard.tradeCategory')}</label>
                       <select
                         value={reqCategory}
                         onChange={(e) => setReqCategory(e.target.value)}
@@ -401,7 +401,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Offered Budget *</label>
+                      <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('householdDashboard.offeredBudget')}</label>
                       <input
                         type="text"
                         required
@@ -414,7 +414,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Required Urgency</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('householdDashboard.requiredUrgency')}</label>
                     <select
                       value={reqUrgency}
                       onChange={(e) => setReqUrgency(e.target.value)}
@@ -427,7 +427,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">Additional Repair Notes</label>
+                    <label className="font-bold text-slate-700 uppercase text-[10px] tracking-wider">{t('householdDashboard.repairNotes')}</label>
                     <textarea
                       rows={2}
                       value={reqNotes}
@@ -438,7 +438,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                   </div>
 
                   <Button type="submit" variant="primary" size="lg" icon="plus" fullWidth className="bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold shadow-md">
-                    Publish Household Custom Offer
+                    {t('householdDashboard.publishOffer')}
                   </Button>
                 </form>
               </Card>
@@ -449,9 +449,9 @@ export const HouseholdDashboard = ({ onNavigate }) => {
               <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
                 <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
                   <Icon name="briefcase" className="w-4 h-4 text-cyan-600" />
-                  <span>My Active Household Budget Offers</span>
+                  <span>{t('householdDashboard.myActiveOffers')}</span>
                 </h3>
-                <Badge variant="indigo" className="text-xs bg-cyan-50 text-cyan-700 border-cyan-200">{householdOffers.length} Active Posts</Badge>
+                <Badge variant="indigo" className="text-xs bg-cyan-50 text-cyan-700 border-cyan-200">{householdOffers.length} {t('householdDashboard.activePosts')}</Badge>
               </div>
 
               <div className="space-y-4">
@@ -464,11 +464,11 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                           <Badge variant="indigo">{off.category}</Badge>
                           {off.status === 'pending' ? (
                             <Badge variant="amber" className="bg-amber-50 text-amber-800 border-amber-200">
-                              ⏳ Waiting for Worker Acceptance
+                              {t('householdDashboard.waitingForWorker')}
                             </Badge>
                           ) : (
                             <Badge variant="emerald" className="bg-emerald-50 text-emerald-800 border-emerald-200">
-                              ✅ Accepted by Worker
+                              {t('householdDashboard.acceptedByWorker')}
                             </Badge>
                           )}
                         </div>
@@ -478,7 +478,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                       </div>
 
                       <div className="text-left sm:text-right shrink-0">
-                        <span className="text-[10px] text-slate-400 uppercase font-bold block">Offered Budget</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('householdDashboard.offeredBudgetLabel')}</span>
                         <span className="text-lg font-black text-emerald-700">{off.offeredBudget}</span>
                       </div>
                     </div>
@@ -499,7 +499,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
                           </div>
                         </div>
                         <Button size="sm" variant="outline" icon="phone" onClick={() => alert(`Calling ${off.acceptedBy.name}`)}>
-                          Call Worker
+                          {t('householdDashboard.callWorker')}
                         </Button>
                       </div>
                     )}
@@ -553,38 +553,38 @@ export const HouseholdDashboard = ({ onNavigate }) => {
               </div>
               <div>
                 <Badge variant="emerald" className="bg-teal-500/30 text-teal-200 border-teal-400/40 text-[10px] mb-1">
-                  100% Home Protection Assurance
+                  {t('householdDashboard.shieldModalBadge')}
                 </Badge>
-                <h3 className="text-xl font-black text-white">WorkConnect HomeCare Shield</h3>
-                <p className="text-xs text-teal-100/80">Included automatically for all household bookings</p>
+                <h3 className="text-xl font-black text-white">{t('householdDashboard.shieldModalTitle')}</h3>
+                <p className="text-xs text-teal-100/80">{t('householdDashboard.shieldModalDesc')}</p>
               </div>
             </div>
 
             <div className="space-y-3 text-xs">
               <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-teal-500/30 space-y-1.5">
                 <div className="flex items-center gap-2 font-black text-cyan-300">
-                  <span>🛡️ 30-Day Zero-Cost Re-Work Guarantee</span>
+                  <span>{t('householdDashboard.guarantee30')}</span>
                 </div>
                 <p className="text-[11px] text-slate-300">
-                  If any electrical fix, plumbing joint, or carpentry lock shows issues within 30 days, a technician re-visits your doorstep for ₹0.
+                  {t('householdDashboard.guarantee30Desc')}
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
                 <div className="flex items-center gap-2 font-black text-emerald-300">
-                  <span>🔒 Scam-Free Escrow Protection</span>
+                  <span>{t('householdDashboard.escrowProtect')}</span>
                 </div>
                 <p className="text-[11px] text-slate-300">
-                  Payment is safely held in WorkConnect Vault and only released when both you and the worker confirm job sign-off.
+                  {t('householdDashboard.escrowProtectDesc')}
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1.5">
                 <div className="flex items-center gap-2 font-black text-amber-300">
-                  <span>⚡ Priority Concierge & Verified Pros</span>
+                  <span>{t('householdDashboard.priorityConcierge')}</span>
                 </div>
                 <p className="text-[11px] text-slate-300">
-                  Only background-checked technicians with 90%+ trust scores are dispatched to household residences.
+                  {t('householdDashboard.priorityConciergeDesc')}
                 </p>
               </div>
             </div>
@@ -599,7 +599,7 @@ export const HouseholdDashboard = ({ onNavigate }) => {
               }}
               className="bg-gradient-to-r from-teal-400 via-cyan-500 to-emerald-500 text-slate-950 font-black py-3.5 shadow-lg shadow-teal-500/30 border-none"
             >
-              Keep HomeCare Shield Active ✓
+              {t('householdDashboard.keepShieldActive')}
             </Button>
           </div>
         </div>

@@ -20,7 +20,7 @@ export const LoginPage = ({ onNavigate }) => {
     setErrorMessage('');
     const res = loginWithCredentials(email, password);
     if (!res || res.error) {
-      setErrorMessage(res?.error || 'Invalid email or password.');
+      setErrorMessage(res?.error || t('login.invalidCredentials'));
       return;
     }
     const loggedUser = res.user || res;
@@ -59,9 +59,9 @@ export const LoginPage = ({ onNavigate }) => {
 
       <main className="max-w-xl mx-auto px-4 py-12 space-y-6 flex-1 flex flex-col justify-center w-full">
         <div className="text-center space-y-2">
-          <Badge variant="primary">WorkConnect Authentication</Badge>
-          <h1 className="text-3xl font-black text-slate-900">Sign In to Your Account</h1>
-          <p className="text-xs text-slate-600 font-medium">Use your account credentials or select a predefined demo role below.</p>
+          <Badge variant="primary">{t('login.badge')}</Badge>
+          <h1 className="text-3xl font-black text-slate-900">{t('login.title')}</h1>
+          <p className="text-xs text-slate-600 font-medium">{t('login.subtitle')}</p>
         </div>
 
         {/* PREDEFINED DEMO CREDENTIALS INFOGRAPHIC CARD */}
@@ -69,9 +69,9 @@ export const LoginPage = ({ onNavigate }) => {
           <div className="flex items-center justify-between">
             <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
               <Icon name="key" className="w-4 h-4 text-indigo-600" />
-              <span>Predefined Demo Credentials</span>
+              <span>{t('login.demoCreds')}</span>
             </span>
-            <span className="text-[10px] text-slate-500 font-mono">Password: <strong>demo123</strong></span>
+            <span className="text-[10px] text-slate-500 font-mono">{t('login.password')}: <strong>demo123</strong></span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -124,7 +124,7 @@ export const LoginPage = ({ onNavigate }) => {
 
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <Input
-              label="Email Address"
+              label={t('login.emailLabel')}
               type="email"
               required
               value={email}
@@ -132,7 +132,7 @@ export const LoginPage = ({ onNavigate }) => {
               placeholder="e.g. business@demo.com"
             />
             <Input
-              label="Password"
+              label={t('login.passwordLabel')}
               type="password"
               required
               value={password}
@@ -141,19 +141,19 @@ export const LoginPage = ({ onNavigate }) => {
             />
 
             <Button type="submit" variant="primary" size="lg" icon="arrow-right" iconPosition="right" fullWidth>
-              Sign In to Account
+              {t('login.signIn')}
             </Button>
           </form>
 
           <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-500 space-y-2">
             <p>
-              Don't have an account yet?{' '}
+              {t('login.noAccount')}{' '}
               <button
                 type="button"
                 onClick={() => onNavigate('/register')}
                 className="text-indigo-600 font-bold hover:underline"
               >
-                Create Smart Account
+                {t('login.createAccount')}
               </button>
             </p>
           </div>
@@ -161,7 +161,7 @@ export const LoginPage = ({ onNavigate }) => {
       </main>
 
       <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-200">
-        WorkConnect Platform Account Login
+        {t('login.footer')}
       </footer>
     </div>
   );
